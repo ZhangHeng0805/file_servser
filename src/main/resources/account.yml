@@ -1,0 +1,6 @@
+accs:
+  data:
+    - {account: 123,password: 111,state: 1}
+    - account: "111"
+      password: "222"
+      state: 2
