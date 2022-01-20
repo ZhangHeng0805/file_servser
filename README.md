@@ -1,6 +1,6 @@
 # 一、文件上传（单个文件最大100Mb）
 
-##1.保存MultipartFile类型图片
+## 1.保存MultipartFile类型图片
 * 访问路径：```localhost:8080/upload/saveMulImg```
 * 请求方式：get/post
 * 请求参数：
@@ -23,7 +23,7 @@
 | message | String |     消息内容（如果成功则返回文件保存路径）      |
 |   obj   | Object |           附加消息内容（默认为null）            |
 
-##2.保存Base64类型图片
+## 2.保存Base64类型图片
 
 * 访问路径：```localhost:8080/upload/saveBase64Img```
 * 请求方式：get/post
