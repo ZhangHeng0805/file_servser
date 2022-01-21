@@ -2,6 +2,12 @@ spring:
   application:
     #    应用名称
     name: happy_shopping
+  devtools:
+    restart:
+      # 设置热部署
+      enabled: true
+      # 设置重启目录
+      additional-paths: src/main/
   thymeleaf:
     # THYMELEAF (ThymeleafAutoConfiguration)
     # 开启模板缓存（默认值： true ）

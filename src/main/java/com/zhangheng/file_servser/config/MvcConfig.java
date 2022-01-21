@@ -20,6 +20,7 @@ public class MvcConfig implements WebMvcConfigurer {
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        //上传验证
         registry.addInterceptor(verifyInterceptor).addPathPatterns("/upload/**");
     }
 }

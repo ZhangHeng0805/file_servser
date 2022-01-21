@@ -134,11 +134,11 @@ public class UpLoadService {
             //图片小于2Mb
             String filename = file.getOriginalFilename();
             log.info("文件名：{}", filename);
-            log.info("图片大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
+            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
             //排除文件名中的空格
             filename = filename.replaceAll(" ", "");
             //判断文件名长度
-            fileName = fileName.length() < 8 ? fileName : fileName.substring(0, 8);
+            fileName = fileName.length() < 12 ? fileName : fileName.substring(0, 12);
             //保存文件名
             String name = type + "/" + appName
                     + UUID.randomUUID().toString().substring(0, 5)
