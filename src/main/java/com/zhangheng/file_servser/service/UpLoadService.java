@@ -138,7 +138,7 @@ public class UpLoadService {
             //排除文件名中的空格
             filename = filename.replaceAll(" ", "");
             //判断文件名长度
-            fileName = fileName.length() < 12 ? fileName : fileName.substring(0, 12);
+            fileName = fileName.length() < 20 ? fileName : fileName.substring(0, 20);
             //保存文件名
             String name = type + "/" + appName
                     + UUID.randomUUID().toString().substring(0, 5)
