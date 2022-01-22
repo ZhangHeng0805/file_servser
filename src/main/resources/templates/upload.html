@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传界面</title>
+</head>
+<body>
+<form id="upload_form" class="form-horizontal" style="padding: 8px" action="/" method="post" role="form" onsubmit="return sub();" enctype="multipart/form-data">
+    <div class="form-group" title="用户访问密钥">
+        <label class="control-label" for="key"><label style="color: red">*</label>访问秘钥：</label>
+        <input class="form-control" type="password" id="key" name="key" placeholder="请输入访问秘钥" required autofocus>
+    </div>
+    <div class="form-group" title="选择100Mb以内的文件">
+        <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：</label>
+        <input type="file" id="file" name="file" required>
+    </div>
+    <div class="form-group" title="选择文件后可以修改保存的文件名称，文件名控制在20个字符内">
+        <label class="control-label" for="fileName">文件名称：</label>
+        <input class="form-control" type="text" id="fileName" name="fileName" placeholder="请输入文件名称（选填）例：壁纸123" >
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="path">保存路径：</label>
+        <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image" >
+    </div>
+    <div>
+        <input type="submit" class="btn btn-search" value="上传">
+        <input type="reset" class="btn btn-default" value="取消">
+    </div>
+    <script>
+        $("#file").change(function () {
+            var f = document.getElementById("file").files;
+            var name=f[0].name;
+            var size=f[0].size;
+            var type=f[0].type;
+            $("#fileName").val(name.substring(0,name.lastIndexOf(".")));
+            // $("#path").val(size);
+            if ((size/1048576)>=100) {
+                alert("警告：文件大小超过100Mb最大限制！");
+                $("#file").val(null);
+                $("#fileName").val(null);
+                // $("#path").val(null);
+            }
+        });
+        function sub() {
+            var key=$("#key").val();
+            var file=$("#file").val();
+            if (key.length>0){
+                if (file.length>0){
+                    return true;
+                } else {
+                    alert("请选择文件");
+                }
+            } else {
+                alert("请输入秘钥");
+            }
+            return false;
+        }
+    </script>
+</form>
+</body>
+</html>

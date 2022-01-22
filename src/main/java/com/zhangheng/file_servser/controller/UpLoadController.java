@@ -1,6 +1,5 @@
 package com.zhangheng.file_servser.controller;
 
-import com.zhangheng.file_servser.entity.Account;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.FiletypeUtil;

@@ -2,6 +2,7 @@ package com.zhangheng.file_servser.controller;
 
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.service.UpLoadService;
+import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -38,10 +40,11 @@ public class WebController {
     }
 
     @PostMapping("/")
-    public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model){
+    public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model, HttpServletRequest request){
         Message msg = new Message();
         if (key!=null&&key.length()>0){
             if (keys.indexOf(key)>-1){
+                log.info("页面上传IP:{}；密钥[{}]正确", CusAccessObjectUtil.getIpAddress(request),key);
                 if (!file.isEmpty()){
                     String name=fileName!=null&&fileName.length()>0?fileName:file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
                     String Path=path!=null&&path.length()>0?path.split("/")[0]:FiletypeUtil.getFileType(file.getOriginalFilename());

@@ -49,6 +49,22 @@ public class UpLoadService {
                     }else {
                         log.info("空文件夹清除失败!");
                     }
+                }else {
+                    boolean flag=true;
+                    for (File f:dir.listFiles()){
+                        if (f.isFile()){
+                            flag=false;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        boolean b = deleteDir(dirPath);
+                        if (b){
+                            log.info("空文件夹清除成功!");
+                        }else {
+                            log.info("空文件夹清除失败!");
+                        }
+                    }
                 }
                 return true;
             }else {
@@ -84,6 +100,10 @@ public class UpLoadService {
             if (split.length>1) {
                 type = "." + split[0].split("/")[1].split(";")[0];
             }
+            //排除文件名中的非法字符
+            fileName = fileName.replace("/", "")
+                    .replace(" ","")
+                    .replace("\\","");
             //判断文件名长度
             fileName=fileName.length()<8?fileName:fileName.substring(0,8);
             //构造文件名
@@ -96,9 +116,10 @@ public class UpLoadService {
             fos = new java.io.FileOutputStream(file);
             bos = new BufferedOutputStream(fos);
             bos.write(bytes);
+            //文件的保存路径
             path = savePath+name+type;
-            log.info("图片名：{}", path);
-            log.info("图片大小：{}kb", Message.twoDecimalPlaces((double) file.length()/1024));
+            log.info("图片名：{}；图片大小：{}kb", path, Message.twoDecimalPlaces((double) file.length()/1024));
+//            log.info("图片大小：{}kb", Message.twoDecimalPlaces((double) file.length()/1024));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -132,17 +153,19 @@ public class UpLoadService {
         //图片不为空
         if (!fileName.isEmpty()) {
             //图片小于2Mb
-            String filename = file.getOriginalFilename();
-            log.info("文件名：{}", filename);
-            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
-            //排除文件名中的空格
-            filename = filename.replaceAll(" ", "");
+            String Fname = file.getOriginalFilename();
+            log.info("文件名：{}；文件大小：{}kb", Fname, Message.twoDecimalPlaces((double) file.getSize()/1024));
+//            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
+            //排除文件名中的非法字符
+            fileName = fileName.replace("/", "")
+                    .replace(" ","")
+                    .replace("\\","");
             //判断文件名长度
             fileName = fileName.length() < 20 ? fileName : fileName.substring(0, 20);
             //保存文件名
             String name = type + "/" + appName
                     + UUID.randomUUID().toString().substring(0, 5)
-                    + "_" + fileName + filename.substring(filename.lastIndexOf("."));
+                    + "_" + fileName + Fname.substring(Fname.lastIndexOf("."));
             File outFile = new File(baseDir + name);
             try {
                 FileUtils.copyToFile(file.getInputStream(), outFile);
