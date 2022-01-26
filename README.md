@@ -1,16 +1,17 @@
+# 服务器[jar包](https://github.com/ZhangHeng0805/file_servser/releases/download/1.0/file_servser-0.0.1-SNAPSHOT.jar)下载
 # 配置文件
 * 在服务器jar包同级目录下新建一个application.properties配置文件，将下面配置粘贴进去，修改配置文件后需要重启服务器
 ```properties
 # 应用服务 WEB 访问端口
 server.port=8080
         
-# 文件名前缀名
+# 文件名前缀名(中文可能会乱码)
 appName=星曦向荣网
 
-# 文件存放位置(注意末尾加/)
+# 文件存放位置(注意末尾加/，中文可能会乱码)
 baseDir=files/
 
-# 访问秘钥(多个秘钥之间用逗号隔开，注意不要换行)
+# 访问秘钥(多个秘钥之间用逗号隔开，注意不要换行，中文可能会乱码)
 keys=123456,666666,888888
 ```
 
