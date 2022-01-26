@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>文件管理</title>
 
-    <div th:include="comm :: #com_css"></div>
-    <div th:include="comm :: #com_js"></div>
+    <link th:include="comm :: #com_css">
 
+    <div th:include="comm :: #com_js"></div>
 </head>
 <body class="" style="background-color: #a8a8a8;">
 <section>
     <div class="row">
 
     </div>
-    <div class="row">
-        <div class="col-lg-3"></div>
-        <section class="panel col-lg-6">
+    <div class="wrapper">
+        <div class="col-lg-2"></div>
+        <section class="panel col-lg-8">
             <div class="panel-heading custom-tab blue-tab">
                 <ul class="nav nav-tabs">
                     <li class="active">
@@ -33,21 +33,21 @@
                 </ul>
             </div>
             <div class="panel-body">
-                <div th:replace="comm::#com_alert"></div>
                 <div class="tab-content">
                     <div class="tab-pane active" id="t1">
                         <div th:replace="upload::#upload_form"></div>
                     </div>
                     <div class="tab-pane" id="t2">
-                        文件查找
+                        <div th:replace="findFileList::#findFileList"></div>
                     </div>
                 </div>
 
             </div>
         </section>
-        <div class="col-lg-3"></div>
+        <div class="col-lg-2"></div>
     </div>
 </section>
+
 <script src="/static/js/scripts.js"></script>
 </body>
 </html>

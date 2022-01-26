@@ -34,11 +34,25 @@ public class WebController {
     private UpLoadService upLoadService;
     private Logger log= LoggerFactory.getLogger(getClass());
 
+    /**
+     * 跳转至上传首页
+     * @return
+     */
     @GetMapping("/")
     public String index(){
         return "index";
     }
 
+    /**
+     * 文件上传页面表单提交
+     * @param file 上传文件
+     * @param key 访问秘钥
+     * @param fileName 文件名称
+     * @param path 文件路径
+     * @param model
+     * @param request
+     * @return
+     */
     @PostMapping("/")
     public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model, HttpServletRequest request){
         Message msg = new Message();
@@ -71,4 +85,6 @@ public class WebController {
         model.addAttribute("msg",msg);
         return "index";
     }
+
+
 }

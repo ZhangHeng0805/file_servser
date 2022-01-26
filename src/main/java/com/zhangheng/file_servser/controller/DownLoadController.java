@@ -1,17 +1,16 @@
 package com.zhangheng.file_servser.controller;
 
+import com.sun.org.glassfish.gmbal.ParameterNames;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
+import com.zhangheng.file_servser.utils.FolderFileScanner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +39,7 @@ public class DownLoadController {
     @Value("${baseDir}")
     private String baseDir;
     private Logger log = LoggerFactory.getLogger(getClass());
+    private List<Object> files = new ArrayList<>();
     /**
      * 查看账号信息
      * @return
@@ -94,5 +95,82 @@ public class DownLoadController {
             request.setAttribute("msg", new Message());
             request.getRequestDispatcher("/err_404").forward(request, response);
         }
+    }
+
+    @ResponseBody
+    @PostMapping("findFileList")
+    public List<Message> findFileList(String key, String type)  {
+        List<Message> list =new ArrayList<>();
+        list.clear();
+        if (key!=null&&key.length()>0){
+            if (keys.indexOf(key)>-1){
+                if (type!=null&&type.length()>0){
+                    files.clear();
+                    try {
+                        switch (type){
+                            case "$all$"://检索全部文件
+                                files = FolderFileScanner.scanFilesWithRecursion(baseDir);
+                                break;
+                                default:
+//                                    files.add("对不起，"+type+"中没有找到你需要的，请换一个！");
+                                    files = FolderFileScanner.scanFilesWithRecursion(baseDir+type);
+                                    break;
+                        }
+                        if (!files.isEmpty()) {
+                            for (Object o : files) {
+                                String s1 = "";
+                                String s = String.valueOf(o);
+                                String replace = baseDir.replace("/", "");
+                                if (s.indexOf(replace) > 1) {
+                                    s1 = s.substring(s.indexOf(replace) + baseDir.length());
+                                    s1=s1.replace("\\","/");
+                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1),s1,null));
+                                } else {
+                                    s1 = s;
+                                    list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,null));
+                                }
+                            }
+                        }
+                    }catch (Exception e){
+                        log.error(e.getMessage());
+                        list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),null));
+                    }
+                }else {
+                    list.add(new Message(null,500,"文件夹名称为null","对不起，文件夹名称不能为空",null));
+                }
+            }else {
+                list.add(new Message(null,500,"秘钥错误","对不起，访问秘钥错误",null));
+            }
+        }else {
+            list.add(new Message(null,500,"秘钥为null","对不起，访问秘钥不能为空",null));
+        }
+        return list;
+    }
+
+    /**
+     * 获取文件夹列表
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("getAllFileType")
+    public List<Message> getAllFileType(){
+        ArrayList<Message> list = new ArrayList<>();
+        list.clear();
+        files.clear();
+        try {
+            list.add(new Message(null,200,"全部","$all$",null));
+            File fileList = new File(baseDir);
+            File[] files = fileList.listFiles();
+            for (File f : files) {
+                if (f.isDirectory()){
+                    String path = f.getPath().substring(baseDir.length());
+                    list.add(new Message(null,500,path,path,null));
+                }
+            }
+        }catch (Exception e){
+            list.add(new Message(null,500,"出错了！",e.getMessage(),null));
+        }
+
+        return list;
     }
 }

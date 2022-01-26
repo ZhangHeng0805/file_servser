@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>文件查找</title>
+</head>
+<body>
+<div id="findFileList">
+    <div class="row" >
+        <form class="form-inline" role="form" onsubmit="return false;">
+            <div class="form-group col-lg-5" title="用户访问密钥">
+                <label class="control-label col-lg-5" for="keys" id="lab_keys" style="text-align: center;"><label style="color: red">*</label>访问秘钥：</label>
+                <input class="form-control col-lg-7" type="password" id="keys" placeholder="请输入访问秘钥" required autofocus>
+            </div>
+            <div class="form-group col-lg-5" title="选择查找路径">
+                <label class="control-label col-lg-6" for="type" id="lab_type" style="text-align: center;"><label style="color: red">*</label>选择类型：</label>
+                <select class="form-control col-lg-6" id="type"  required>
+                    <option value="$all$">全部</option>
+                    <option value="image">图片</option>
+                    <option value="video">视频</option>
+                </select>
+            </div>
+            <script>
+                $("#lab_keys").css("font-size",$("#keys").height()/1.5);
+                $("#lab_type").css("font-size",$("#type").height()/1.5);
+            </script>
+            <div class="form-group col-lg-2" title="查找">
+                <button class="btn btn-search col-lg-12" onclick="sub2()">查找</button>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <h4 align="center" id="files_num"></h4>
+    <div id="files_result">
+    </div>
+    <script>
+        function getAllFileType() {
+            $.ajax({
+                url:"/download/getAllFileType",
+                method:"post",
+                dataType:"json",
+                success:function (d) {
+                    var html="";
+                    for (var i=0;i<d.length;i++){
+                        html+='<option value="'+d[i].message+'">'+d[i].title+'</option>';
+                    }
+                    $("#type").html(html);
+                },
+                error:function (e) {
+                    alert("类型查询错误："+e);
+                }
+            })
+        }
+        getAllFileType();
+        function sub2() {
+            if ($("#keys").val().length>0){
+                $.ajax({
+                    url:"/download/findFileList",
+                    method:"post",
+                    dataType:"json",
+                    data:{
+                        key:$("#keys").val(),
+                        type:$("#type").val()
+                    },
+                    success:function (d) {
+                        // console.log(d);
+                        handle(d);
+                    },
+                    error:function (e) {
+                        alert("结果查询错误："+e);
+                    }
+                })
+            } else {
+                alert("请输入秘钥")
+            }
+
+        }
+        function handle(d) {
+            var html="";
+            for (var i=0;i<d.length;i++){
+                var msg=d[i];
+                switch (msg.code) {
+                    case 200:
+                        html+='<div class="panel panel-success">';
+                        break;
+                    case 500:
+                        html+='<div class="panel panel-danger">';
+                        break;
+                    case 404:
+                        html+='<div class="panel panel-warning">';
+                        break;
+                }
+                html+='<div class="panel-heading">'+msg.title+'</div>' +
+                    '<div class="panel-body">' +
+                    '<label class="control-label col-md-2" for="type">文件路径：</label>' +
+                    '    <div class="form-group col-md-9">' +
+                    '       <input class="form-control file_path_'+i+'" type="text" readonly></div>';
+                if (msg.code!=200){
+                    html+='<a class="btn btn-primary col-md-1" disabled>访问</a>';
+                } else {
+                    html+='<a class="btn btn-primary col-md-1" target="_blank" href="/download/show/'+msg.message+'">访问</a>';
+                }
+                html+='</div></div>';
+            }
+            $("#files_result").html(html);
+            $("#files_num").html('总计:'+d.length+'个文件');
+            initData(d);
+        }
+        function initData(d) {
+            for (var i=0;i<d.length;i++){
+                $(".file_path_"+i).val(d[i].message);
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

@@ -145,8 +145,8 @@ public class UpLoadController {
         Message msg = new Message();
         msg.setTime(TimeUtil.time(new Date()));
         if (!file.isEmpty()){
-            String name=fileName!=null?fileName:file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
-            String Path=path!=null?path.split("/")[0]:FiletypeUtil.getFileType(file.getOriginalFilename());
+            String name=fileName!=null&&fileName.length()>0?fileName:file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
+            String Path=path!=null&&path.length()>0?path.split("/")[0]:FiletypeUtil.getFileType(file.getOriginalFilename());
             String s = upLoadService.saveFile(file, name, Path);
             if (s!=null){
                 msg.setCode(200);

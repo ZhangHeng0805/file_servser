@@ -20,6 +20,14 @@ public class Message {
     public Message() {
     }
 
+    public Message(String time, int code, String title, String message, Object obj) {
+        this.time = time;
+        this.code = code;
+        this.title = title;
+        this.message = message;
+        this.obj = obj;
+    }
+
     public String getTime() {
         return time;
     }

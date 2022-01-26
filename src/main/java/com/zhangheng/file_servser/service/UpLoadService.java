@@ -86,6 +86,8 @@ public class UpLoadService {
     public String base64ToImg(String base64, String fileName, String savePath) {
         File file = null;
         String path=null;
+        //排除文件夹名称的非法字符
+        savePath=savePath.replace("$","");
         //创建文件目录
         String filePath = baseDir+savePath;
         File dir = new File(filePath);
@@ -160,6 +162,8 @@ public class UpLoadService {
             fileName = fileName.replace("/", "")
                     .replace(" ","")
                     .replace("\\","");
+            //排除文件夹名称的非法字符
+            type=type.replace("$","");
             //判断文件名长度
             fileName = fileName.length() < 20 ? fileName : fileName.substring(0, 20);
             //保存文件名
