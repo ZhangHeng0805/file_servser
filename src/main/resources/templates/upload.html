@@ -8,8 +8,15 @@
 <form id="upload_form" class="form-horizontal" style="padding: 8px" role="form" onsubmit="return false;" enctype="multipart/form-data">
     <div id="upload_alert"></div>
     <div class="form-group" title="用户访问密钥">
-        <label class="control-label" for="key"><label style="color: red">*</label>访问秘钥：</label>
-        <input class="form-control" type="password" id="key" name="key" placeholder="请输入访问秘钥" required autofocus>
+        <div class="col-md-2 form-group">
+            <label class="control-label" for="key"><label style="color: red">*</label>访问秘钥：</label>
+        </div>
+        <div class="col-lg-7 form-group">
+            <input class="form-control" type="password" id="key" name="key" placeholder="请输入访问秘钥" required autofocus>
+        </div>
+        <div class="col-lg-3 checkbox" style="float: right">
+            <input type="checkbox" id="remember"><label>记住秘钥</label>
+        </div>
     </div>
     <div class="form-group" title="选择100Mb以内的文件">
         <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：</label>
@@ -24,7 +31,7 @@
         <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image" >
     </div>
     <div>
-        <input type="submit" class="btn btn-search" onclick="sub1()" value="上传">
+        <input type="submit" id="btn_upload" class="btn btn-search" onclick="sub1()" value="上传">
         <input type="reset" class="btn btn-default" value="取消">
     </div>
     <script>
@@ -47,6 +54,7 @@
             var file=$("#file").val();
             if (key.length>0){
                 if (file.length>0){
+                    $("#btn_upload").attr('disabled',true);
                     upload(key);
                 } else {
                     alert("请选择文件");
@@ -96,12 +104,23 @@
                     }
                     html+= '</div>';
                     $("#upload_alert").html(html);
-                    $('#upload_form')[0].reset();
+                    reset();
+                    $("#btn_upload").attr("disabled",false);
                 },
                 error:function (e) {
+                    $("#btn_upload").attr("disabled",false);
                     alert("上传错误："+e);
                 }
             })
+        }
+
+        function reset() {
+           if (!$("#remember").is(':checked'))  {
+               $("#key").val(null);
+           }
+            $("#file").val(null);
+            $("#fileName").val(null);
+            $("#path").val(null);
         }
     </script>
 </form>

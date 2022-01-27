@@ -1,6 +1,5 @@
 package com.zhangheng.file_servser.controller;
 
-import com.sun.org.glassfish.gmbal.ParameterNames;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;

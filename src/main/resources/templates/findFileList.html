@@ -33,7 +33,10 @@
     <h4 align="center" id="files_num"></h4>
     <div id="files_result">
     </div>
+
     <script>
+        var TYPE;
+        var Data;
         function getAllFileType() {
             $.ajax({
                 url:"/download/getAllFileType",
@@ -45,6 +48,7 @@
                         html+='<option value="'+d[i].message+'">'+d[i].title+'</option>';
                     }
                     $("#type").html(html);
+                    set_select_checked("type",TYPE);
                 },
                 error:function (e) {
                     alert("类型查询错误："+e);
@@ -64,7 +68,11 @@
                     },
                     success:function (d) {
                         // console.log(d);
+                        TYPE=$("#type").val();
+                        //处理数据
                         handle(d);
+                        //刷新下拉框数据
+                        getAllFileType();
                     },
                     error:function (e) {
                         alert("结果查询错误："+e);
@@ -76,6 +84,7 @@
 
         }
         function handle(d) {
+            Data=d;
             var html="";
             for (var i=0;i<d.length;i++){
                 var msg=d[i];
@@ -93,12 +102,12 @@
                 html+='<div class="panel-heading">'+msg.title+'</div>' +
                     '<div class="panel-body">' +
                     '<label class="control-label col-md-2" for="type">文件路径：</label>' +
-                    '    <div class="form-group col-md-9">' +
-                    '       <input class="form-control file_path_'+i+'" type="text" readonly></div>';
-                if (msg.code!=200){
-                    html+='<a class="btn btn-primary col-md-1" disabled>访问</a>';
-                } else {
-                    html+='<a class="btn btn-primary col-md-1" target="_blank" href="/download/show/'+msg.message+'">访问</a>';
+                    '    <div class="form-group col-md-8">' +
+                    '       <input class="form-control file_path_'+i+'" type="text" readonly>' +
+                    '     </div>';
+                if (msg.code==200){
+                    html+='<button class="btn btn-search col-md-1 btn_'+i+'" id="btn_'+i+'" onclick="copeText('+i+');">复制地址</button>';
+                    html+='<a class="btn btn-primary col-md-1" target="_blank" href="/download/show/'+msg.message+'">直接访问</a>';
                 }
                 html+='</div></div>';
             }
@@ -109,7 +118,25 @@
         function initData(d) {
             for (var i=0;i<d.length;i++){
                 $(".file_path_"+i).val(d[i].message);
+                $(".btn_"+i).attr("data-clipboard-text",""+window.location.host+"/download/show/"+d[i].message);
             }
+        }
+        function copeText(i) {
+            //set_btn_delayed("btn_"+i,2000);
+            var clipboard = new Clipboard("#btn_"+i);
+            // console.log(clipboard);
+            clipboard.on('success', function(e) {
+                // console.info('Action:', e.action);
+                console.info('Text:', e.text);
+                // console.info('Trigger:', e.trigger);
+                alert('复制成功');
+                e.clearSelection();
+            });
+            clipboard.on('error', function(e) {
+                alert('复制失败');
+                console.error('Action:', e.action);
+                console.error('Trigger:', e.trigger);
+            });
         }
     </script>
 </div>
