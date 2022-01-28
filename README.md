@@ -1,4 +1,4 @@
-# 服务器[jar包](https://github.com/ZhangHeng0805/file_servser/releases/download/1.0/file_servser-0.0.1-SNAPSHOT.jar)下载
+# [服务器](https://github.com/ZhangHeng0805/file_servser/releases/download/2.0/default.zip)下载
 # 配置文件
 * 在服务器jar包同级目录下新建一个application.properties配置文件，将下面配置粘贴进去，修改配置文件后需要重启服务器
 ```properties
