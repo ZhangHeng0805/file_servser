@@ -9,7 +9,6 @@ function set_select_checked(selectId, checkValue){
     }
 }
 //设置按钮点击延时
-
 function set_btn_delayed(btnId,time) {
     var btn = document.getElementById(btnId);
     btn.disabled = 'disabled';//只要点击就将按钮的可点击的状态更改为不可以点击的状态

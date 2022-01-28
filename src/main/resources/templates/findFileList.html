@@ -25,7 +25,7 @@
                 $("#lab_type").css("font-size",$("#type").height()/1.5);
             </script>
             <div class="form-group col-lg-2" title="查找">
-                <button class="btn btn-search col-lg-12" onclick="sub2()">查找</button>
+                <button class="btn btn-success col-lg-12" id="btn_sub2" onclick="sub2()">查找</button>
             </div>
         </form>
     </div>
@@ -58,6 +58,7 @@
         getAllFileType();
         function sub2() {
             if ($("#keys").val().length>0){
+                $("#btn_sub2").attr('disabled',true);
                 $.ajax({
                     url:"/download/findFileList",
                     method:"post",
@@ -73,8 +74,10 @@
                         handle(d);
                         //刷新下拉框数据
                         getAllFileType();
+                        $("#btn_sub2").attr('disabled',false);
                     },
                     error:function (e) {
+                        $("#btn_sub2").attr('disabled',false);
                         alert("结果查询错误："+e);
                     }
                 })
@@ -122,7 +125,7 @@
             }
         }
         function copeText(i) {
-            //set_btn_delayed("btn_"+i,2000);
+            set_btn_delayed("btn_"+i,4000);
             var clipboard = new Clipboard("#btn_"+i);
             // console.log(clipboard);
             clipboard.on('success', function(e) {

@@ -103,7 +103,9 @@ public class DownLoadController {
         list.clear();
         if (key!=null&&key.length()>0){
             if (keys.indexOf(key)>-1){
+
                 if (type!=null&&type.length()>0){
+                    log.info("秘钥[{}],查询[{}]文件夹",key,type);
                     files.clear();
                     try {
                         switch (type){

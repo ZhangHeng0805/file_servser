@@ -31,8 +31,9 @@
         <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image" >
     </div>
     <div>
+        <img id="wait_icon" src="/static/img/循环.gif" style="zoom:0.2;" hidden="hidden">
         <input type="submit" id="btn_upload" class="btn btn-search" onclick="sub1()" value="上传">
-        <input type="reset" class="btn btn-default" value="取消">
+        <input type="reset" class="btn btn-default" value="重置">
     </div>
     <script>
         $("#file").change(function () {
@@ -54,7 +55,9 @@
             var file=$("#file").val();
             if (key.length>0){
                 if (file.length>0){
+                    $("#wait_icon").show();
                     $("#btn_upload").attr('disabled',true);
+                    $("#btn_upload").val('上传中...');
                     upload(key);
                 } else {
                     alert("请选择文件");
@@ -65,9 +68,7 @@
             return false;
         }
         function upload(key) {
-
             var form = new FormData(document.getElementById("upload_form"));
-
             $.ajax({
                 url:"/upload/saveMulFile",
                 type:"post",
@@ -106,9 +107,13 @@
                     $("#upload_alert").html(html);
                     reset();
                     $("#btn_upload").attr("disabled",false);
+                    $("#btn_upload").val('上传');
+                    $("#wait_icon").hide();
                 },
                 error:function (e) {
                     $("#btn_upload").attr("disabled",false);
+                    $("#btn_upload").val('上传');
+                    $("#wait_icon").hide();
                     alert("上传错误："+e);
                 }
             })
