@@ -1,7 +1,9 @@
 package com.zhangheng.file_servser.controller;
 
+import com.zhangheng.file_servser.entity.FileInfo;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
+import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -97,7 +99,7 @@ public class DownLoadController {
     }
 
     @ResponseBody
-    @PostMapping("findFileList")
+    @RequestMapping("findFileList")
     public List<Message> findFileList(String key, String type)  {
         List<Message> list =new ArrayList<>();
         list.clear();
@@ -118,6 +120,7 @@ public class DownLoadController {
                                     break;
                         }
                         if (!files.isEmpty()) {
+                            File file=null;
                             for (Object o : files) {
                                 String s1 = "";
                                 String s = String.valueOf(o);
@@ -125,7 +128,19 @@ public class DownLoadController {
                                 if (s.indexOf(replace) > 1) {
                                     s1 = s.substring(s.indexOf(replace) + baseDir.length());
                                     s1=s1.replace("\\","/");
-                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1),s1,null));
+                                    file = new File(s);
+                                    FileInfo info = new FileInfo();
+                                    if (file.exists()){
+                                        info.setName(file.getName().split("[.]")[0]);
+                                        info.setType(FiletypeUtil.getFileType(file.getName()));
+                                        info.setSize(file.length());
+                                        info.setPath(s1);
+                                    }else {
+                                        info.setName("***");
+                                        info.setType("***");
+                                        info.setSize(0);
+                                    }
+                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1),s1,info));
                                 } else {
                                     s1 = s;
                                     list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,null));
@@ -133,6 +148,7 @@ public class DownLoadController {
                             }
                         }
                     }catch (Exception e){
+                        e.printStackTrace();
                         log.error(e.getMessage());
                         list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),null));
                     }

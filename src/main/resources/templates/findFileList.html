@@ -89,10 +89,42 @@
         function handle(d) {
             Data=d;
             var html="";
+            var icon="未知文件.png";
+            var title="";
+            var size=0;
             for (var i=0;i<d.length;i++){
                 var msg=d[i];
+                title=msg.title;
                 switch (msg.code) {
                     case 200:
+                        switch (msg.obj.type) {
+                            case "text":
+                                icon="文本文件.png";
+                                break;
+                            case "video":
+                                icon="视频文件.png";
+                                break;
+                            case "audio":
+                                icon="音频文件.png";
+                                break;
+                            case "image":
+                                icon="图片文件.png";
+                                break;
+                            case "application":
+                                icon="应用文件.png";
+                                break;
+                            default:
+                                icon="未知文件.png";
+                                break;
+                        }
+                        title=msg.obj.name;
+                        if (msg.obj.size>=0&&msg.obj.size<(1024*1000)) {
+                            size = (msg.obj.size / 1024).toFixed(2)+ "Kb";
+                        }else if (msg.obj.size>=(1024*1000)&&msg.obj.size<(1024*1024*1000)){
+                            size=(msg.obj.size/(1024*1024)).toFixed(2)+"Mb"
+                        }else if (msg.obj.size>=(1024*1024*1000)) {
+                            size=(msg.obj.size/(1024*1024*1024)).toFixed(2)+"Gb"
+                        }
                         html+='<div class="panel panel-success">';
                         break;
                     case 500:
@@ -102,7 +134,11 @@
                         html+='<div class="panel panel-warning">';
                         break;
                 }
-                html+='<div class="panel-heading">'+msg.title+'</div>' +
+                html+='<div class="panel-heading">' +
+                    '<img src="/static/img/'+icon+'" style="height: 35px;margin-right: 15px">' +
+                    '<label style="margin-right: 25px">'+title+'</label>' +
+                    '<label class="badge bg-primary">'+size+'</label>' +
+                    '</div>' +
                     '<div class="panel-body">' +
                     '<label class="control-label col-md-2" for="type">文件路径：</label>' +
                     '    <div class="form-group col-md-8">' +
