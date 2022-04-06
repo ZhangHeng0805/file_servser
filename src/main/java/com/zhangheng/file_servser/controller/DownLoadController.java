@@ -2,6 +2,7 @@ package com.zhangheng.file_servser.controller;
 
 import com.zhangheng.file_servser.entity.FileInfo;
 import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
@@ -9,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,10 @@ import java.util.List;
 @RequestMapping("download")
 @Controller
 public class DownLoadController {
+
+
+    @Autowired
+    private KeyService keyService;
     @Value("${appName}")
     private String appName;
     @Value("#{'${keys}'.split(',')}")
@@ -64,8 +70,7 @@ public class DownLoadController {
                      HttpServletResponse response) throws IOException, ServletException {
         String user_agent = CusAccessObjectUtil.getUser_Agent(request);
         String ipAddress = CusAccessObjectUtil.getIpAddress(request);
-        log.info("下载请求头："+user_agent);
-        log.info("下载IP："+ipAddress);
+        log.info("下载请求："+CusAccessObjectUtil.getRequst(request));
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         File file = new File(baseDir + type+"/"+name);
         if (file.exists()) {
@@ -75,7 +80,7 @@ public class DownLoadController {
                 response.setHeader("Content-Length", String.valueOf(file.length()));
                 input = FileUtils.openInputStream(file);
                 IOUtils.copy(input, response.getOutputStream());
-                log.info("下载请求成功:" + file.getPath());
+                log.info("请求文件:" + file.getPath());
             } catch (Exception e) {
                 if (e.getMessage().indexOf("does not exist") > 1) {
 
@@ -104,8 +109,7 @@ public class DownLoadController {
         List<Message> list =new ArrayList<>();
         list.clear();
         if (key!=null&&key.length()>0){
-            if (keys.indexOf(key)>-1){
-
+            if (keyService.isKeys(key)||keyService.isAdminKeys(key)){
                 if (type!=null&&type.length()>0){
                     log.info("秘钥[{}],查询[{}]文件夹",key,type);
                     files.clear();
@@ -135,6 +139,12 @@ public class DownLoadController {
                                         info.setType(FiletypeUtil.getFileType(file.getName()));
                                         info.setSize(file.length());
                                         info.setPath(s1);
+                                        //判断是否为管理秘钥
+                                        if (keyService.isAdminKeys(key)) {
+                                            info.setUpdate_time("admin");
+                                        }else {
+                                            info.setUpdate_time("common");
+                                        }
                                     }else {
                                         info.setName("***");
                                         info.setType("***");

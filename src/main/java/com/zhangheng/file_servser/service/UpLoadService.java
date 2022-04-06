@@ -31,7 +31,7 @@ public class UpLoadService {
     private Logger log = LoggerFactory.getLogger(getClass());
     /**
      * 删除文件
-     * @param path 图片路径
+     * @param path 文件路径
      * @return is 否删除成功
      */
     public boolean deleteFile(String path){

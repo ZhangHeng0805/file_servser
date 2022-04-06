@@ -27,6 +27,8 @@ public class VerifyInterceptor implements HandlerInterceptor {
 
     @Value("#{'${keys}'.split(',')}")
     private List<String> keys;
+    @Value("#{'${admin_keys}'.split(',')}")
+    private List<String> admin_keys;
     private Logger log= LoggerFactory.getLogger(getClass());
 
     @Override
@@ -34,9 +36,17 @@ public class VerifyInterceptor implements HandlerInterceptor {
         String key = request.getParameter("key");
         Message msg = new Message();
         if (key!=null) {
+            //遍历普通秘钥
             for (String s : keys) {
                 if (s.equals(key)) {
-                    log.info("密钥["+s+"]访问成功");
+                    log.info("普通密钥["+s+"]访问成功");
+                    return true;
+                }
+            }
+            //遍历管理秘钥
+            for (String s:admin_keys){
+                if (s.equals(key)){
+                    log.info("管理密钥["+s+"]访问成功");
                     return true;
                 }
             }
