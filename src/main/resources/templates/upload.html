@@ -83,7 +83,6 @@
                         xhr.upload.addEventListener('progress', function(event) {
                             var percent = Math.floor(event.loaded / event.total * 100);
                             $("#btn_upload").val(percent + "%"+'上传中...');
-                            // document.querySelector("#progress .progress-item").style.width = percent + "%";
                         }, false);
                     }
                     return xhr
