@@ -25,7 +25,7 @@
                 $("#lab_type").css("font-size",$("#type").height()/1.5);
             </script>
             <div class="form-group col-lg-2" title="查找">
-                <button class="btn btn-success col-lg-12" id="btn_sub2" onclick="sub2()">查找</button>
+                <button class="btn btn-warning col-lg-12" id="btn_sub2" onclick="sub2()">查找</button>
             </div>
         </form>
     </div>
@@ -79,6 +79,7 @@
                     error:function (e) {
                         $("#btn_sub2").attr('disabled',false);
                         alert("结果查询错误："+e);
+                        console.log(e);
                     }
                 })
             } else {
@@ -199,7 +200,8 @@
                             alert(d.message);
                         },
                         error: function (e) {
-                            alert("结果查询错误：" + e);
+                            alert("删除错误：" + e);
+                            console.log(e);
                         }
                     })
                 } else {

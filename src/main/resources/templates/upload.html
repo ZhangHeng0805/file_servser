@@ -41,7 +41,8 @@
             var name=f[0].name;
             var size=f[0].size;
             var type=f[0].type;
-            $("#fileName").val(name.substring(0,name.lastIndexOf(".")));
+            var fName=name.substring(0,name.lastIndexOf(".")).length>20?name.substring(0,20):name.substring(0,name.lastIndexOf("."));
+            $("#fileName").val(fName);
             // $("#path").val(size);
             if ((size/1048576)>=100) {
                 alert("警告：文件大小超过100Mb最大限制！");

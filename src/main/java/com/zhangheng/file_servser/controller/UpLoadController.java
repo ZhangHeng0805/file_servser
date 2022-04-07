@@ -3,6 +3,7 @@ package com.zhangheng.file_servser.controller;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.service.UpLoadService;
+import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.file_servser.utils.TimeUtil;
 import org.slf4j.Logger;
@@ -146,11 +147,12 @@ public class UpLoadController {
      */
     @ResponseBody
     @RequestMapping("/saveMulFile")
-    public Message saveFileInterface(MultipartFile file
+    public Message saveFileInterface(@Nullable MultipartFile file
             ,@Nullable String fileName
-            ,@Nullable String path){
+            ,@Nullable String path,HttpServletRequest request){
         Message msg = new Message();
         msg.setTime(TimeUtil.time(new Date()));
+        log.info("文件上传："+ CusAccessObjectUtil.getRequst(request));
         if (!file.isEmpty()){
             String name=fileName!=null&&fileName.length()>0?fileName:file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
             String Path=path!=null&&path.length()>0?path.split("/")[0]:FiletypeUtil.getFileType(file.getOriginalFilename());
