@@ -77,6 +77,17 @@
                 data: form,
                 processData: false,
                 contentType: false,
+                xhr: function() { //用以显示上传进度
+                    var xhr = $.ajaxSettings.xhr();
+                    if (xhr.upload) {
+                        xhr.upload.addEventListener('progress', function(event) {
+                            var percent = Math.floor(event.loaded / event.total * 100);
+                            $("#btn_upload").val(percent + "%"+'上传中...');
+                            // document.querySelector("#progress .progress-item").style.width = percent + "%";
+                        }, false);
+                    }
+                    return xhr
+                },
                 success:function (d) {
                     // console.log(d);
                     // alert(d.message);
