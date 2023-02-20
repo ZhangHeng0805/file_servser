@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="form-group" title="选择100Mb以内的文件">
-        <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：</label>
+        <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：<span id="fileSize"></span></label>
         <input type="file" id="file" name="file" required>
     </div>
     <div class="form-group" title="选择文件后可以修改保存的文件名称，文件名控制在25个字符内">
@@ -42,14 +42,18 @@
             var name=f[0].name;
             var size=f[0].size;
             var type=f[0].type;
-            var fName=name.substring(0,name.lastIndexOf(".")).length>20?name.substring(0,20):name.substring(0,name.lastIndexOf("."));
+            var fName=name.substring(0,name.lastIndexOf(".")).length>25?name.substring(0,25):name.substring(0,name.lastIndexOf("."));
             $("#fileName").val(fName);
+            $("#fileSize").text(getFileSizeFormat(size));
             // $("#path").val(size);
             if ((size/1048576)>=100) {
                 alert("警告：文件大小超过100Mb最大限制！");
                 $("#file").val(null);
                 $("#fileName").val(null);
+                $("#fileSize").attr("style","color:red");
                 // $("#path").val(null);
+            }else {
+                $("#fileSize").attr("style","color:green");
             }
         });
         function sub1() {
@@ -137,7 +141,19 @@
            }
             $("#file").val(null);
             $("#fileName").val(null);
+            $("#fileSize").val(null);
             $("#path").val(null);
+        }
+        function getFileSizeFormat(size) {
+            if (size >= 0 && size < (1024 * 1000)) {
+                return (size / 1024).toFixed(2) + "Kb";
+            } else if (size >= (1024 * 1000) && size < (1024 * 1024 * 1000)) {
+                return (size / (1024 * 1024)).toFixed(2) + "Mb"
+            } else if (size >= (1024 * 1024 * 1000)) {
+                return (size / (1024 * 1024 * 1024)).toFixed(2) + "Gb"
+            } else {
+                return size + "B";
+            }
         }
     </script>
 </form>

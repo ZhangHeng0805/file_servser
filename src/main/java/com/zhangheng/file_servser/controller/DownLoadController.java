@@ -196,8 +196,9 @@ public class DownLoadController {
                                     file = new File(s);
                                     FileInfo info = new FileInfo();
                                     if (file.exists()){
-                                        info.setName(file.getName().split("[.]")[0]);
-                                        info.setType(FiletypeUtil.getFileType(file.getName()));
+                                        String name = file.getName();
+                                        info.setName(FiletypeUtil.getMainName(name));
+                                        info.setType(FiletypeUtil.getFileType(name));
                                         info.setSize(file.length());
                                         info.setPath(s1);
                                         //判断是否为管理秘钥

@@ -115,6 +115,13 @@ public class FiletypeUtil {
         }
         return type;
     }
-
-
+    public static String getMainName(String fileName){
+        String[] p={"tar.bz2", "tar.Z", "tar.gz", "tar.xz"};
+        for (String s : p) {
+            if (fileName.indexOf(s)>0){
+                return fileName.replace("."+s,"");
+            }
+        }
+        return fileName.substring(0,fileName.lastIndexOf("."));
+    }
 }

@@ -122,13 +122,14 @@
                                 break;
                         }
                         title=msg.obj.name;
-                        if (msg.obj.size>=0&&msg.obj.size<(1024*1000)) {
-                            size = (msg.obj.size / 1024).toFixed(2)+ "Kb";
-                        }else if (msg.obj.size>=(1024*1000)&&msg.obj.size<(1024*1024*1000)){
-                            size=(msg.obj.size/(1024*1024)).toFixed(2)+"Mb"
-                        }else if (msg.obj.size>=(1024*1024*1000)) {
-                            size=(msg.obj.size/(1024*1024*1024)).toFixed(2)+"Gb"
-                        }
+                        // if (msg.obj.size>=0&&msg.obj.size<(1024*1000)) {
+                        //     size = (msg.obj.size / 1024).toFixed(2)+ "Kb";
+                        // }else if (msg.obj.size>=(1024*1000)&&msg.obj.size<(1024*1024*1000)){
+                        //     size=(msg.obj.size/(1024*1024)).toFixed(2)+"Mb"
+                        // }else if (msg.obj.size>=(1024*1024*1000)) {
+                        //     size=(msg.obj.size/(1024*1024*1024)).toFixed(2)+"Gb"
+                        // }
+                        size=getFileSizeFormat(msg.obj.size);
                         html+='<div class="panel panel-success">';
                         break;
                     case 500:
