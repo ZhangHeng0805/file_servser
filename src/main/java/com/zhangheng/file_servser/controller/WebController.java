@@ -1,6 +1,7 @@
 package com.zhangheng.file_servser.controller;
 
 import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
@@ -28,8 +29,6 @@ import java.util.List;
 @Controller
 public class WebController {
 
-    @Value("#{'${keys}'.split(',')}")
-    private List<String> keys;
     @Autowired
     private UpLoadService upLoadService;
     private Logger log= LoggerFactory.getLogger(getClass());
@@ -53,11 +52,12 @@ public class WebController {
      * @param request
      * @return
      */
-    @PostMapping("/")
+    @PostMapping("/web/upload")
     public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model, HttpServletRequest request){
         Message msg = new Message();
+        User user = (User) request.getAttribute("user");
         if (key!=null&&key.length()>0){
-            if (keys.indexOf(key)>-1){
+            if (user.getType().equals(User.Type.Common)||user.getType().equals(User.Type.Admin)){
                 log.info("页面上传IP:{}；密钥[{}]正确", CusAccessObjectUtil.getIpAddress(request),key);
                 if (!file.isEmpty()){
                     String name=fileName!=null&&fileName.length()>0?fileName:file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
@@ -76,7 +76,7 @@ public class WebController {
                 }
             }else {
                 msg.setCode(500);
-                msg.setMessage("秘钥错误！");
+                msg.setMessage("秘钥错误！该秘钥没有上传文件的权限");
             }
         }else {
             msg.setCode(500);

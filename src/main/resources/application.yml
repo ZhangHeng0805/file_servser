@@ -1,7 +1,7 @@
 spring:
   application:
     #    应用名称
-    name: happy_shopping
+    name: file_server
   devtools:
     restart:
       # 设置热部署

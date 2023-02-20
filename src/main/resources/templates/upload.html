@@ -22,13 +22,14 @@
         <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：</label>
         <input type="file" id="file" name="file" required>
     </div>
-    <div class="form-group" title="选择文件后可以修改保存的文件名称，文件名控制在20个字符内">
+    <div class="form-group" title="选择文件后可以修改保存的文件名称，文件名控制在25个字符内">
         <label class="control-label" for="fileName">文件名称：</label>
-        <input class="form-control" type="text" id="fileName" name="fileName" placeholder="请输入文件名称（选填）例：壁纸123" >
+        <input class="form-control" type="text" id="fileName" name="fileName" placeholder="请输入文件名称（选填）例：壁纸123" oninput="titleInput('fileName','fileName_tips',25)" onchange="limitInput('fileName',25)" >
+        <p class="help-block" id="fileName_tips"></p>
     </div>
-    <div class="form-group">
+    <div class="form-group" title="输入文件保存的目录，默认根据文件类型进行保存">
         <label class="control-label" for="path">保存路径：</label>
-        <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image" >
+        <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image" onchange="limitInput('path',20)" >
     </div>
     <div>
         <img id="wait_icon" src="/static/img/循环.gif" style="zoom:0.2;" hidden="hidden">
@@ -82,7 +83,7 @@
                     if (xhr.upload) {
                         xhr.upload.addEventListener('progress', function(event) {
                             var percent = Math.floor(event.loaded / event.total * 100);
-                            $("#btn_upload").val(percent + "%"+'上传中...');
+                            $("#btn_upload").val(percent-1 + "%"+'上传中...');
                         }, false);
                     }
                     return xhr

@@ -17,6 +17,7 @@ import java.util.Date;
  * @date 2022-01-19 11:03
  */
 @Controller
+@RequestMapping("error")
 public class ErrorController {
 
     /**

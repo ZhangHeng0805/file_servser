@@ -21,6 +21,12 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //上传验证
-        registry.addInterceptor(verifyInterceptor).addPathPatterns("/upload/**");
+        registry.addInterceptor(verifyInterceptor).excludePathPatterns(
+                "/",//首页
+                "/download/show/**",//下载
+                "/static/**",//静态资源
+                "/error/**",//错误
+                "/download/getAllFileType"//获取文件夹列表名
+        );
     }
 }

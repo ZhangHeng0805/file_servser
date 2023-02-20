@@ -58,6 +58,7 @@ public class FiletypeUtil {
             {".rc",    "text"},
             {".log",   "text"},
             {".sh",    "text"},
+            {".wsdl",    "text"},
 
             {".class",  "application"},
             {".apk",    "application"},

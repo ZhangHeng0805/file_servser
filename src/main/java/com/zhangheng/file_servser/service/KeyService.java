@@ -19,6 +19,8 @@ public class KeyService {
     private List<String> keys;
     @Value("#{'${admin_keys}'.split(',')}")
     private List<String> admin_keys;
+    @Value("#{'${test_keys}'.split(',')}")
+    private List<String> test_keys;
 
     /**
      * 判断是否为普通秘钥
@@ -49,6 +51,20 @@ public class KeyService {
                 if (s.equals(key)) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断是否为临时秘钥
+     * @param key
+     * @return
+     */
+    public boolean isTestKeys(String key){
+        if (key!=null) {
+            if (test_keys.indexOf(key)>-1){
+                return true;
             }
         }
         return false;
