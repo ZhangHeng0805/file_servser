@@ -95,12 +95,17 @@ admin_keys=admin123456
 |   obj   | Object |                  附加消息内容（默认为null）                  |
 
 # 二、文件下载
+### 普通下载
+* 访问路径：````http://localhost:8080/download/show/+文件保存路径```
+* 请求方式：get/post
 
-* 访问路径：```localhost:8080/download/show/+文件保存路径```
-* 请求方式：get
+> 例： ```http://localhost:8080/download/show/text/星曦向荣网48122_张恒.pdf ```
+### 断点分片下载
+* 访问路径：```http://localhost:8080/download/split/+文件保存路径```
+* 请求方式：get/post
+> * 例： ```http://localhost:8080/download/split/text/星曦向荣网48122_张恒.pdf ```
+> * 注意：此下载需要下载客户端支持断点分片下载功能
 
-> 例： ```localhost:8080/download/show/text/星曦向荣网48122_张恒.pdf ```
->
 > 文件下载不需要请求数据，只需下载路径正确
 
 # 三、文件删除
