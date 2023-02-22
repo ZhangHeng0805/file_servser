@@ -152,7 +152,7 @@
                 if (msg.code==200){
                     html+='<div class="form-group col-md-4">' +
                         '<a class="btn btn-search col-md-4 btn_'+i+'" id="btn_'+i+'" onclick="copeText('+i+');">复制地址</a>';
-                    html+='<a class="btn btn-primary col-md-4" target="_blank" href="/download/show/'+msg.message+'">直接访问</a>';
+                    html+='<a class="btn btn-primary col-md-4" target="_blank" href="/download/split/'+msg.message+'">直接访问</a>';
                     if (msg.obj.update_time!=null&&msg.obj.update_time.length>0&&msg.obj.update_time=="admin"){
                         html+='<a class="btn btn-danger col-md-4" target="_blank" onclick="del(\''+msg.message+'\')">删除文件</a>';
                     }
@@ -166,7 +166,7 @@
         function initData(d) {
             for (var i=0;i<d.length;i++){
                 $(".file_path_"+i).val(d[i].message);
-                $(".btn_"+i).attr("data-clipboard-text","http://"+window.location.host+"/download/show/"+d[i].message);
+                $(".btn_"+i).attr("data-clipboard-text",encodeURI("http://"+window.location.host+"/download/split/"+d[i].message));
             }
         }
         var clip;

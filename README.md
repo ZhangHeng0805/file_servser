@@ -96,7 +96,7 @@ admin_keys=admin123456
 
 # 二、文件下载
 ### 普通下载
-* 访问路径：````http://localhost:8080/download/show/+文件保存路径```
+* 访问路径：```http://localhost:8080/download/show/+文件保存路径```
 * 请求方式：get/post
 
 > 例： ```http://localhost:8080/download/show/text/星曦向荣网48122_张恒.pdf ```
