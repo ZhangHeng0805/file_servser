@@ -39,6 +39,8 @@ public class UpLoadController {
     private UpLoadService upLoadService;
     @Autowired
     private KeyService keyService;
+    @Value("#{'${is-add-appName}'}")
+    private Boolean is_add_appName;
     @Value("#{'${admin_keys}'.split(',')}")
     private List<String> admin_keys;
     @Value("${baseDir}")

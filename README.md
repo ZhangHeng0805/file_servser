@@ -8,7 +8,8 @@ server.port=8080
 # 文件名前缀名(中文可能会乱码)
 appName=XXXR
 
-
+# 是否为上传文件名添加前缀
+is-add-appName=false
 
 # 文件存放位置(注意末尾加/，中文可能会乱码)
 baseDir=files/

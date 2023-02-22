@@ -16,7 +16,6 @@ import java.util.Base64;
 import java.util.UUID;
 
 /**
- *
  * @author 张恒
  * @program: file_servser
  * @email zhangheng.0805@qq.com
@@ -26,70 +25,75 @@ import java.util.UUID;
 public class UpLoadService {
     @Value("${baseDir}")
     private String baseDir;
+    @Value("${is-add-appName}")
+    private boolean is_add_appName;
     @Value("${appName}")
     private String appName;
     private Logger log = LoggerFactory.getLogger(getClass());
+
     /**
      * 删除文件
+     *
      * @param path 文件路径
      * @return is 否删除成功
      */
-    public boolean deleteFile(String path){
-        File file = new File(baseDir+path);
-        if (file.exists()){
+    public boolean deleteFile(String path) {
+        File file = new File(baseDir + path);
+        if (file.exists()) {
             boolean delete = file.delete();
             if (delete) {
-                log.info("文件删除成功："+path);
-                String dirPath=path.split("/")[0];
+                log.info("文件删除成功：" + path);
+                String dirPath = path.split("/")[0];
                 File dir = new File(baseDir + dirPath);
-                if (dir.listFiles().length<=0){
+                if (dir.listFiles().length <= 0) {
                     boolean b = deleteDir(dirPath);
-                    if (b){
+                    if (b) {
                         log.info("空文件夹清除成功!");
-                    }else {
+                    } else {
                         log.info("空文件夹清除失败!");
                     }
-                }else {
-                    boolean flag=true;
-                    for (File f:dir.listFiles()){
-                        if (f.isFile()){
-                            flag=false;
+                } else {
+                    boolean flag = true;
+                    for (File f : dir.listFiles()) {
+                        if (f.isFile()) {
+                            flag = false;
                             break;
                         }
                     }
-                    if (flag){
+                    if (flag) {
                         boolean b = deleteDir(dirPath);
-                        if (b){
+                        if (b) {
                             log.info("空文件夹清除成功!");
-                        }else {
+                        } else {
                             log.info("空文件夹清除失败!");
                         }
                     }
                 }
                 return true;
-            }else {
-                log.error("文件删除失败："+path);
+            } else {
+                log.error("文件删除失败：" + path);
             }
-        }else {
-            log.error("删除文件的不存在："+path);
+        } else {
+            log.error("删除文件的不存在：" + path);
         }
         return false;
     }
 
     /**
      * 保存base64格式的图片
-     * @param base64 base64字符
+     *
+     * @param base64   base64字符
      * @param fileName 文件名
      * @param savePath 保存路径文件夹(父级文件夹的名称)
      * @return 返回保存路径，如果返回为null则保存失败
      */
     public String base64ToImg(String base64, String fileName, String savePath) {
         File file = null;
-        String path=null;
+        String path = null;
         //排除文件夹名称的非法字符
-        savePath=savePath.replace("$","");
+        savePath = savePath.replace("$", "");
         //创建文件目录
-        String filePath = baseDir+savePath;
+        String filePath = baseDir + savePath;
         File dir = new File(filePath);
         if (!dir.exists() && !dir.isDirectory()) {
             dir.mkdirs();
@@ -97,30 +101,35 @@ public class UpLoadService {
         BufferedOutputStream bos = null;
         java.io.FileOutputStream fos = null;
         try {
-            String type=".jpg";
+            String type = ".jpg";
             String[] split = base64.split(",");
-            if (split.length>1) {
+            if (split.length > 1) {
                 type = "." + split[0].split("/")[1].split(";")[0];
             }
             //排除文件名中的非法字符
             fileName = fileName.replace("/", "")
-                    .replace(" ","")
-                    .replace("\\","");
+                    .replace(" ", "")
+                    .replace("\\", "");
             //判断文件名长度
-            fileName=fileName.length()<8?fileName:fileName.substring(0,8);
+            fileName = fileName.length() < 8 ? fileName : fileName.substring(0, 8);
             //构造文件名
-            String name="/"+appName
-                    + UUID.randomUUID().toString().substring(0, 5)
-                    + "_" + fileName;
+            String name;
+            if (is_add_appName) {
+                name = "/" + appName
+                        + UUID.randomUUID().toString().substring(0, 5)
+                        + "_" + fileName;
+            } else {
+                name = "/" + fileName;
+            }
             base64 = split[1];
             byte[] bytes = Base64.getDecoder().decode(base64);
-            file=new File(filePath + name + type);
+            file = new File(filePath + name + type);
             fos = new java.io.FileOutputStream(file);
             bos = new BufferedOutputStream(fos);
             bos.write(bytes);
             //文件的保存路径
-            path = savePath+name+type;
-            log.info("图片名：{}；图片大小：{}kb", path, Message.twoDecimalPlaces((double) file.length()/1024));
+            path = savePath + name + type;
+            log.info("图片名：{}；图片大小：{}kb", path, Message.twoDecimalPlaces((double) file.length() / 1024));
 //            log.info("图片大小：{}kb", Message.twoDecimalPlaces((double) file.length()/1024));
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,9 +154,10 @@ public class UpLoadService {
 
     /**
      * 保存MultipartFile格式的文件（MultipartFile文件），并返回保存路径，(如果返回为null则保存失败)
-     * @param file 文件
+     *
+     * @param file     文件
      * @param fileName 文件名称
-     * @param type 文件文件夹（父级文件夹名称）
+     * @param type     文件文件夹（父级文件夹名称）
      * @return 返回保存路径，如果返回为null则保存失败
      */
     public String saveFile(MultipartFile file, String fileName, String type) {
@@ -156,20 +166,25 @@ public class UpLoadService {
         if (!fileName.isEmpty()) {
             //图片小于2Mb
             String Fname = file.getOriginalFilename();
-            log.info("文件名：{}；文件大小：{}kb", Fname, Message.twoDecimalPlaces((double) file.getSize()/1024));
+            log.info("文件名：{}；文件大小：{}kb", Fname, Message.twoDecimalPlaces((double) file.getSize() / 1024));
 //            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
             //排除文件名中的非法字符
             fileName = fileName.replace("/", "")
-                    .replace(" ","")
-                    .replace("\\","");
+                    .replace(" ", "")
+                    .replace("\\", "");
             //排除文件夹名称的非法字符
-            type=type.replace("$","");
+            type = type.replace("$", "");
             //判断文件名长度
-            fileName = fileName.length() < 20 ? fileName : fileName.substring(0, 20);
+            fileName = fileName.length() < 25 ? fileName : fileName.substring(0, 25);
             //保存文件名
-            String name = type + "/" + appName
-                    + UUID.randomUUID().toString().substring(0, 5)
-                    + "_" + fileName + Fname.substring(Fname.lastIndexOf("."));
+            String name;
+            if (is_add_appName) {
+                name = type + "/" + appName
+                        + UUID.randomUUID().toString().substring(0, 5)
+                        + "_" + fileName + Fname.substring(Fname.lastIndexOf("."));
+            } else {
+                name = type + "/" + fileName + Fname.substring(Fname.lastIndexOf("."));
+            }
             File outFile = new File(baseDir + name);
             try {
                 FileUtils.copyToFile(file.getInputStream(), outFile);
@@ -183,10 +198,11 @@ public class UpLoadService {
 
     /**
      * 递归删除文件夹
+     *
      * @param path 文件夹路径
      * @return
      */
-    private boolean deleteDir(String path){
+    private boolean deleteDir(String path) {
         File file = new File(baseDir + path);
         if (file.isDirectory()) {
             try {

@@ -144,17 +144,21 @@
                     '<label style="margin-right: 25px">'+title+'</label>' +
                     '<label class="badge bg-primary">'+size+'</label>' +
                     '</div>' +
-                    '<div class="panel-body">' +
+                    '<div class="panel-body" style="background-color: #afd9ee">' +
                     // '<label class="control-label" for="type">文件路径：</label>' +
-                    '    <div class="form-group col-md-8">' +
+                    '    <div class="form-group">' +
                     '       <input class="form-control file_path_'+i+'" type="text" readonly>' +
                     '     </div>';
                 if (msg.code==200){
-                    html+='<div class="form-group col-md-4">' +
-                        '<a class="btn btn-search col-md-4 btn_'+i+'" id="btn_'+i+'" onclick="copeText('+i+');">复制地址</a>';
-                    html+='<a class="btn btn-primary col-md-4" target="_blank" href="/download/split/'+msg.message+'">直接访问</a>';
+                    html+='<div class="form-group">' +
+                        '<div class="btn-group"><button data-toggle="dropdown" class="btn btn-search dropdown-toggle btn_'+i+'" ">复制下载地址<span class="caret"></span></button>' +
+                        '<ul role="menu" class="dropdown-menu">' +
+                        '<li><a id="c1_'+i+'" onclick="copeText(\'c1_'+i+'\');" title="普通的单个文件直接下载">普通下载地址</a></li>' +
+                        '<li><a id="c2_'+i+'" onclick="copeText(\'c2_'+i+'\');" title="断点分片快速下载，需要下载端支持">分片下载地址</a></li>' +
+                        '</ul></div>';
+                    html+='<div class="btn-group"><a class="btn btn-primary" target="_blank" href="/download/show/'+msg.message+'">直接访问</a></div>';
                     if (msg.obj.update_time!=null&&msg.obj.update_time.length>0&&msg.obj.update_time=="admin"){
-                        html+='<a class="btn btn-danger col-md-4" target="_blank" onclick="del(\''+msg.message+'\')">删除文件</a>';
+                        html+='<div class="btn-group"><a class="btn btn-danger" target="_blank" onclick="del(\''+msg.message+'\')">删除文件</a></div>';
                     }
                 }
                 html+='</div></div></div>';
@@ -166,14 +170,17 @@
         function initData(d) {
             for (var i=0;i<d.length;i++){
                 $(".file_path_"+i).val(d[i].message);
-                $(".btn_"+i).attr("data-clipboard-text",encodeURI("http://"+window.location.host+"/download/split/"+d[i].message));
+                let url1=encodeURI("http://"+window.location.host+"/download/show/"+d[i].message);
+                let url2=encodeURI("http://"+window.location.host+"/download/split/"+d[i].message);
+                $("#c1_"+i).attr("data-clipboard-text",url1);
+                $("#c2_"+i).attr("data-clipboard-text",url2);
             }
         }
         var clip;
 
-        function copeText(i) {
+        function copeText(id) {
             // set_btn_delayed("btn_"+i,4000);
-            clip = new Clipboard("#btn_"+i);
+            clip = new Clipboard("#"+id);
             // console.log(clipboard);
             clip.on('success', function(e) {
                 e.clearSelection();

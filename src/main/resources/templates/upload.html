@@ -56,6 +56,7 @@
                 $("#fileSize").attr("style","color:green");
             }
         });
+
         function sub1() {
             var key=$("#key").val();
             var file=$("#file").val();
@@ -73,6 +74,7 @@
             }
             return false;
         }
+
         function upload(key) {
             var form = new FormData(document.getElementById("upload_form"));
             $.ajax({
@@ -141,9 +143,10 @@
            }
             $("#file").val(null);
             $("#fileName").val(null);
-            $("#fileSize").text("");
+            $("#fileSize").innerText="";
             $("#path").val(null);
         }
+
         function getFileSizeFormat(size) {
             if (size >= 0 && size < (1024 * 1000)) {
                 return (size / 1024).toFixed(2) + "Kb";
