@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -214,7 +215,7 @@ public class DownLoadController {
                                         info.setType("***");
                                         info.setSize(0);
                                     }
-                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1),s1,info));
+                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), URLEncoder.encode(s1,"UTF-8"),info));
                                 } else {
                                     s1 = s;
                                     list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,null));
