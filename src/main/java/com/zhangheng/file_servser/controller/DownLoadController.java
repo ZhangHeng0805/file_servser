@@ -121,7 +121,8 @@ public class DownLoadController {
             //显示文件大小
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名
-            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
+//            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
+            response.setHeader("Content-Disposition", "filename=" + file.getName());
             input = FileUtils.openInputStream(file);
             IOUtils.copy(input, outputStream);
 //            log.info("下载请求成功:"+file.getPath());

@@ -1,6 +1,6 @@
 package com.zhangheng.file_servser.controller;
 
-import com.zhangheng.file_servser.entity.Range;
+
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
