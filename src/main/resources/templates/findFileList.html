@@ -112,7 +112,7 @@
                                 icon="/static/img/audio.png";
                                 break;
                             case "image":
-                                icon="/download/show/"+msg.message;
+                                icon="/download/show/"+encodeURI(msg.message);
                                 break;
                             case "application":
                                 icon="/static/img/application.png";

@@ -62,6 +62,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--导入本地jar包-->
+        <dependency>
+            <groupId>com.zhangheng</groupId>
+            <artifactId>ZH_Utils</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ZH_Utils.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -94,6 +102,8 @@
                 <version>2.3.7.RELEASE</version>
                 <configuration>
                     <mainClass>com.zhangheng.file_servser.FileServserApplication</mainClass>
+                    <!--引入外部-->
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
                 <executions>
                     <execution>

@@ -59,6 +59,7 @@ public class FiletypeUtil {
             {".log",   "text"},
             {".sh",    "text"},
             {".wsdl",    "text"},
+            {".xsd",    "text"},
 
             {".class",  "application"},
             {".apk",    "application"},
@@ -124,4 +125,5 @@ public class FiletypeUtil {
         }
         return fileName.substring(0,fileName.lastIndexOf("."));
     }
+
 }

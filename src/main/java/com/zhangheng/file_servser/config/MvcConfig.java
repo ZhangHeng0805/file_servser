@@ -26,7 +26,9 @@ public class MvcConfig implements WebMvcConfigurer {
                 "/download/show/**",//下载
                 "/download/split/**",//分片下载
                 "/static/**",//静态资源
+                "/favicon.ico",//网址图标
                 "/error/**",//错误
+                "/getVerify/**",//错误
                 "/download/getAllFileType"//获取文件夹列表名
         );
     }

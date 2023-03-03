@@ -215,7 +215,7 @@ public class DownLoadController {
                                         info.setType("***");
                                         info.setSize(0);
                                     }
-                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), URLEncoder.encode(s1,"UTF-8"),info));
+                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), s1,info));
                                 } else {
                                     s1 = s;
                                     list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,null));

@@ -5,8 +5,10 @@
     <title>文件上传界面</title>
 </head>
 <body>
-<form id="upload_form" class="form-horizontal" style="padding: 8px" role="form" onsubmit="return false;" enctype="multipart/form-data">
+<form id="upload_form" class="form-horizontal" style="padding: 8px" role="form" onsubmit="return false;"
+      enctype="multipart/form-data">
     <div id="upload_alert"></div>
+    <!--    <input id="v-code" name="code" type="hidden">-->
     <div class="form-group" title="用户访问密钥">
         <div class="col-md-2 form-group">
             <label class="control-label" for="key"><label style="color: red">*</label>访问秘钥：</label>
@@ -19,51 +21,68 @@
         </div>
     </div>
     <div class="form-group" title="选择100Mb以内的文件">
-        <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：<span id="fileSize"></span></label>
+        <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：<span
+                id="fileSize"></span></label>
         <input type="file" id="file" name="file" required>
     </div>
     <div class="form-group" title="选择文件后可以修改保存的文件名称，文件名控制在25个字符内">
         <label class="control-label" for="fileName">文件名称：</label>
-        <input class="form-control" type="text" id="fileName" name="fileName" placeholder="请输入文件名称（选填）例：壁纸123" oninput="titleInput('fileName','fileName_tips',25)" onchange="limitInput('fileName',25)" >
+        <input class="form-control" type="text" id="fileName" name="fileName" placeholder="请输入文件名称（选填）例：壁纸123"
+               oninput="titleInput('fileName','fileName_tips',25)" onchange="limitInput('fileName',25)">
         <p class="help-block" id="fileName_tips"></p>
     </div>
     <div class="form-group" title="输入文件保存的目录，默认根据文件类型进行保存">
         <label class="control-label" for="path">保存路径：</label>
-        <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image" onchange="limitInput('path',20)" >
+        <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image"
+               onchange="limitInput('path',20)">
+    </div>
+    <div class="form-group" title="输入验证码，进行上传验证">
+        <label class="control-label" for="code"><label style="color: red">*</label>验证码：<img src="/getVerify/math"
+                                                                                            style="height: 50px"
+                                                                                            onclick="resetImgCode()"
+                                                                                            id="img-code"><a
+                onclick="resetImgCode()">换一张</a></label>
+        <input class="form-control" type="text" id="code" name="code" placeholder="请输入图片中的计算结果" required>
     </div>
     <div>
         <img id="wait_icon" src="/static/img/循环.gif" style="zoom:0.2;" hidden="hidden">
         <input type="submit" id="btn_upload" class="btn btn-search" onclick="sub1()" value="上传">
-        <input type="reset" class="btn btn-default" value="重置">
+        <input type="button" class="btn btn-default" value="重置" onclick="reset()">
     </div>
+
     <script>
+        function resetImgCode() {
+            $("#code").val(null);
+            $("#img-code").attr("src", "/getVerify/math?t=" + new Date().getTime());
+        }
+
         $("#file").change(function () {
             var f = document.getElementById("file").files;
-            var name=f[0].name;
-            var size=f[0].size;
-            var type=f[0].type;
-            var fName=name.substring(0,name.lastIndexOf(".")).length>25?name.substring(0,25):name.substring(0,name.lastIndexOf("."));
+            var name = f[0].name;
+            var size = f[0].size;
+            var type = f[0].type;
+            var fName = name.substring(0, name.lastIndexOf(".")).length > 25 ? name.substring(0, 25) : name.substring(0, name.lastIndexOf("."));
             $("#fileName").val(fName);
             $("#fileSize").text(getFileSizeFormat(size));
             // $("#path").val(size);
-            if ((size/1048576)>=100) {
+            if ((size / 1048576) >= 100) {
                 alert("警告：文件大小超过100Mb最大限制！");
                 $("#file").val(null);
                 $("#fileName").val(null);
-                $("#fileSize").attr("style","color:red");
+                $("#fileSize").attr("style", "color:red");
                 // $("#path").val(null);
-            }else {
-                $("#fileSize").attr("style","color:green");
+            } else {
+                $("#fileSize").attr("style", "color:green");
             }
         });
 
         function sub1() {
-            var key=$("#key").val();
-            var file=$("#file").val();
-            if (key.length>0){
-                if (file.length>0){
+            var key = $("#key").val();
+            var file = $("#file").val();
+            if (key.length > 0) {
+                if (file.length > 0) {
                     $("#wait_icon").show();
-                    $("#btn_upload").attr('disabled',true);
+                    $("#btn_upload").attr('disabled', true);
                     $("#btn_upload").val('上传中...');
                     upload(key);
                 } else {
@@ -78,73 +97,80 @@
         function upload(key) {
             var form = new FormData(document.getElementById("upload_form"));
             $.ajax({
-                url:"/upload/saveMulFile",
-                type:"post",
-                dataType:"json",
+                url: "/upload/saveMulFile",
+                type: "post",
+                dataType: "json",
                 data: form,
                 processData: false,
                 contentType: false,
-                xhr: function() { //用以显示上传进度
+                xhr: function () { //用以显示上传进度
                     var xhr = $.ajaxSettings.xhr();
                     if (xhr.upload) {
-                        xhr.upload.addEventListener('progress', function(event) {
+                        xhr.upload.addEventListener('progress', function (event) {
                             var percent = Math.floor(event.loaded / event.total * 100);
-                            $("#btn_upload").val(percent-1 + "%"+'上传中...');
+                            $("#btn_upload").val(percent - 1 + "%" + '上传中...');
                         }, false);
                     }
                     return xhr
                 },
-                success:function (d) {
+                success: function (d) {
                     // console.log(d);
                     // alert(d.message);
-                    var html="";
+                    var html = "";
                     switch (d.code) {
                         case 200:
-                            html+='<div  class="alert alert-success fade in">';
+                            html += '<div  class="alert alert-success fade in">';
                             break;
                         case 500:
-                            html+='<div  class="alert alert-danger fade in">';
+                            html += '<div  class="alert alert-danger fade in">';
                             break;
                         case 404:
-                            html+='<div  class="alert alert-warning fade in">';
+                            html += '<div  class="alert alert-warning fade in">';
                             break;
                         case 100:
-                            html+='<div  class="alert alert-info fade in">';
+                            html += '<div  class="alert alert-info fade in">';
                             break;
                     }
-                    html+='<button type="button" class="close close-sm" data-dismiss="alert">' +
+                    html += '<button type="button" class="close close-sm" data-dismiss="alert">' +
                         '      <i class="fa fa-times"></i>' +
                         '  </button>' +
-                        '<h4><strong>'+d.title+'</strong></h4>' ;
-                    if (d.code==200){
-                        html+='<label><a target="_blank" href="/download/show/'+d.message+'">'+d.message+'</a></label>' ;
+                        '<h4><strong>' + d.title + '</strong></h4>';
+                    if (d.code == 200) {
+                        html += '<label><a target="_blank" href="/download/show/' + d.message + '">' + d.message + '</a></label>';
                     } else {
-                        html+='<label>'+d.message+'</label>' ;
+                        html += '<label>' + d.message + '</label>';
                     }
-                    html+= '</div>';
+                    html += '</div>';
                     $("#upload_alert").html(html);
-                    reset();
-                    $("#btn_upload").attr("disabled",false);
+                    if (d.code == 200)
+                        reset();
+                    else
+                        resetImgCode();
+                    $("#btn_upload").attr("disabled", false);
                     $("#btn_upload").val('上传');
                     $("#wait_icon").hide();
                 },
-                error:function (e) {
-                    $("#btn_upload").attr("disabled",false);
+                error: function (e) {
+                    $("#btn_upload").attr("disabled", false);
                     $("#btn_upload").val('上传');
                     $("#wait_icon").hide();
-                    alert("上传错误："+e);
+                    alert("上传错误：" + e);
                 }
             })
         }
 
-        function reset() {
-           if (!$("#remember").is(':checked'))  {
-               $("#key").val(null);
-           }
-            $("#file").val(null);
+        function reset(state) {
+            if (!$("#remember").is(':checked')) {
+                $("#key").val(null);
+            }
+            if (state != 1)
+                $("#file").val(null);
+
             $("#fileName").val(null);
-            $("#fileSize").innerText="";
+            $("#fileSize").innerText = "";
             $("#path").val(null);
+            resetImgCode();
+
         }
 
         function getFileSizeFormat(size) {

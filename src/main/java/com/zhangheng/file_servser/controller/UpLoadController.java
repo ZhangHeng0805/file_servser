@@ -38,6 +38,8 @@ public class UpLoadController {
     @Autowired
     private UpLoadService upLoadService;
     @Autowired
+    private WebController webController;
+    @Autowired
     private KeyService keyService;
     @Value("#{'${is-add-appName}'}")
     private Boolean is_add_appName;
@@ -171,36 +173,39 @@ public class UpLoadController {
     @RequestMapping("/saveMulFile")
     public Message saveFileInterface(@Nullable MultipartFile file
             , @Nullable String fileName
+            , @Nullable String code
             , @Nullable String path, HttpServletRequest request) {
         Message msg = new Message();
-        msg.setTime(TimeUtil.time(new Date()));
-        User user = (User) request.getAttribute("user");
-        if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
-            log.info("文件上传：" + CusAccessObjectUtil.getRequst(request));
-            if (!file.isEmpty()) {
-                String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
-                String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
-                String s = upLoadService.saveFile(file, name, Path);
-                if (s != null) {
-                    msg.setCode(200);
-                    msg.setTitle("文件保存成功");
-                    msg.setMessage(s);
+        msg=webController.verifyMathCheck(code,request);
+        if (msg.getCode()==200) {
+            msg.setTime(TimeUtil.time(new Date()));
+            User user = (User) request.getAttribute("user");
+            if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
+                log.info("文件上传：" + CusAccessObjectUtil.getRequst(request));
+                if (!file.isEmpty()) {
+                    String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
+                    String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
+                    String s = upLoadService.saveFile(file, name, Path);
+                    if (s != null) {
+                        msg.setCode(200);
+                        msg.setTitle("文件保存成功");
+                        msg.setMessage(s);
+                    } else {
+                        msg.setCode(500);
+                        msg.setTitle("文件保存失败");
+                        msg.setMessage("上传文件保存失败");
+                    }
                 } else {
                     msg.setCode(500);
-                    msg.setTitle("文件保存失败");
-                    msg.setMessage("上传文件保存失败");
+                    msg.setTitle("文件错误");
+                    msg.setMessage("上传文件为空");
                 }
             } else {
                 msg.setCode(500);
-                msg.setTitle("文件错误");
-                msg.setMessage("上传文件为空");
+                msg.setTitle("上传失败，秘钥错误");
+                msg.setMessage("该秘钥没有上传文件的权限！");
             }
-        } else {
-            msg.setCode(500);
-            msg.setTitle("上传失败，秘钥错误");
-            msg.setMessage("该秘钥没有上传文件的权限！");
         }
-
         log.info(msg.toString());
         return msg;
     }
