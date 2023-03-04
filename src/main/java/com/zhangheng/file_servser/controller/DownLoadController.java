@@ -1,5 +1,6 @@
 package com.zhangheng.file_servser.controller;
 
+import com.zhangheng.file.FileUtil;
 import com.zhangheng.file_servser.entity.FileInfo;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
@@ -123,7 +124,7 @@ public class DownLoadController {
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名
 //            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
-            response.setHeader("Content-Disposition", "filename=" + file.getName());
+            response.setHeader("Content-Disposition", "filename=" + FileUtil.getName(file));
             input = FileUtils.openInputStream(file);
             IOUtils.copy(input, outputStream);
 //            log.info("下载请求成功:"+file.getPath());

@@ -176,8 +176,8 @@ public class UpLoadController {
             , @Nullable String code
             , @Nullable String path, HttpServletRequest request) {
         Message msg = new Message();
-        msg=webController.verifyMathCheck(code,request);
-        if (msg.getCode()==200) {
+//        msg=webController.verifyMathCheck(code,request);
+        if (true) {
             msg.setTime(TimeUtil.time(new Date()));
             User user = (User) request.getAttribute("user");
             if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {

@@ -1,5 +1,6 @@
 package com.zhangheng.file_servser.service;
 
+import com.zhangheng.file.FileUtil;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import org.apache.commons.io.FileUtils;
@@ -107,11 +108,9 @@ public class UpLoadService {
                 type = "." + split[0].split("/")[1].split(";")[0];
             }
             //排除文件名中的非法字符
-            fileName = fileName.replace("/", "")
-                    .replace(" ", "")
-                    .replace("\\", "");
+            fileName = FileUtil.filterFileName(fileName);
             //判断文件名长度
-            fileName = fileName.length() < 8 ? fileName : fileName.substring(0, 8);
+            fileName = fileName.length() < 25 ? fileName : fileName.substring(0, 25);
             //构造文件名
             String name;
             if (is_add_appName) {
@@ -169,9 +168,7 @@ public class UpLoadService {
             log.info("文件名：{}；文件大小：{}kb", Fname, Message.twoDecimalPlaces((double) file.getSize() / 1024));
 //            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
             //排除文件名中的非法字符
-            fileName = fileName.replace("/", "")
-                    .replace(" ", "")
-                    .replace("\\", "");
+            fileName = FileUtil.filterFileName(fileName);
             //排除文件夹名称的非法字符
             type = type.replace("$", "");
             //判断文件名长度
@@ -181,9 +178,9 @@ public class UpLoadService {
             if (is_add_appName) {
                 name = type + "/" + appName
                         + UUID.randomUUID().toString().substring(0, 5)
-                        + "_" + fileName + Fname.substring(Fname.lastIndexOf("."));
+                        + "_" + fileName + "."+FileUtil.getSuffix(Fname);
             } else {
-                name = type + "/" + fileName + Fname.substring(Fname.lastIndexOf("."));
+                name = type + "/" + fileName +"."+FileUtil.getSuffix(Fname);
             }
             File outFile = new File(baseDir + name);
             try {
@@ -195,6 +192,7 @@ public class UpLoadService {
         }
         return path;
     }
+
 
     /**
      * 递归删除文件夹

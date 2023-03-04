@@ -77,14 +77,18 @@
         });
 
         function sub1() {
+            hideModel();
             var key = $("#key").val();
             var file = $("#file").val();
+            var code = $("#code").val();
             if (key.length > 0) {
                 if (file.length > 0) {
-                    $("#wait_icon").show();
-                    $("#btn_upload").attr('disabled', true);
-                    $("#btn_upload").val('上传中...');
-                    upload(key);
+                    if (code.length > 0) {
+                        checkCode(code)
+                        //resetImgCode();
+                    } else {
+                        alert("请输入验证码");
+                    }
                 } else {
                     alert("请选择文件");
                 }
@@ -92,6 +96,34 @@
                 alert("请输入秘钥");
             }
             return false;
+        }
+
+        function checkCode(code) {
+            $.ajax({
+                url: "/getVerify/math/checking",
+                type: "post",
+                dataType: "json",
+                data: {
+                    code: code,
+                    isClear: false
+                },
+                success: function (d) {
+                    if (d.code == 200) {
+                        $("#wait_icon").show();
+                        $("#btn_upload").attr('disabled', true);
+                        $("#btn_upload").val('上传中...');
+                        upload(key);
+                    } else {
+                        showModel(d);
+                        resetImgCode();
+                        return false;
+                    }
+                },
+                error: function (e) {
+                    alert("验证错误！" + e);
+                    return false;
+                }
+            });
         }
 
         function upload(key) {
@@ -108,40 +140,15 @@
                     if (xhr.upload) {
                         xhr.upload.addEventListener('progress', function (event) {
                             var percent = Math.floor(event.loaded / event.total * 100);
-                            $("#btn_upload").val(percent - 1 + "%" + '上传中...');
+                            let pro = percent - 1;
+                            pro = pro > 0 ? pro : 0;
+                            $("#btn_upload").val(pro + "%" + '上传中...');
                         }, false);
                     }
                     return xhr
                 },
                 success: function (d) {
-                    // console.log(d);
-                    // alert(d.message);
-                    var html = "";
-                    switch (d.code) {
-                        case 200:
-                            html += '<div  class="alert alert-success fade in">';
-                            break;
-                        case 500:
-                            html += '<div  class="alert alert-danger fade in">';
-                            break;
-                        case 404:
-                            html += '<div  class="alert alert-warning fade in">';
-                            break;
-                        case 100:
-                            html += '<div  class="alert alert-info fade in">';
-                            break;
-                    }
-                    html += '<button type="button" class="close close-sm" data-dismiss="alert">' +
-                        '      <i class="fa fa-times"></i>' +
-                        '  </button>' +
-                        '<h4><strong>' + d.title + '</strong></h4>';
-                    if (d.code == 200) {
-                        html += '<label><a target="_blank" href="/download/show/' + d.message + '">' + d.message + '</a></label>';
-                    } else {
-                        html += '<label>' + d.message + '</label>';
-                    }
-                    html += '</div>';
-                    $("#upload_alert").html(html);
+                    showModel(d);
                     if (d.code == 200)
                         reset();
                     else
@@ -157,6 +164,39 @@
                     alert("上传错误：" + e);
                 }
             })
+        }
+
+        function showModel(d) {
+            var html = "";
+            switch (d.code) {
+                case 200:
+                    html += '<div  class="alert alert-success fade in">';
+                    break;
+                case 500:
+                    html += '<div  class="alert alert-danger fade in">';
+                    break;
+                case 404:
+                    html += '<div  class="alert alert-warning fade in">';
+                    break;
+                case 100:
+                    html += '<div  class="alert alert-info fade in">';
+                    break;
+            }
+            html += '<button type="button" class="close close-sm" data-dismiss="alert">' +
+                '      <i class="fa fa-times"></i>' +
+                '  </button>' +
+                '<h4><strong>' + d.title + '</strong></h4>';
+            if (d.code == 200) {
+                html += '<label><a target="_blank" href="/download/show/' + encodeURI(d.message) + '">' + d.message + '</a></label>';
+            } else {
+                html += '<label>' + d.message + '</label>';
+            }
+            html += '</div>';
+            $("#upload_alert").html(html);
+        }
+
+        function hideModel() {
+            $("#upload_alert").html('');
         }
 
         function reset(state) {

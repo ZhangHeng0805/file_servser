@@ -34,7 +34,7 @@ import java.util.Objects;
  */
 @Controller
 public class RangeDownloadController {
-    private static Logger log= LoggerFactory.getLogger(RangeDownloadController.class);
+    private static Logger log = LoggerFactory.getLogger(RangeDownloadController.class);
     @Value("${baseDir}")
     private String baseDir;
     @Value("${appName}")
@@ -42,10 +42,11 @@ public class RangeDownloadController {
 
     /**
      * 文件下载
-     * @author kevin
-     * @param response :
-     * @param range :
+     *
+     * @param response       :
+     * @param range          :
      * @param moduleBaseName
+     * @author kevin
      * @date 2021/1/17
      */
     @RequestMapping(value = "/download/split/{moduleBaseName}/**")
@@ -55,7 +56,7 @@ public class RangeDownloadController {
                              @RequestHeader(name = "Range", required = false) String range) throws UnsupportedEncodingException {
 
 
-        File file = pares(request,response,moduleBaseName);
+        File file = pares(request, response, moduleBaseName);
         String filename = file.getName();
         long length = file.length();
         Range full = new Range(0, length - 1, length);
@@ -75,7 +76,7 @@ public class RangeDownloadController {
                 throw new RuntimeException(msg);
             }
             dealRanges(full, range, ranges, response, length);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("文件下载异常：" + e.getMessage());
         }
@@ -103,13 +104,14 @@ public class RangeDownloadController {
             outputRange(response, ranges, input, output, full, length);
             output.flush();
             response.flushBuffer();
-        }catch (Exception e){
+        } catch (Exception e) {
 //            e.printStackTrace();
-            throw new RuntimeException("文件下载异常：" + e.getMessage());
+            log.error("文件下载异常：" + e.toString());
+
         }
     }
 
-    private File pares(HttpServletRequest request,HttpServletResponse response,String moduleBaseName) throws UnsupportedEncodingException {
+    private File pares(HttpServletRequest request, HttpServletResponse response, String moduleBaseName) throws UnsupportedEncodingException {
         request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 //        log.info("moduleBaseName:{}",moduleBaseName);
@@ -145,11 +147,12 @@ public class RangeDownloadController {
 
     /**
      * 处理请求中的Range(多个range或者一个range，每个range范围)
-     * @author kevin
-     * @param range :
-     * @param ranges :
+     *
+     * @param range    :
+     * @param ranges   :
      * @param response :
-     * @param length :
+     * @param length   :
+     * @author kevin
      * @date 2021/1/17
      */
     private void dealRanges(Range full, String range, List<Range> ranges, HttpServletResponse response,
@@ -189,23 +192,23 @@ public class RangeDownloadController {
                 // 添加Range范围.
                 ranges.add(new Range(start, end, end - start + 1));
             }
-        }else{
+        } else {
             //如果未传入Range，默认下载整个文件
             ranges.add(full);
         }
     }
 
 
-
     /**
      * output写流输出到response
-     * @author kevin
+     *
      * @param response :
-     * @param ranges :
-     * @param input :
-     * @param output :
-     * @param full :
-     * @param length :
+     * @param ranges   :
+     * @param input    :
+     * @param output   :
+     * @param full     :
+     * @param length   :
+     * @author kevin
      * @date 2021/1/17
      */
     private void outputRange(HttpServletResponse response, List<Range> ranges, RandomAccessFile input,
@@ -248,7 +251,8 @@ public class RangeDownloadController {
             output.println("--MULTIPART_BYTERANGES--");
         }
     }
-    private static class Range{
+
+    private static class Range {
         long start;
         long end;
         long length;
@@ -280,14 +284,14 @@ public class RangeDownloadController {
             if (fileSize == length) {
                 randomAccessFile.seek(start);
                 //需要下载的文件长度与文件长度相同，下载整个文件.
-                while ((transmitted + read) <= length && (read = randomAccessFile.read(buffer)) != -1){
+                while ((transmitted + read) <= length && (read = randomAccessFile.read(buffer)) != -1) {
                     output.write(buffer, 0, read);
                     transmitted += read;
                 }
                 //处理最后不足buff大小的部分
-                if(transmitted < length){
+                if (transmitted < length) {
                     log.info("最后不足buff大小的部分大小为：" + (length - transmitted));
-                    read = randomAccessFile.read(buffer, 0, (int)(length - transmitted));
+                    read = randomAccessFile.read(buffer, 0, (int) (length - transmitted));
                     output.write(buffer, 0, read);
                 }
             } else {
@@ -295,7 +299,7 @@ public class RangeDownloadController {
                 long toRead = length;
 
                 //如果需要读取的片段，比单次读取的4096小，则使用读取片段大小读取
-                if(toRead < buffer.length){
+                if (toRead < buffer.length) {
                     output.write(buffer, 0, randomAccessFile.read(new byte[(int) toRead]));
                     return;
                 }

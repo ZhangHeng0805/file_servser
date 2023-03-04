@@ -42,62 +42,65 @@ public class WebController {
 
     @Autowired
     private UpLoadService upLoadService;
-    private Logger log= LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @RequestMapping("/favicon.ico")
-    public String favicon(){
+    public String favicon() {
         return "forward:/static/favicon.ico";
     }
+
     /**
      * 跳转至上传首页
+     *
      * @return
      */
     @GetMapping("/")
-    public String index(){
+    public String index() {
         return "index";
     }
 
     /**
      * 文件上传页面表单提交
-     * @param file 上传文件
-     * @param key 访问秘钥
+     *
+     * @param file     上传文件
+     * @param key      访问秘钥
      * @param fileName 文件名称
-     * @param path 文件路径
+     * @param path     文件路径
      * @param model
      * @param request
      * @return
      */
     @PostMapping("/web/upload")
-    public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model, HttpServletRequest request){
+    public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model, HttpServletRequest request) {
         Message msg = new Message();
         User user = (User) request.getAttribute("user");
-        if (key!=null&&key.length()>0){
-            if (user.getType().equals(User.Type.Common)||user.getType().equals(User.Type.Admin)){
-                log.info("页面上传IP:{}；密钥[{}]正确", CusAccessObjectUtil.getIpAddress(request),key);
-                if (!file.isEmpty()){
-                    String name=fileName!=null&&fileName.length()>0?fileName:file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
-                    String Path=path!=null&&path.length()>0?path.split("/")[0]:FiletypeUtil.getFileType(file.getOriginalFilename());
+        if (key != null && key.length() > 0) {
+            if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
+                log.info("页面上传IP:{}；密钥[{}]正确", CusAccessObjectUtil.getIpAddress(request), key);
+                if (!file.isEmpty()) {
+                    String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
+                    String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
                     String s = upLoadService.saveFile(file, name, Path);
-                    if (s!=null){
+                    if (s != null) {
                         msg.setCode(200);
-                        msg.setMessage("文件保存成功！<br><a target='_blank' href='/download/show/"+s+"'>"+s+"</a>");
-                    }else {
+                        msg.setMessage("文件保存成功！<br><a target='_blank' href='/download/show/" + s + "'>" + s + "</a>");
+                    } else {
                         msg.setCode(500);
                         msg.setMessage("文件保存失败！");
                     }
-                }else {
+                } else {
                     msg.setCode(500);
                     msg.setMessage("上传文件为空！");
                 }
-            }else {
+            } else {
                 msg.setCode(500);
                 msg.setMessage("秘钥错误！该秘钥没有上传文件的权限");
             }
-        }else {
+        } else {
             msg.setCode(500);
             msg.setMessage("秘钥不能为空！");
         }
-        model.addAttribute("msg",msg);
+        model.addAttribute("msg", msg);
         return "index";
     }
 
@@ -116,12 +119,12 @@ public class WebController {
             HttpSession session = request.getSession();
             session.setAttribute("verify-code", ScriptUtil.eval(code.replace("=", "")));
             outputStream = response.getOutputStream();
-            response.setHeader("Content-Disposition", "filename=[星曦向荣]验证码"+new Date().getTime()+".png");
+            response.setHeader("Content-Disposition", "filename=[星曦向荣]验证码" + new Date().getTime() + ".png");
             captcha.write(outputStream);
-        }catch (Exception e){
-            response.sendError(500,"验证码生成错误:"+e.getMessage());
-        }finally {
-            if (outputStream!=null){
+        } catch (Exception e) {
+            response.sendError(500, "验证码生成错误:" + e.getMessage());
+        } finally {
+            if (outputStream != null) {
                 outputStream.close();
             }
         }
@@ -129,31 +132,32 @@ public class WebController {
 
     @RequestMapping("/getVerify/math/checking")
     @ResponseBody
-    public Message verifyMathCheck(@RequestParam("code") String code, HttpServletRequest request){
+    public Message verifyMathCheck(@RequestParam("code") String code, @RequestParam("isClear") Boolean isClear, HttpServletRequest request) {
         Message msg = new Message();
         msg.setTime(TimeUtil.getNowTime());
         HttpSession session = request.getSession();
         Integer vCode = Convert.toInt(session.getAttribute("verify-code"));
-        System.out.println(vCode);
-        System.out.println(code);
-        if (vCode!=null&&!StrUtil.isBlank(code)){
-            if (FormatUtil.isNumber(code)){
-                if (vCode.equals(Convert.toInt(code))){
+//        System.out.println(vCode);
+//        System.out.println(code);
+        if (vCode != null && !StrUtil.isBlank(code)) {
+            if (FormatUtil.isNumber(code)) {
+                if (vCode.equals(Convert.toInt(code))) {
                     msg.setCode(200);
                     msg.setTitle("验证码正确");
                     msg.setMessage("恭喜，验证成功！");
-                    session.setAttribute("verify-code",null);
-                }else {
+                    if (isClear)
+                        session.setAttribute("verify-code", null);
+                } else {
                     msg.setCode(500);
                     msg.setTitle("验证码错误");
                     msg.setMessage("对不起，验证码输入错误！");
                 }
-            }else {
+            } else {
                 msg.setCode(500);
                 msg.setTitle("验证码格式错误");
                 msg.setMessage("请输入验证码中的计算结果！");
             }
-        }else {
+        } else {
             msg.setCode(404);
             msg.setTitle("验证码为空");
             msg.setMessage("请重新获取验证码，然后再来验证！");

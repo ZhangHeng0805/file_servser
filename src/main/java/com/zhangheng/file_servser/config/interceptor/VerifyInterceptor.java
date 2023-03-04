@@ -66,21 +66,6 @@ public class VerifyInterceptor implements HandlerInterceptor {
             }
             request.setAttribute("user",user);
             return true;
-            //遍历普通秘钥
-//            for (String s : keys) {
-//                if (s.equals(key)) {
-//                    log.info("普通密钥["+s+"]访问成功");
-//                    return true;
-//                }
-//            }
-
-            //遍历管理秘钥
-//            for (String s:admin_keys){
-//                if (s.equals(key)){
-//                    log.info("管理密钥["+s+"]访问成功");
-//                    return true;
-//                }
-//            }
         }else {
             msg.setTime(TimeUtil.time(new Date()));
             msg.setCode(500);
