@@ -148,8 +148,8 @@
                 html += '<div class="panel-heading">' +
                     '<img src="' + icon + '" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">' +
                     '<label style="margin-right: 25px">' + title + '</label>' +
-                    '<label class="badge bg-primary">' + size + '</label>' +
-                    '<label class="label label-warning">' + msg.obj.update_time + '</label>' +
+                    '<label class="label label-primary">' + size + '</label>' +
+                    '<code>' + msg.obj.update_time + '</code>' +
                     '</div>' +
                     '<div class="panel-body" style="background-color: #afd9ee">' +
                     // '<label class="control-label" for="type">文件路径：</label>' +
@@ -158,7 +158,7 @@
                     '     </div>';
                 if (msg.code == 200) {
                     html += '<div class="form-group">' +
-                        '<div class="btn-group"><button data-toggle="dropdown" class="btn btn-search dropdown-toggle btn_' + i + '" ">复制下载地址<span class="caret"></span></button>' +
+                        '<div class="btn-group"><button data-toggle="dropdown" class="btn btn-search dropdown-toggle btn_' + i + '" ">复制链接<span class="caret"></span></button>' +
                         '<ul role="menu" class="dropdown-menu">' +
                         '<li><a id="c1_' + i + '" onclick="copeText(\'c1_' + i + '\');" title="普通的单个文件直接下载">普通下载地址</a></li>' +
                         '<li><a id="c2_' + i + '" onclick="copeText(\'c2_' + i + '\');" title="断点分片快速下载，需要下载端支持">分片下载地址</a></li>' +
