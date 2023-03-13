@@ -131,7 +131,7 @@ public class DownLoadController {
             IOUtils.copy(input, outputStream);
 //            log.info("下载请求成功:"+file.getPath());
         } catch (Exception e) {
-            if (e.toString().indexOf("找不到") > 1) {
+            if (e.toString().indexOf("not exist") > 1) {
                 err = "对不起o(╥﹏╥)o，没有找到你需要的文件";
             } else {
                 err = "错误o(╥﹏╥)o，下载出错误了";

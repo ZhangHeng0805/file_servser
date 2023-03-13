@@ -53,7 +53,7 @@ public class RangeDownloadController {
     public void downloadFile(@PathVariable("moduleBaseName") String moduleBaseName,
                              HttpServletResponse response,
                              HttpServletRequest request,
-                             @RequestHeader(name = "Range", required = false) String range) throws UnsupportedEncodingException {
+                             @RequestHeader(name = "Range", required = false) String range) throws IOException {
 
 
         File file = pares(request, response, moduleBaseName);
@@ -65,20 +65,22 @@ public class RangeDownloadController {
         try {
 
             if (!file.exists()) {
-                String msg = "需要下载的文件不存在：" + file.getAbsolutePath();
+                String msg = "需要下载的文件不存在：" + file.getName();
                 log.error(msg);
-                throw new RuntimeException(msg);
+//                throw new RuntimeException(msg);
+                response.sendError(404,msg);
             }
 
             if (file.isDirectory()) {
-                String msg = "需要下载的文件的路径对应的是一个文件夹：" + file.getAbsolutePath();
+                String msg = "需要下载的文件的路径对应的是一个文件夹：" + file.getName();
                 log.error(msg);
-                throw new RuntimeException(msg);
+//                throw new RuntimeException(msg);
+                response.sendError(500,msg);
             }
             dealRanges(full, range, ranges, response, length);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("文件下载异常：" + e.getMessage());
+            log.error(e.toString());
+            response.sendError(500,"文件下载异常：" + e.getMessage());
         }
         // 如果浏览器支持内容类型，则设置为“内联”，否则将弹出“另存为”对话框. attachment inline
         String disposition = "attachment";
