@@ -168,7 +168,7 @@ public class UpLoadService {
             log.info("文件名：{}；文件大小：{}kb", Fname, Message.twoDecimalPlaces((double) file.getSize() / 1024));
 //            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
             //排除文件名中的非法字符
-            fileName = FileUtil.filterFileName(fileName);
+            fileName = FiletypeUtil.filterFileName(fileName);
             //排除文件夹名称的非法字符
             type = type.replace("$", "");
             //判断文件名长度

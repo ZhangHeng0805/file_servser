@@ -5,7 +5,7 @@
 ```properties
 # 应用服务 WEB 访问端口
 server.port=8080
-        
+
 # 文件名前缀名(中文可能会乱码)
 appName=XXXR
 

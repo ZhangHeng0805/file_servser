@@ -9,6 +9,7 @@ import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
+import com.zhangheng.file_servser.utils.TimeUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -124,7 +126,7 @@ public class DownLoadController {
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名
 //            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
-            response.setHeader("Content-Disposition", "filename=" + FileUtil.getName(file));
+            response.setHeader("Content-Disposition", "filename=" + file.getName());
             input = FileUtils.openInputStream(file);
             IOUtils.copy(input, outputStream);
 //            log.info("下载请求成功:"+file.getPath());
@@ -206,10 +208,11 @@ public class DownLoadController {
                                         info.setName(FiletypeUtil.getMainName(name));
                                         info.setType(FiletypeUtil.getFileType(name));
                                         info.setSize(file.length());
+                                        info.setUpdate_time(TimeUtil.time(new Date(file.lastModified())));
                                         info.setPath(s1);
                                         //判断是否为管理秘钥
                                         if (user.getType().equals(User.Type.Admin)) {
-                                            info.setUpdate_time("admin");
+                                            info.setAuth("admin");
                                         }
                                     }else {
                                         info.setName("***");

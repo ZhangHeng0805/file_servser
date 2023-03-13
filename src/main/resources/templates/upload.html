@@ -187,7 +187,12 @@
                 '  </button>' +
                 '<h4><strong>' + d.title + '</strong></h4>';
             if (d.code == 200) {
-                html += '<label><a target="_blank" href="/download/show/' + encodeURI(d.message) + '">' + d.message + '</a></label>';
+                let arr = d.message.split("/");
+                for (let n = 0; n < arr.length; n++) {
+                    arr[n] = encodeURIComponent(arr[n]);
+                }
+                let path = arr.join("/");
+                html += '<label><a target="_blank" href="/download/show/' + path + '">' + d.message + '</a></label>';
             } else {
                 html += '<label>' + d.message + '</label>';
             }

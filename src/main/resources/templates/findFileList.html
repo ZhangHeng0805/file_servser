@@ -9,23 +9,25 @@
 </head>
 <body>
 <div id="findFileList">
-    <div class="row" >
+    <div class="row">
         <form class="form-inline" role="form" onsubmit="return false;">
             <div class="form-group col-lg-5" title="用户访问密钥">
-                <label class="control-label col-lg-5" for="keys" id="lab_keys" style="text-align: center;"><label style="color: red">*</label>秘钥：</label>
+                <label class="control-label col-lg-5" for="keys" id="lab_keys" style="text-align: center;"><label
+                        style="color: red">*</label>秘钥：</label>
                 <input class="form-control col-lg-7" type="password" id="keys" placeholder="请输入访问秘钥" required autofocus>
             </div>
             <div class="form-group col-lg-5" title="选择查找路径">
-                <label class="control-label col-lg-6" for="type" id="lab_type" style="text-align: center;"><label style="color: red">*</label>选择类型：</label>
-                <select class="form-control col-lg-6" id="type"  required>
+                <label class="control-label col-lg-6" for="type" id="lab_type" style="text-align: center;"><label
+                        style="color: red">*</label>选择类型：</label>
+                <select class="form-control col-lg-6" id="type" required>
                     <option value="$all$">全部</option>
                     <option value="image">图片</option>
                     <option value="video">视频</option>
                 </select>
             </div>
             <script>
-                $("#lab_keys").css("font-size",$("#keys").height()/1.5);
-                $("#lab_type").css("font-size",$("#type").height()/1.5);
+                $("#lab_keys").css("font-size", $("#keys").height() / 1.5);
+                $("#lab_type").css("font-size", $("#type").height() / 1.5);
             </script>
             <div class="form-group col-lg-2" title="查找">
                 <button class="btn btn-warning col-lg-12" id="btn_sub2" onclick="sub2()">查找</button>
@@ -40,48 +42,51 @@
     <script>
         var TYPE;
         var Data;
+
         function getAllFileType() {
             $.ajax({
-                url:"/download/getAllFileType",
-                method:"post",
-                dataType:"json",
-                success:function (d) {
-                    var html="";
-                    for (var i=0;i<d.length;i++){
-                        html+='<option value="'+d[i].message+'">'+d[i].title+'</option>';
+                url: "/download/getAllFileType",
+                method: "post",
+                dataType: "json",
+                success: function (d) {
+                    var html = "";
+                    for (var i = 0; i < d.length; i++) {
+                        html += '<option value="' + d[i].message + '">' + d[i].title + '</option>';
                     }
                     $("#type").html(html);
-                    set_select_checked("type",TYPE);
+                    set_select_checked("type", TYPE);
                 },
-                error:function (e) {
-                    alert("类型查询错误："+e);
+                error: function (e) {
+                    alert("类型查询错误：" + e);
                 }
             })
         }
+
         getAllFileType();
+
         function sub2() {
-            if ($("#keys").val().length>0){
-                $("#btn_sub2").attr('disabled',true);
+            if ($("#keys").val().length > 0) {
+                $("#btn_sub2").attr('disabled', true);
                 $.ajax({
-                    url:"/download/findFileList",
-                    method:"post",
-                    dataType:"json",
-                    data:{
-                        key:$("#keys").val(),
-                        type:$("#type").val()
+                    url: "/download/findFileList",
+                    method: "post",
+                    dataType: "json",
+                    data: {
+                        key: $("#keys").val(),
+                        type: $("#type").val()
                     },
-                    success:function (d) {
+                    success: function (d) {
                         // console.log(d);
-                        TYPE=$("#type").val();
+                        TYPE = $("#type").val();
                         //处理数据
                         handle(d);
                         //刷新下拉框数据
                         getAllFileType();
-                        $("#btn_sub2").attr('disabled',false);
+                        $("#btn_sub2").attr('disabled', false);
                     },
-                    error:function (e) {
-                        $("#btn_sub2").attr('disabled',false);
-                        alert("结果查询错误："+e);
+                    error: function (e) {
+                        $("#btn_sub2").attr('disabled', false);
+                        alert("结果查询错误：" + e);
                         console.log(e);
                     }
                 })
@@ -90,38 +95,39 @@
             }
 
         }
+
         function handle(d) {
-            Data=d;
-            var html="";
-            var icon="/static/img/unknown.png";
-            var title="";
-            var size=0;
-            for (var i=0;i<d.length;i++){
-                var msg=d[i];
-                title=msg.title;
+            Data = d;
+            var html = "";
+            var icon = "/static/img/unknown.png";
+            var title = "";
+            var size = 0;
+            for (var i = 0; i < d.length; i++) {
+                var msg = d[i];
+                title = msg.title;
                 switch (msg.code) {
                     case 200:
                         switch (msg.obj.type) {
                             case "text":
-                                icon="/static/img/text.png";
+                                icon = "/static/img/text.png";
                                 break;
                             case "video":
-                                icon="/static/img/video.png";
+                                icon = "/static/img/video.png";
                                 break;
                             case "audio":
-                                icon="/static/img/audio.png";
+                                icon = "/static/img/audio.png";
                                 break;
                             case "image":
-                                icon="/download/show/"+encodeURI(msg.message);
+                                icon = "/download/show/" + encodeURI(msg.message);
                                 break;
                             case "application":
-                                icon="/static/img/application.png";
+                                icon = "/static/img/application.png";
                                 break;
                             default:
-                                icon="/static/img/unknown.png";
+                                icon = "/static/img/unknown.png";
                                 break;
                         }
-                        title=msg.obj.name;
+                        title = msg.obj.name;
                         // if (msg.obj.size>=0&&msg.obj.size<(1024*1000)) {
                         //     size = (msg.obj.size / 1024).toFixed(2)+ "Kb";
                         // }else if (msg.obj.size>=(1024*1000)&&msg.obj.size<(1024*1024*1000)){
@@ -129,60 +135,68 @@
                         // }else if (msg.obj.size>=(1024*1024*1000)) {
                         //     size=(msg.obj.size/(1024*1024*1024)).toFixed(2)+"Gb"
                         // }
-                        size=getFileSizeFormat(msg.obj.size);
-                        html+='<div class="panel panel-success">';
+                        size = getFileSizeFormat(msg.obj.size);
+                        html += '<div class="panel panel-success">';
                         break;
                     case 500:
-                        html+='<div class="panel panel-danger">';
+                        html += '<div class="panel panel-danger">';
                         break;
                     case 404:
-                        html+='<div class="panel panel-warning">';
+                        html += '<div class="panel panel-warning">';
                         break;
                 }
-                html+='<div class="panel-heading">' +
-                    '<img src="'+icon+'" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">' +
-                    '<label style="margin-right: 25px">'+title+'</label>' +
-                    '<label class="badge bg-primary">'+size+'</label>' +
+                html += '<div class="panel-heading">' +
+                    '<img src="' + icon + '" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">' +
+                    '<label style="margin-right: 25px">' + title + '</label>' +
+                    '<label class="badge bg-primary">' + size + '</label>' +
+                    '<label class="label label-warning">' + msg.obj.update_time + '</label>' +
                     '</div>' +
                     '<div class="panel-body" style="background-color: #afd9ee">' +
                     // '<label class="control-label" for="type">文件路径：</label>' +
                     '    <div class="form-group">' +
-                    '       <input class="form-control file_path_'+i+'" type="text" readonly>' +
+                    '       <input class="form-control file_path_' + i + '" type="text" readonly>' +
                     '     </div>';
-                if (msg.code==200){
-                    html+='<div class="form-group">' +
-                        '<div class="btn-group"><button data-toggle="dropdown" class="btn btn-search dropdown-toggle btn_'+i+'" ">复制下载地址<span class="caret"></span></button>' +
+                if (msg.code == 200) {
+                    html += '<div class="form-group">' +
+                        '<div class="btn-group"><button data-toggle="dropdown" class="btn btn-search dropdown-toggle btn_' + i + '" ">复制下载地址<span class="caret"></span></button>' +
                         '<ul role="menu" class="dropdown-menu">' +
-                        '<li><a id="c1_'+i+'" onclick="copeText(\'c1_'+i+'\');" title="普通的单个文件直接下载">普通下载地址</a></li>' +
-                        '<li><a id="c2_'+i+'" onclick="copeText(\'c2_'+i+'\');" title="断点分片快速下载，需要下载端支持">分片下载地址</a></li>' +
+                        '<li><a id="c1_' + i + '" onclick="copeText(\'c1_' + i + '\');" title="普通的单个文件直接下载">普通下载地址</a></li>' +
+                        '<li><a id="c2_' + i + '" onclick="copeText(\'c2_' + i + '\');" title="断点分片快速下载，需要下载端支持">分片下载地址</a></li>' +
                         '</ul></div>';
-                    html+='<div class="btn-group"><a class="btn btn-primary" target="_blank" href="/download/show/'+encodeURI(msg.message)+'">直接访问</a></div>';
-                    if (msg.obj.update_time!=null&&msg.obj.update_time.length>0&&msg.obj.update_time=="admin"){
-                        html+='<div class="btn-group"><a class="btn btn-danger" target="_blank" onclick="del(\''+msg.message+'\')">删除文件</a></div>';
+                    html += '<div class="btn-group"><a class="btn btn-primary" target="_blank" id="btn'+i+'_download">直接访问</a></div>';
+                    if (msg.obj.auth != null && msg.obj.auth.length > 0 && msg.obj.auth == "admin") {
+                        html += '<div class="btn-group"><a class="btn btn-danger" target="_blank" onclick="del(\'' + msg.message + '\')">删除文件</a></div>';
                     }
                 }
-                html+='</div></div></div>';
+                html += '</div></div></div>';
             }
             $("#files_result").html(html);
-            $("#files_num").html('总计:'+d.length+'个文件');
+            $("#files_num").html('总计:' + d.length + '个文件');
             initData(d);
         }
+
         function initData(d) {
-            for (var i=0;i<d.length;i++){
-                $(".file_path_"+i).val(d[i].message);
-                let url1=encodeURI("http://"+window.location.host+"/download/show/"+d[i].message);
-                let url2=encodeURI("http://"+window.location.host+"/download/split/"+d[i].message);
-                $("#c1_"+i).attr("data-clipboard-text",url1);
-                $("#c2_"+i).attr("data-clipboard-text",url2);
+            for (var i = 0; i < d.length; i++) {
+                $(".file_path_" + i).val(d[i].message);
+                let arr = d[i].message.split("/");
+                for (let n = 0; n < arr.length; n++) {
+                    arr[n] = encodeURIComponent(arr[n]);
+                }
+                let path = arr.join("/");
+                let url1 = "http://" + window.location.host + "/download/show/" + path;
+                let url2 = "http://" + window.location.host + "/download/split/" + path;
+                $("#c1_" + i).attr("data-clipboard-text", url1);
+                $("#c2_" + i).attr("data-clipboard-text", url2);
+                $("#btn" + i+"_download").attr("href", url1);
             }
         }
-        var clip;
 
+        var clip;
         function copeText(id) {
             // set_btn_delayed("btn_"+i,4000);
-            clip = new Clipboard("#"+id);
+            clip = new Clipboard("#" + id);
             // console.log(clipboard);
-            clip.on('success', function(e) {
+            clip.on('success', function (e) {
                 e.clearSelection();
                 // console.info('Action:', e.action);
                 console.info('复制Text:', e.text);
@@ -190,13 +204,14 @@
                 alert('复制成功');
                 clip.destroy();
             });
-            clip.on('error', function(e) {
+            clip.on('error', function (e) {
                 alert('复制失败');
                 console.error('Action:', e.action);
                 console.error('Trigger:', e.trigger);
             });
 
         }
+
         function del(path) {
             if (confirm("确定删除该文件吗？")) {
                 var key = $("#keys").val();

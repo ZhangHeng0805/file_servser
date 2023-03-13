@@ -15,4 +15,5 @@ public class FileInfo {
     private String path;//文件路径
     private String update_time;//更新时间
     private double size;//文件大小
+    private String auth;
 }

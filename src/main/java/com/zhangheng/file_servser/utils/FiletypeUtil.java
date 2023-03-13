@@ -1,5 +1,7 @@
 package com.zhangheng.file_servser.utils;
 
+import cn.hutool.core.util.StrUtil;
+
 import java.io.File;
 
 public class FiletypeUtil {
@@ -124,6 +126,28 @@ public class FiletypeUtil {
             }
         }
         return fileName.substring(0,fileName.lastIndexOf("."));
+    }
+    public static String filterFileName(String fileName) {
+        String[] illegal = new String[]{"\\", "/", ":", "*", "?", "\"", "<", ">", "|",
+        };
+        StringBuilder name = new StringBuilder();
+        fileName = fileName.replace("\\", "/");
+        String[] split = fileName.split("/");
+        if (split.length > 1) {
+            name.append(fileName.substring(0, fileName.lastIndexOf("/") + 1) + split[split.length - 1]);
+        } else {
+            name.append(split[0]);
+        }
+
+        String[] var4 = illegal;
+        int var5 = illegal.length;
+
+        for(int var6 = 0; var6 < var5; ++var6) {
+            String s = var4[var6];
+            name.replace(0, name.length(), StrUtil.removeAll(name, s));
+        }
+
+        return name.toString();
     }
 
 }
