@@ -109,6 +109,7 @@ public class RangeDownloadController {
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error("文件下载异常：" + e.toString());
+            response.sendError(500,"文件下载异常：" + e.getMessage());
 
         }
     }
