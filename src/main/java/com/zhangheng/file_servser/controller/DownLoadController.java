@@ -122,6 +122,9 @@ public class DownLoadController {
 //            FileInputStream input = null;
             outputStream = response.getOutputStream();
 
+            String fileContentType = FiletypeUtil.getFileContentType(file.getName());
+            //文件类型
+            response.setHeader("Content-Type", fileContentType);
             //显示文件大小
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名

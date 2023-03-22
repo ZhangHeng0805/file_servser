@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import java.io.File;
 
 public class FiletypeUtil {
+
     public static final String[][] MIME_MapTable={
             //{后缀名，    类型}
             {".3gp",   "video"},
@@ -60,8 +61,8 @@ public class FiletypeUtil {
             {".rc",    "text"},
             {".log",   "text"},
             {".sh",    "text"},
-            {".wsdl",    "text"},
-            {".xsd",    "text"},
+            {".wsdl",  "text"},
+            {".xsd",   "text"},
 
             {".class",  "application"},
             {".apk",    "application"},
@@ -84,6 +85,38 @@ public class FiletypeUtil {
             {"",        "unknown"}
     };
 
+    public static final String[][] Content_Type={
+            {".txt",  "text/plain"},
+
+            {".html",  "text/html"},
+            {".jsp",  "text/html"},
+
+            {".xml",   "text/xml"},
+            {".wsdl",  "text/xml"},
+            {".xsd",  "text/xml"},
+            {".xsl",  "text/xml"},
+
+            {".json",  "application/json"},
+            {".pdf",  "application/pdf"},
+            {".word",  "application/msword"},
+            {".ppt",  "application/application/vnd.ms-powerpoint"},
+            {".apk",  "application/vnd.android.package-archive"},
+            {".js",  "application/x-javascript"},
+
+            {".mp4",  "video/mpeg4"},
+            {".avi",  "video/avi"},
+
+            {".mp3",  "audio/mp3"},
+
+            {".png",  "image/png"},
+            {".jpg",  "image/jpeg"},
+            {".jpeg",  "image/jpeg"},
+
+
+            //二进制流，不知道下载文件类型
+            {"",        "application/octet-stream"}
+    };
+
     /**
      * 获取文件类型
      * @param file 文件
@@ -92,12 +125,19 @@ public class FiletypeUtil {
     public static String getFileType(File file){
         return getFileType(file.getName());
     }
+
+    public static String getFileType(String filename){
+        return getFileType(filename,MIME_MapTable);
+    }
+    public static String getFileContentType(String filename){
+        return getFileType(filename,Content_Type);
+    }
     /**
      * 获取文件类型
      * @param filename 文件全称（含后缀名）
      * @return
      */
-    public static String getFileType(String filename)
+    public static String getFileType(String filename,String[][] MIME_MapTable)
     {
         String type="unknown";
         String fName=filename;
