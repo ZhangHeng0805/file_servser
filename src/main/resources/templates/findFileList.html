@@ -101,13 +101,18 @@
             var html = "";
             var icon = "/static/img/unknown.png";
             var title = "";
+            let update_time="";
+            let type="";
+            let auth="";
             var size = 0;
             for (var i = 0; i < d.length; i++) {
                 var msg = d[i];
+                update_time=msg.obj==null?"":msg.obj.update_time;
+                type=msg.obj==null?"":msg.obj.type;
                 title = msg.title;
                 switch (msg.code) {
                     case 200:
-                        switch (msg.obj.type) {
+                        switch (type) {
                             case "text":
                                 icon = "/static/img/text.png";
                                 break;
@@ -127,15 +132,8 @@
                                 icon = "/static/img/unknown.png";
                                 break;
                         }
-                        title = msg.obj.name;
-                        // if (msg.obj.size>=0&&msg.obj.size<(1024*1000)) {
-                        //     size = (msg.obj.size / 1024).toFixed(2)+ "Kb";
-                        // }else if (msg.obj.size>=(1024*1000)&&msg.obj.size<(1024*1024*1000)){
-                        //     size=(msg.obj.size/(1024*1024)).toFixed(2)+"Mb"
-                        // }else if (msg.obj.size>=(1024*1024*1000)) {
-                        //     size=(msg.obj.size/(1024*1024*1024)).toFixed(2)+"Gb"
-                        // }
-                        size = getFileSizeFormat(msg.obj.size);
+                        title = msg.obj==null?"":msg.obj.name;
+                        size = msg.obj==null?"":getFileSizeFormat(msg.obj.size);
                         html += '<div class="panel panel-success">';
                         break;
                     case 500:
@@ -149,7 +147,7 @@
                     '<img src="' + icon + '" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">' +
                     '<label style="margin-right: 25px">' + title + '</label>' +
                     '<label class="label label-primary">' + size + '</label>' +
-                    '<code>' + msg.obj.update_time + '</code>' +
+                    '<code>' + update_time + '</code>' +
                     '</div>' +
                     '<div class="panel-body" style="background-color: #afd9ee">' +
                     // '<label class="control-label" for="type">文件路径：</label>' +
@@ -164,7 +162,8 @@
                         '<li><a id="c2_' + i + '" onclick="copeText(\'c2_' + i + '\');" title="断点分片快速下载，需要下载端支持">分片下载地址</a></li>' +
                         '</ul></div>';
                     html += '<div class="btn-group"><a class="btn btn-primary" target="_blank" id="btn'+i+'_download">直接访问</a></div>';
-                    if (msg.obj.auth != null && msg.obj.auth.length > 0 && msg.obj.auth == "admin") {
+                    auth=msg.obj==null?"":msg.obj.auth;
+                    if (auth != null && auth.length > 0 && auth == "admin") {
                         html += '<div class="btn-group"><a class="btn btn-danger" target="_blank" onclick="del(\'' + msg.message + '\')">删除文件</a></div>';
                     }
                 }

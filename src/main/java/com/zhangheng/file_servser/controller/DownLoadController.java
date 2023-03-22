@@ -223,6 +223,7 @@ public class DownLoadController {
                                         info.setName("***");
                                         info.setType("***");
                                         info.setSize(0);
+                                        info.setUpdate_time("***");
                                     }
                                     list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), s1,info));
                                 } else {
@@ -232,7 +233,7 @@ public class DownLoadController {
                             }
                         }
                     }catch (Exception e){
-                        e.printStackTrace();
+                        //e.printStackTrace();
                         log.error(e.getMessage());
                         list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),null));
                     }
