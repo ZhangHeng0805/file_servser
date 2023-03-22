@@ -7,7 +7,7 @@ import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.file_servser.utils.FiletypeUtil;
+import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
 import com.zhangheng.file_servser.utils.TimeUtil;
 import org.apache.commons.io.FileUtils;
@@ -18,7 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletException;
@@ -122,14 +125,13 @@ public class DownLoadController {
 //            FileInputStream input = null;
             outputStream = response.getOutputStream();
 
-            String fileContentType = FiletypeUtil.getFileContentType(file.getName());
             //文件类型
-            response.setHeader("Content-Type", fileContentType);
+            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(file.getName())+";charset=UTF-8");
             //显示文件大小
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名
 //            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
-            response.setHeader("Content-Disposition", "filename=" + file.getName());
+            response.setHeader("Content-Disposition", "filename=\"" + URLEncoder.encode(file.getName(), StandardCharsets.UTF_8.name())+"\"");
             input = FileUtils.openInputStream(file);
             IOUtils.copy(input, outputStream);
 //            log.info("下载请求成功:"+file.getPath());
@@ -208,7 +210,7 @@ public class DownLoadController {
                                     FileInfo info = new FileInfo();
                                     if (file.exists()){
                                         String name = file.getName();
-                                        info.setName(FiletypeUtil.getMainName(name));
+                                        info.setName(FileUtil.getMainName(name));
                                         info.setType(FiletypeUtil.getFileType(name));
                                         info.setSize(file.length());
                                         info.setUpdate_time(TimeUtil.time(new Date(file.lastModified())));

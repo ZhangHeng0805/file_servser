@@ -1,6 +1,7 @@
 package com.zhangheng.file_servser.controller;
 
 
+import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,9 +96,11 @@ public class RangeDownloadController {
             //初始化response.
             response.reset();
             response.setBufferSize(20480);
-            response.setHeader("Content-type", "application/octet-stream;charset=UTF-8");
-            response.setHeader("Content-Disposition", disposition + ";filename=" +
-                    URLEncoder.encode(filename, StandardCharsets.UTF_8.name()));
+            //文件类型
+            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(file.getName())+";charset=UTF-8");
+//            response.setHeader("Content-type", "application/octet-stream;charset=UTF-8");
+            response.setHeader("Content-Disposition", disposition + ";filename=\"" +
+                    URLEncoder.encode(filename, StandardCharsets.UTF_8.name())+"\"");
             response.setHeader("Accept-Ranges", "bytes");
             response.setHeader("ETag", URLEncoder.encode(filename, StandardCharsets.UTF_8.name()));
             response.setDateHeader("Last-Modified", lastModified);
