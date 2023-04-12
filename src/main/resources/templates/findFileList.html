@@ -4,47 +4,49 @@
     <meta charset="UTF-8">
     <title>文件查找</title>
     <style>
-
     </style>
 </head>
 <body>
 <div id="findFileList">
     <div class="row">
         <form class="form-inline" role="form" onsubmit="return false;">
-            <div class="form-group col-lg-5" title="用户访问密钥">
-                <label class="control-label col-lg-5" for="keys" id="lab_keys" style="text-align: center;"><label
-                        style="color: red">*</label>秘钥：</label>
-                <input class="form-control col-lg-7" type="password" id="keys" placeholder="请输入访问秘钥" required autofocus>
+            <div class="row">
+                <div class="form-group col-md-4" title="用户访问密钥">
+                    <label class="control-label" for="keys" id="lab_keys"><label
+                            style="color: red">*</label>秘钥：</label>
+                    <input class="form-control" type="password" id="keys" placeholder="请输入访问秘钥" required autofocus>
+                </div>
+                <div class="form-group col-md-4" title="选择查找路径">
+                    <label class="control-label" for="type" id="lab_type"><label
+                            style="color: red">*</label>选择类型：</label>
+                    <select class="form-control" id="type" required>
+                        <option value="$all$">全部</option>
+                    </select>
+                </div>
+                <div id="query_file" class="form-group col-md-4" title="查询文件">
+                    <label class="control-label" for="query_name" id="lab_query">文件名：</label>
+                    <input class="form-control" type="text" id="query_name" placeholder="请输入查找的文件名">
+                </div>
             </div>
-            <div class="form-group col-lg-5" title="选择查找路径">
-                <label class="control-label col-lg-6" for="type" id="lab_type" style="text-align: center;"><label
-                        style="color: red">*</label>选择类型：</label>
-                <select class="form-control col-lg-6" id="type" required>
-                    <option value="$all$">全部</option>
-                    <option value="image">图片</option>
-                    <option value="video">视频</option>
-                </select>
-            </div>
-            <script>
-                $("#lab_keys").css("font-size", $("#keys").height() / 1.5);
-                $("#lab_type").css("font-size", $("#type").height() / 1.5);
-            </script>
-            <div class="form-group col-lg-2" title="查找">
-                <button class="btn btn-warning col-lg-12" id="btn_sub2" onclick="sub2()">查找</button>
-            </div>
+<!--            <script>-->
+<!--                $("#lab_keys").css("font-size", $("#keys").height() / 1.5);-->
+<!--                $("#lab_type").css("font-size", $("#type").height() / 1.5);-->
+<!--            </script>-->
+            <hr>
+            <input type="submit" class="btn btn-warning btn-block text-center" id="btn_sub2" onclick="sub2()" value="查询">
         </form>
     </div>
     <hr>
     <h4 align="center" id="files_num"></h4>
     <div id="files_result">
     </div>
-    <a class="btn btn-info" style="z-index: 9999; position: fixed ! important; right: 50px; bottom: 50px;" onclick="scrollToTop()">
-        <i class="fa fa-angle-double-up"></i>返回顶部
+    <a class="btn btn-info" style="z-index: 9999; position: fixed ! important; right: 2%; bottom: 3%;"
+       onclick="scrollToTop()">
+        <i class="fa fa-angle-double-up"></i>顶部
     </a>
     <script>
         var TYPE;
-        var Data;
-
+        var Data=null;
         function getAllFileType() {
             $.ajax({
                 url: "/download/getAllFileType",
@@ -61,12 +63,31 @@
                 error: function (e) {
                     alert("类型查询错误：" + e);
                 }
-            })
+            });
+            if (isData()){
+                $("#query_file").show();
+                $("#query_file").val('');
+            } else {
+                $("#query_file").hide();
+            }
+        }
+
+        function isData(){
+            return Data!=null&&Data.length>0&&Data[0].code==200;
         }
 
         getAllFileType();
 
         function sub2() {
+            let query_name=$("#query_name").val();
+            if (query_name!=null&&query_name.length>0){
+                if (TYPE!=$("#type").val()){
+                    set_select_checked("type",TYPE);
+                }
+                handle(fuzzyQuery(Data,query_name));
+                return;
+            }
+
             if ($("#keys").val().length > 0) {
                 $("#btn_sub2").attr('disabled', true);
                 $.ajax({
@@ -95,6 +116,7 @@
             } else {
                 alert("请输入秘钥")
             }
+
         }
 
         function handle(d) {
@@ -246,12 +268,13 @@
         function fuzzyQuery(list, keyWord) {
             var arr = list.filter(function (item) {
                 var reg = new RegExp(keyWord, "gi");
-            return reg.test(item.obj.name)
-        });
+                return reg.test(item.title)
+            });
             return arr
         }
+
         function scrollToTop() {
-            var timer= setInterval(function () {
+            var timer = setInterval(function () {
                 if (document.documentElement.scrollTop != 0) {
                     document.documentElement.scrollTop -= 100;
                 } else {
