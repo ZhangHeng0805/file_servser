@@ -99,6 +99,7 @@
                         type: $("#type").val()
                     },
                     success: function (d) {
+                        Data = d;
                         // console.log(d);
                         TYPE = $("#type").val();
                         //处理数据
@@ -120,7 +121,6 @@
         }
 
         function handle(d) {
-            Data = d;
             var html = "";
             var icon = "/static/img/unknown.png";
             var title = "";
