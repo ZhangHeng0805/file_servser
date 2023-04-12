@@ -5,26 +5,42 @@
     <title>页面公共</title>
     <!--公共css-->
     <div id="com_css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="ThemeBucket">
-        <link rel="shortcut icon" href="#" type="image/png">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="ZhangHeng">
+<!--        <link rel="shortcut icon" href="#" type="image/png">-->
+        <script src="/static/js/localFile.js" th:version="${version}"></script>
 
         <link href="/static/css/style.css" rel="stylesheet">
-        <link href="/static/css/style-responsive.css" rel="stylesheet">
-        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/static/css/load.css" rel="stylesheet">
-        <link href="/static/css/bootstrap-reset.css" rel="stylesheet">
-
+<!--        <link href="/static/css/style-responsive.css" rel="stylesheet">-->
+<!--        <link href="/static/css/bootstrap.min.css" rel="stylesheet">-->
+<!--        <link href="/static/css/load.css" rel="stylesheet">-->
+<!--        <link href="/static/css/bootstrap-reset.css" rel="stylesheet">-->
+        <script>
+            // eval(loadCss("/static/css/style.css"));
+            loadCss("/static/css/style-responsive.css");
+            loadCss("/static/css/bootstrap.min.css");
+            loadCss("/static/css/bootstrap-reset.css");
+            loadCss("/static/css/load.css");
+            eval(loadJs("/static/js/jquery-1.10.2.min.js"));
+        </script>
     </div>
     <!--公共js-->
     <div id="com_js">
-        <script src="/static/js/jquery-1.10.2.min.js"></script>
-        <script src="/static/js/bootstrap.min.js"></script>
-<!--        <script src="/static/js/jquery.nicescroll.js"></script>-->
-        <script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
-        <script src="/static/js/clipboard.js"></script>
-        <script src="/static/js/ZH_Utils.js"></script>
+<!--        <script src="/static/js/jquery-1.10.2.min.js"></script>-->
+<!--        <script src="/static/js/bootstrap.min.js"></script>-->
+<!--        <script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>-->
+<!--        <script src="/static/js/clipboard.js"></script>-->
+<!--        <script src="/static/js/ZH_Utils.js"></script>-->
+        <script>
+
+            eval(loadJs("/static/js/bootstrap.min.js"));
+            eval(loadJs("/static/js/jquery-ui-1.9.2.custom.min.js"));
+            eval(loadJs("/static/js/clipboard.js"));
+            eval(loadJs("/static/js/ZH_Utils.js"));
+
+
+        </script>
     </div>
 </head>
 <body>

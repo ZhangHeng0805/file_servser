@@ -16,6 +16,7 @@ import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +42,8 @@ public class WebController {
     @Autowired
     private UpLoadService upLoadService;
     private Logger log = LoggerFactory.getLogger(getClass());
+    @Value(value = "#{'${version}'}")
+    private String version;
 
     @RequestMapping("/favicon.ico")
     public String favicon() {
@@ -53,7 +56,8 @@ public class WebController {
      * @return
      */
     @GetMapping("/")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("version",version);
         return "index";
     }
 

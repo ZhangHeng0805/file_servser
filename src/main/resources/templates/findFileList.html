@@ -14,7 +14,7 @@
                 <div class="form-group col-md-4" title="用户访问密钥">
                     <label class="control-label" for="keys" id="lab_keys"><label
                             style="color: red">*</label>秘钥：</label>
-                    <input class="form-control" type="password" id="keys" placeholder="请输入访问秘钥" required autofocus>
+                    <input class="form-control" type="password" id="keys" placeholder="请输入访问秘钥" required autofocus autocomplete>
                 </div>
                 <div class="form-group col-md-4" title="选择查找路径">
                     <label class="control-label" for="type" id="lab_type"><label
@@ -175,7 +175,7 @@
                         break;
                 }
                 html += '<div class="panel-heading">' +
-                    '<img src="' + icon + '" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">' +
+                    '<img lsrc="' + icon + '" src="" onerror="loadImg(this)" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">' +
                     '<label style="margin-right: 25px">' + title + '</label>' +
                     '<label class="label label-primary">' + size + '</label>' +
                     '<code>' + update_time + '</code>' +
