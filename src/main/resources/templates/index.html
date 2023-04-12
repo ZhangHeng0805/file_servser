@@ -17,13 +17,13 @@
         <section class="panel col-lg-8">
             <div class="panel-heading custom-tab blue-tab">
                 <ul class="nav nav-tabs">
-                    <li class="active">
+                    <li class="">
                         <a href="#t1" data-toggle="tab">
                             <i class="fa fa-upload"></i>
                             文件上传
                         </a>
                     </li>
-                    <li class="">
+                    <li class="active">
                         <a href="#t2" data-toggle="tab">
                             <i class="fa fa-search"></i>
                             文件查找
@@ -33,10 +33,10 @@
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="t1">
+                    <div class="tab-pane" id="t1">
                         <div th:replace="upload::#upload_form"></div>
                     </div>
-                    <div class="tab-pane" id="t2">
+                    <div class="tab-pane active" id="t2">
                         <div th:replace="findFileList::#findFileList"></div>
                     </div>
                 </div>

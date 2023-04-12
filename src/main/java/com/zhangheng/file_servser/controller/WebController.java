@@ -5,18 +5,17 @@ import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.captcha.generator.MathGenerator;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.script.ScriptUtil;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.util.FormatUtil;
+import com.zhangheng.util.MathUtil;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author 张恒
@@ -117,7 +115,7 @@ public class WebController {
             captcha.createCode();
             String code = captcha.getCode();
             HttpSession session = request.getSession();
-            session.setAttribute("verify-code", ScriptUtil.eval(code.replace("=", "")));
+            session.setAttribute("verify-code", MathUtil.simpleOperation(code));
             outputStream = response.getOutputStream();
             response.setHeader("Content-Disposition", "filename=[星曦向荣]验证码" + new Date().getTime() + ".png");
             captcha.write(outputStream);

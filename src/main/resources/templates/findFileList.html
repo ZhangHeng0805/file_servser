@@ -38,7 +38,9 @@
     <h4 align="center" id="files_num"></h4>
     <div id="files_result">
     </div>
-
+    <a class="btn btn-info" style="z-index: 9999; position: fixed ! important; right: 50px; bottom: 50px;" onclick="scrollToTop()">
+        <i class="fa fa-angle-double-up"></i>返回顶部
+    </a>
     <script>
         var TYPE;
         var Data;
@@ -93,7 +95,6 @@
             } else {
                 alert("请输入秘钥")
             }
-
         }
 
         function handle(d) {
@@ -101,14 +102,14 @@
             var html = "";
             var icon = "/static/img/unknown.png";
             var title = "";
-            let update_time="";
-            let type="";
-            let auth="";
+            let update_time = "";
+            let type = "";
+            let auth = "";
             var size = 0;
             for (var i = 0; i < d.length; i++) {
                 var msg = d[i];
-                update_time=msg.obj==null?"":msg.obj.update_time;
-                type=msg.obj==null?"":msg.obj.type;
+                update_time = msg.obj == null ? "" : msg.obj.update_time;
+                type = msg.obj == null ? "" : msg.obj.type;
                 title = msg.title;
                 switch (msg.code) {
                     case 200:
@@ -132,8 +133,8 @@
                                 icon = "/static/img/unknown.png";
                                 break;
                         }
-                        title = msg.obj==null?"":msg.obj.name;
-                        size = msg.obj==null?"":getFileSizeFormat(msg.obj.size);
+                        title = msg.obj == null ? "" : msg.obj.name;
+                        size = msg.obj == null ? "" : getFileSizeFormat(msg.obj.size);
                         html += '<div class="panel panel-success">';
                         break;
                     case 500:
@@ -161,8 +162,8 @@
                         '<li><a id="c1_' + i + '" onclick="copeText(\'c1_' + i + '\');" title="普通的单个文件直接下载">普通下载地址</a></li>' +
                         '<li><a id="c2_' + i + '" onclick="copeText(\'c2_' + i + '\');" title="断点分片快速下载，需要下载端支持">分片下载地址</a></li>' +
                         '</ul></div>';
-                    html += '<div class="btn-group"><a class="btn btn-primary" target="_blank" id="btn'+i+'_download">直接访问</a></div>';
-                    auth=msg.obj==null?"":msg.obj.auth;
+                    html += '<div class="btn-group"><a class="btn btn-primary" target="_blank" id="btn' + i + '_download">直接访问</a></div>';
+                    auth = msg.obj == null ? "" : msg.obj.auth;
                     if (auth != null && auth.length > 0 && auth == "admin") {
                         html += '<div class="btn-group"><a class="btn btn-danger" target="_blank" onclick="del(\'' + msg.message + '\')">删除文件</a></div>';
                     }
@@ -186,11 +187,12 @@
                 let url2 = "http://" + window.location.host + "/download/split/" + path;
                 $("#c1_" + i).attr("data-clipboard-text", url1);
                 $("#c2_" + i).attr("data-clipboard-text", url2);
-                $("#btn" + i+"_download").attr("href", url1);
+                $("#btn" + i + "_download").attr("href", url1);
             }
         }
 
         var clip;
+
         function copeText(id) {
             // set_btn_delayed("btn_"+i,4000);
             clip = new Clipboard("#" + id);
@@ -238,6 +240,24 @@
                     alert("请输入管理访问秘钥");
                 }
             }
+        }
+
+        /*模糊查询过滤*/
+        function fuzzyQuery(list, keyWord) {
+            var arr = list.filter(function (item) {
+                var reg = new RegExp(keyWord, "gi");
+            return reg.test(item.obj.name)
+        });
+            return arr
+        }
+        function scrollToTop() {
+            var timer= setInterval(function () {
+                if (document.documentElement.scrollTop != 0) {
+                    document.documentElement.scrollTop -= 100;
+                } else {
+                    clearInterval(timer);
+                }
+            }, 10);
         }
     </script>
 </div>
