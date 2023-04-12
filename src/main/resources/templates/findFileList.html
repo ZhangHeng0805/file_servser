@@ -28,12 +28,13 @@
                     <input class="form-control" type="text" id="query_name" placeholder="请输入查找的文件名">
                 </div>
             </div>
-<!--            <script>-->
-<!--                $("#lab_keys").css("font-size", $("#keys").height() / 1.5);-->
-<!--                $("#lab_type").css("font-size", $("#type").height() / 1.5);-->
-<!--            </script>-->
+            <!--            <script>-->
+            <!--                $("#lab_keys").css("font-size", $("#keys").height() / 1.5);-->
+            <!--                $("#lab_type").css("font-size", $("#type").height() / 1.5);-->
+            <!--            </script>-->
             <hr>
-            <input type="submit" class="btn btn-warning btn-block text-center" id="btn_sub2" onclick="sub2()" value="查询">
+            <input type="submit" class="btn btn-warning btn-block text-center" id="btn_sub2" onclick="sub2()"
+                   value="查询">
         </form>
     </div>
     <hr>
@@ -46,7 +47,8 @@
     </a>
     <script>
         var TYPE;
-        var Data=null;
+        var Data = null;
+
         function getAllFileType() {
             $.ajax({
                 url: "/download/getAllFileType",
@@ -64,7 +66,7 @@
                     alert("类型查询错误：" + e);
                 }
             });
-            if (isData()){
+            if (isData(Data)) {
                 $("#query_file").show();
                 $("#query_file").val('');
             } else {
@@ -72,19 +74,19 @@
             }
         }
 
-        function isData(){
-            return Data!=null&&Data.length>0&&Data[0].code==200;
+        function isData(data) {
+            return data != null && data.length > 0 && data[0].code == 200;
         }
 
         getAllFileType();
 
         function sub2() {
-            let query_name=$("#query_name").val();
-            if (query_name!=null&&query_name.length>0){
-                if (TYPE!=$("#type").val()){
-                    set_select_checked("type",TYPE);
+            let query_name = $("#query_name").val();
+            if (query_name != null && query_name.length > 0) {
+                if (TYPE != $("#type").val()) {
+                    set_select_checked("type", TYPE);
                 }
-                handle(fuzzyQuery(Data,query_name));
+                handle(fuzzyQuery(Data, query_name));
                 return;
             }
 
@@ -99,9 +101,14 @@
                         type: $("#type").val()
                     },
                     success: function (d) {
-                        Data = d;
                         // console.log(d);
-                        TYPE = $("#type").val();
+                        if (isData(d)) {
+                            Data = d;
+                            TYPE = $("#type").val();
+                        }else {
+                            if (TYPE != $("#type").val())
+                                set_select_checked("type", TYPE);
+                        }
                         //处理数据
                         handle(d);
                         //刷新下拉框数据
