@@ -106,7 +106,8 @@
                             Data = d;
                             TYPE = $("#type").val();
                         }else {
-                            if (TYPE != $("#type").val())
+                            Data = null;
+                            if (TYPE != $("#type").val());
                                 set_select_checked("type", TYPE);
                         }
                         //处理数据
