@@ -34,7 +34,7 @@ public class UploadInterceptor implements HandlerInterceptor {
             if (user.getType().equals(User.Type.Common)||user.getType().equals(User.Type.Admin)){
                 msg=webController.verifyMathCheck((String)request.getParameter("code"),true,request);
                 if (msg.getCode()==200){
-                    log.info("文件上传拦截：验证成功，放行！");
+                    log.info("\n文件上传拦截：验证成功，放行！\n");
                     return true;
                 }
             }else {
@@ -47,7 +47,7 @@ public class UploadInterceptor implements HandlerInterceptor {
             msg.setTitle("没有验证信息");
             msg.setMessage("错误！请输入访问密钥key");
         }
-        log.info("文件上传拦截：验证失败，拦截！"+msg.toString());
+        log.info("\n文件上传拦截：验证失败，拦截！"+msg.toString()+"\n");
         request.setAttribute("msg",msg);
         request.getRequestDispatcher("/error/error_key").forward(request,response);
         return false;

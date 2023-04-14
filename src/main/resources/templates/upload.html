@@ -116,11 +116,13 @@
                     } else {
                         showModel(d);
                         resetImgCode();
+                        console.warn(d);
                         return false;
                     }
                 },
                 error: function (e) {
                     alert("验证错误！" + e);
+                    console.error(e);
                     return false;
                 }
             });
@@ -149,10 +151,12 @@
                 },
                 success: function (d) {
                     showModel(d);
-                    if (d.code == 200)
+                    if (d.code == 200) {
                         reset();
-                    else
+                    }else {
                         resetImgCode();
+                        console.warn(d);
+                    }
                     $("#btn_upload").attr("disabled", false);
                     $("#btn_upload").val('上传');
                     $("#wait_icon").hide();
@@ -162,6 +166,7 @@
                     $("#btn_upload").val('上传');
                     $("#wait_icon").hide();
                     alert("上传错误：" + e);
+                    console.error(e);
                 }
             })
         }

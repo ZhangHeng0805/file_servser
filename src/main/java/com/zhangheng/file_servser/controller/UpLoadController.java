@@ -105,7 +105,7 @@ public class UpLoadController {
             msg.setTitle("秘钥key错误");
             msg.setMessage("该秘钥没有上传文件的权限！");
         }
-        log.info(msg.toString());
+        log.info("\n"+msg.toString()+"\n");
         return msg;
     }
 
@@ -157,7 +157,7 @@ public class UpLoadController {
             msg.setTitle("秘钥key错误");
             msg.setMessage("该秘钥没有上传文件的权限！");
         }
-        log.info(msg.toString());
+        log.info("\n"+msg.toString()+"\n");
         return msg;
     }
 
@@ -170,7 +170,7 @@ public class UpLoadController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/saveMulFile")
+    @RequestMapping(value = "/saveMulFile")
     public Message saveFileInterface(@Nullable MultipartFile file
             , @Nullable String fileName
             , @Nullable String code
@@ -181,14 +181,14 @@ public class UpLoadController {
             msg.setTime(TimeUtil.time(new Date()));
             User user = (User) request.getAttribute("user");
             if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
-                log.info("文件上传：" + CusAccessObjectUtil.getRequst(request));
-                if (!file.isEmpty()) {
+                log.info("\n文件上传：" + CusAccessObjectUtil.getRequst(request)+"\n");
+                if (file!=null&&!file.isEmpty()) {
                     String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
                     String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
                     String s = upLoadService.saveFile(file, name, Path);
                     if (s != null) {
                         msg.setCode(200);
-                        msg.setTitle("文件保存成功");
+                        msg.setTitle("["+code+"]上传文件保存成功");
                         msg.setMessage(s);
                     } else {
                         msg.setCode(500);
@@ -206,7 +206,7 @@ public class UpLoadController {
                 msg.setMessage("该秘钥没有上传文件的权限！");
             }
         }
-        log.info(msg.toString());
+        log.info("\n"+msg.toString()+"\n");
         return msg;
     }
 
@@ -257,6 +257,7 @@ public class UpLoadController {
             msg.setTitle("秘钥为空");
             msg.setMessage("错误！管理秘钥不能为空");
         }
+        log.info("\n"+msg.toString()+"\n");
         return msg;
     }
 

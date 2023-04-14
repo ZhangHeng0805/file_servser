@@ -45,16 +45,16 @@ public class VerifyInterceptor implements HandlerInterceptor {
             user.setIp(CusAccessObjectUtil.getIpAddress(request));
             user.setKey(key);
             if (test_keys.indexOf(key)>-1){
-                log.info("IP[{}],临时密钥["+key+"]访问成功",user.getIp());
+                log.info("\nIP[{}],临时密钥["+key+"]访问成功\n",user.getIp());
                 user.setType(User.Type.Test);
             }else if (keys.indexOf(key)>-1){
-                log.info("IP[{}],普通密钥["+key+"]访问成功",user.getIp());
+                log.info("\nIP[{}],普通密钥["+key+"]访问成功\n",user.getIp());
                 user.setType(User.Type.Common);
             }else if (admin_keys.indexOf(key)>-1){
-                log.info("IP[{}],管理密钥["+key+"]访问成功",user.getIp());
+                log.info("\nIP[{}],管理密钥["+key+"]访问成功\n",user.getIp());
                 user.setType(User.Type.Admin);
             }else {
-                log.info("IP[{}],未知密钥["+key+"]访问拦截",user.getIp());
+                log.info("\nIP[{}],未知密钥["+key+"]访问拦截\n",user.getIp());
                 user.setType(User.Type.Unknown);
 //                msg.setTime(TimeUtil.time(new Date()));
 //                msg.setCode(500);

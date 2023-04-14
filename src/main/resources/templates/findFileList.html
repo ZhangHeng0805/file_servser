@@ -57,13 +57,19 @@
                 success: function (d) {
                     var html = "";
                     for (var i = 0; i < d.length; i++) {
-                        html += '<option value="' + d[i].message + '">' + d[i].title + '</option>';
+                        if (d[i].code==200) {
+                            html += '<option value="' + d[i].message + '">' + d[i].title + '</option>';
+                        }else {
+                            alert("类型查询错误：" + d[i].message);
+                            console.warn("类型查询错误:"+d[i])
+                        }
                     }
                     $("#type").html(html);
                     set_select_checked("type", TYPE);
                 },
                 error: function (e) {
                     alert("类型查询错误：" + e);
+                    console.error(e)
                 }
             });
             if (isData(Data)) {
@@ -109,6 +115,7 @@
                             Data = null;
                             if (TYPE != $("#type").val());
                                 set_select_checked("type", TYPE);
+                            console.warn(d)
                         }
                         //处理数据
                         handle(d);
@@ -119,7 +126,7 @@
                     error: function (e) {
                         $("#btn_sub2").attr('disabled', false);
                         alert("结果查询错误：" + e);
-                        console.log(e);
+                        console.error(e);
                     }
                 })
             } else {
@@ -258,12 +265,14 @@
                         success: function (d) {
                             if (d.code == 200) {
                                 sub2();
+                            }else {
+                                console.warn(d);
                             }
                             alert(d.message);
                         },
                         error: function (e) {
                             alert("删除错误：" + e);
-                            console.log(e);
+                            console.error(e);
                         }
                     })
                 } else {

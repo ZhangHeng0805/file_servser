@@ -1,13 +1,13 @@
 package com.zhangheng.file_servser.controller;
 
 import com.zhangheng.file.FileUtil;
+import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.entity.FileInfo;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
 import com.zhangheng.file_servser.utils.TimeUtil;
 import org.apache.commons.io.FileUtils;
@@ -57,6 +57,8 @@ public class DownLoadController {
     private List<String> test_keys;
     @Value("${baseDir}")
     private String baseDir;
+    @Value("${is-download-show-attchment}")
+    private Boolean is_show_attchment;
     private Logger log = LoggerFactory.getLogger(getClass());
     private List<String> files = new ArrayList<>();
 
@@ -97,7 +99,7 @@ public class DownLoadController {
             String ipMessage;
             ipMessage = CusAccessObjectUtil.getCompleteRequest(request);
 //        String ipMessage = IPAnalysisAPI.getIPMessage(request);
-            log.info("\n文件下载请求：" + ipMessage);
+            log.info("\n文件普通下载请求：" + ipMessage+"\n");
 //        log.info("下载IP："+ipAddress);
             //请求的完整路径（地址）
             final String pathq =
@@ -124,14 +126,28 @@ public class DownLoadController {
             file = new File(baseDir + type + "/" + name);
 //            FileInputStream input = null;
             outputStream = response.getOutputStream();
-
+            //最后修改时间
+            long lastModified = file.lastModified();
+//            FileTime lastModifiedObj = Files.getLastModifiedTime(file.toPath());
+//            long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(),
+//                    ZoneId.of(ZoneId.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
+            //判断文件是否被修改
+            String fileName = file.getName();
+            String encode = URLEncoder.encode(fileName, "UTF-8");
+            response.setHeader("ETag", encode);
+            //文件修改时间
+            response.setDateHeader("Last-Modified", lastModified);
+            //过期时间
+            response.setDateHeader("Expires", System.currentTimeMillis() + 604800000L);
             //文件类型
-            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(file.getName())+";charset=UTF-8");
+            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(fileName)+";charset=UTF-8");
             //显示文件大小
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名
 //            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
-            response.setHeader("Content-Disposition", "filename=\"" + URLEncoder.encode(file.getName(), StandardCharsets.UTF_8.name())+"\"");
+            String disposition = "filename=" + encode;
+            disposition=is_show_attchment?"attchment;"+disposition:disposition;
+            response.setHeader("Content-Disposition", disposition);
             input = FileUtils.openInputStream(file);
             IOUtils.copy(input, outputStream);
 //            log.info("下载请求成功:"+file.getPath());
@@ -141,7 +157,7 @@ public class DownLoadController {
             } else {
                 err = "错误o(╥﹏╥)o，下载出错误了";
             }
-            log.error("错误：" + e.getMessage());
+            log.error("下载show错误2：" + e.getMessage());
         } finally {
             try {
                 if (file.exists()) {
@@ -168,7 +184,7 @@ public class DownLoadController {
                     outputStream.close();
                 }
             } catch (IOException e) {
-                log.error(e.toString());
+                log.error("下载show错误1："+e.toString());
             }
         }
     }
@@ -180,12 +196,11 @@ public class DownLoadController {
     @RequestMapping("findFileList")
     public List<Message> findFileList(HttpServletRequest request, String type)  {
         List<Message> list =new ArrayList<>();
-        list.clear();
         User user = (User) request.getAttribute("user");
         if (user.getKey()!=null&&user.getKey().length()>0){
             if (!user.getType().equals(User.Type.Unknown)){
                 if (type!=null&&type.length()>0){
-                    log.info("IP[{}],秘钥[{}],查询[{}]文件夹",user.getIp(),user.getKey(),type);
+                    log.info("\n文件夹检索：IP[{}],秘钥[{}],查询[{}]文件夹\n",user.getIp(),user.getKey(),type);
                     files.clear();
                     try {
                         switch (type){
@@ -234,7 +249,7 @@ public class DownLoadController {
                         }
                     }catch (Exception e){
                         //e.printStackTrace();
-                        log.error(e.getMessage());
+                        log.error("\n文件检索错误："+e.getMessage()+"\n");
                         list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),null));
                     }
                 }else {
@@ -257,8 +272,6 @@ public class DownLoadController {
     @PostMapping("getAllFileType")
     public List<Message> getAllFileType(){
         ArrayList<Message> list = new ArrayList<>();
-        list.clear();
-        files.clear();
         try {
             list.add(new Message(null,200,"全部","$all$",null));
             File fileList = new File(baseDir);
@@ -266,13 +279,12 @@ public class DownLoadController {
             for (File f : files) {
                 if (f.isDirectory()){
                     String path = f.getPath().substring(baseDir.length());
-                    list.add(new Message(null,500,path,path,null));
+                    list.add(new Message(null,200,path,path,null));
                 }
             }
         }catch (Exception e){
-            list.add(new Message(null,500,"出错了！",e.getMessage(),null));
+            list.add(new Message(null,500,"文件类型获取错误！",e.getMessage(),null));
         }
-
         return list;
     }
 }

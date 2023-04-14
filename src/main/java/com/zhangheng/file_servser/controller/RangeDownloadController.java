@@ -1,14 +1,15 @@
 package com.zhangheng.file_servser.controller;
 
 
-import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletOutputStream;
@@ -17,11 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +36,8 @@ public class RangeDownloadController {
     private String baseDir;
     @Value("${appName}")
     private String appName;
+    @Value("${is-download-split-attchment}")
+    private Boolean is_split_attchment;
 
     /**
      * 文件下载
@@ -64,46 +62,49 @@ public class RangeDownloadController {
         List<Range> ranges = new ArrayList<>();
         //处理Range
         try {
-
             if (!file.exists()) {
                 String msg = "需要下载的文件不存在：" + file.getName();
-                log.error(msg);
+                log.error("下载spilt错误1："+msg);
 //                throw new RuntimeException(msg);
                 response.sendError(404,msg);
             }
 
             if (file.isDirectory()) {
                 String msg = "需要下载的文件的路径对应的是一个文件夹：" + file.getName();
-                log.error(msg);
+                log.error("下载spilt错误2："+msg);
 //                throw new RuntimeException(msg);
                 response.sendError(500,msg);
             }
             dealRanges(full, range, ranges, response, length);
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("下载spilt错误3："+e.toString());
             response.sendError(500,"文件下载异常：" + e.getMessage());
         }
         // 如果浏览器支持内容类型，则设置为“内联”，否则将弹出“另存为”对话框. attachment inline
-        String disposition = "attachment";
+        String disposition = is_split_attchment?"attachment;":"";
 
         // 将需要下载的文件段发送到客服端，准备流.
         try (RandomAccessFile input = new RandomAccessFile(file, "r");
              ServletOutputStream output = response.getOutputStream()) {
             //最后修改时间
-            FileTime lastModifiedObj = Files.getLastModifiedTime(file.toPath());
-            long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(),
-                    ZoneId.of(ZoneId.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
+            long lastModified = file.lastModified();
+//            FileTime lastModifiedObj = Files.getLastModifiedTime(file.toPath());
+//            long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(),
+//                    ZoneId.of(ZoneId.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
             //初始化response.
             response.reset();
             response.setBufferSize(20480);
             //文件类型
-            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(file.getName())+";charset=UTF-8");
+//            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(filename)+";charset=UTF-8");
 //            response.setHeader("Content-type", "application/octet-stream;charset=UTF-8");
-            response.setHeader("Content-Disposition", disposition + ";filename=\"" +
-                    URLEncoder.encode(filename, StandardCharsets.UTF_8.name())+"\"");
+            String encode = URLEncoder.encode(filename, "UTF-8");
+            response.setHeader("Content-Disposition", disposition + "filename=" + encode);
             response.setHeader("Accept-Ranges", "bytes");
-            response.setHeader("ETag", URLEncoder.encode(filename, StandardCharsets.UTF_8.name()));
+            //判断文件是否被修改
+            response.setHeader("ETag", encode);
+            //文件修改时间
             response.setDateHeader("Last-Modified", lastModified);
+            //过期时间
             response.setDateHeader("Expires", System.currentTimeMillis() + 604800000L);
             //输出Range到response
             outputRange(response, ranges, input, output, full, length);
@@ -111,7 +112,7 @@ public class RangeDownloadController {
             response.flushBuffer();
         } catch (Exception e) {
 //            e.printStackTrace();
-            log.error("文件下载异常：" + e.toString());
+            log.error("下载spilt错误4："+ e.toString());
             response.sendError(500,"文件下载异常：" + e.getMessage());
 
         }
@@ -124,7 +125,7 @@ public class RangeDownloadController {
         String ipMessage;
         ipMessage = CusAccessObjectUtil.getCompleteRequest(request);
 //        String ipMessage = IPAnalysisAPI.getIPMessage(request);
-        log.info("\n文件分片下载请求：" + ipMessage);
+        log.info("\n文件分片下载请求：" + ipMessage+"\n");
 //        log.info("下载IP："+ipAddress);
         //请求的完整路径（地址）
         final String pathq =

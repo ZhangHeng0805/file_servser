@@ -43,15 +43,15 @@ public class UpLoadService {
         if (file.exists()) {
             boolean delete = file.delete();
             if (delete) {
-                log.info("文件删除成功：" + path);
+                log.info("\n文件删除成功：" + path+"\n");
                 String dirPath = path.split("/")[0];
                 File dir = new File(baseDir + dirPath);
                 if (dir.listFiles().length <= 0) {
                     boolean b = deleteDir(dirPath);
                     if (b) {
-                        log.info("空文件夹清除成功!");
+                        log.info("\n空文件夹清除成功!\n");
                     } else {
-                        log.info("空文件夹清除失败!");
+                        log.info("\n空文件夹清除失败!\n");
                     }
                 } else {
                     boolean flag = true;
@@ -64,9 +64,9 @@ public class UpLoadService {
                     if (flag) {
                         boolean b = deleteDir(dirPath);
                         if (b) {
-                            log.info("空文件夹清除成功!");
+                            log.info("\n空文件夹清除成功!\n");
                         } else {
-                            log.info("空文件夹清除失败!");
+                            log.info("\n空文件夹清除失败!\n");
                         }
                     }
                 }
@@ -128,7 +128,7 @@ public class UpLoadService {
             bos.write(bytes);
             //文件的保存路径
             path = savePath + name + type;
-            log.info("图片名：{}；图片大小：{}kb", path, Message.twoDecimalPlaces((double) file.length() / 1024));
+            log.info("\n图片名：{}；图片大小：{}kb\n", path, Message.twoDecimalPlaces((double) file.length() / 1024));
 //            log.info("图片大小：{}kb", Message.twoDecimalPlaces((double) file.length()/1024));
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +165,7 @@ public class UpLoadService {
         if (!fileName.isEmpty()) {
             //图片小于2Mb
             String Fname = file.getOriginalFilename();
-            log.info("文件名：{}；文件大小：{}kb", Fname, Message.twoDecimalPlaces((double) file.getSize() / 1024));
+            log.info("\n文件名：{}；文件大小：{}kb\n", Fname, Message.twoDecimalPlaces((double) file.getSize() / 1024));
 //            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
             //排除文件名中的非法字符
             fileName = FiletypeUtil.filterFileName(fileName);
@@ -187,7 +187,7 @@ public class UpLoadService {
                 FileUtils.copyToFile(file.getInputStream(), outFile);
                 path = name;
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error("文件保存错误："+e.getMessage());
             }
         }
         return path;
@@ -207,7 +207,7 @@ public class UpLoadService {
                 FileUtils.deleteDirectory(file);
                 return true;
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error("文件夹删除错误："+e.getMessage());
             }
         }
         return false;
