@@ -116,6 +116,17 @@ public class CusAccessObjectUtil {
     }
 
     /**
+     * 获取请求行中的资源名称
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String getUri(HttpServletRequest request) throws UnsupportedEncodingException {
+        String uri = request.getRequestURI();//返回请求行中的资源名称
+        return URLDecoder.decode(uri,"UTF-8");
+    }
+
+    /**
      * 获取指定格式请求信息
      * [ip] / User-Agent
      * @param request 请求对象

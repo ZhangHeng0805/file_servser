@@ -5,6 +5,8 @@ import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.captcha.generator.MathGenerator;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
@@ -166,5 +168,29 @@ public class WebController {
         }
         return msg;
     }
+    @ResponseBody
+    @RequestMapping("/static/client")
+    public void client(@RequestBody String map, HttpServletRequest request){
+        String ip = com.zhangheng.util.CusAccessObjectUtil.getIpAddress(request);
+        StringBuilder sb = new StringBuilder();
+//        System.out.println(map);
+        if (!StrUtil.isBlank(map)&&!"null".equals(map)) {
+            JSONObject jb = JSONUtil.parseObj(map);
+                    sb.append("时间:" + TimeUtil.toTime(new Date(jb.getLong("r"))))
+                    .append("\tip:" + ip)
+                    .append("\t系统:" + jb.getStr("os") + jb.getStr("osv"))
+                    .append("\t浏览器:" + jb.getStr("bs") + "-V" + jb.getStr("bsv") + "(" + jb.getStr("ul") + ")[" + jb.getStr("br") + "]");
+            String app = jb.getStr("app");
+            if (!StrUtil.isEmptyIfStr(app)) {
+                sb.append("\t应用:" + app);
+            }
+        }else {
+            sb.append("暂无信息");
+        }
+        log.info("\nWeb端信息:{{}}\n",sb.toString());
+    }
 
+    public static void main(String[] args) {
+        System.out.println("/12".startsWith("/"));
+    }
 }

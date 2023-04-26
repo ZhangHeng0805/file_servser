@@ -28,4 +28,8 @@ public class StatusCode {
      * 500
      */
     public static final String Http500="抱歉【ε=(´ο｀*)))唉】，服务器遇到错误【Σσ(・Д・；)我我我什么都没做!!!】，无法完成请求【๑乛◡乛๑卡在了奇怪的地方】";
+    /**
+     * 503
+     */
+    public static final String Http503="请求频繁，我都忙不过来了，太快了服务器受不了啊【(ó﹏ò｡)难受】，慢一点哦【_(:3」∠❀)_菊花碎了一地！】";
 }

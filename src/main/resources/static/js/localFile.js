@@ -36,7 +36,7 @@ function loadImg(img) {
                     }
                 }
             }
-            x.open("get", window.location.href + img.getAttribute("lsrc"), true);
+            x.open("get", img.getAttribute("lsrc"), true);
             x.send();
         } else {
             let str64=localStorage[img.getAttribute("lsrc")];

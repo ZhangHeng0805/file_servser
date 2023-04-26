@@ -21,20 +21,22 @@ public class MvcConfig implements WebMvcConfigurer {
     @Autowired
     private UploadInterceptor uploadInterceptor;
 
+    public static String[] excluePath1={
+            "/",//首页
+            "/download/show/**",//下载
+            "/download/split/**",//分片下载
+            "/static/**",//静态资源
+            "/favicon.ico",//网址图标
+            "/error/**",//错误
+            "/getVerify/**",//验证码
+            "/download/getAllFileType"//获取文件夹列表名
+    };
+
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //验证
-        registry.addInterceptor(verifyInterceptor).excludePathPatterns(
-                "/",//首页
-                "/download/show/**",//下载
-                "/download/split/**",//分片下载
-                "/static/**",//静态资源
-                "/favicon.ico",//网址图标
-                "/error/**",//错误
-                "/getVerify/**",//验证码
-                "/download/getAllFileType"//获取文件夹列表名
-        );
+        registry.addInterceptor(verifyInterceptor).excludePathPatterns(excluePath1);
         //上传
         registry.addInterceptor(uploadInterceptor).addPathPatterns("/upload/saveMulFile");
     }
