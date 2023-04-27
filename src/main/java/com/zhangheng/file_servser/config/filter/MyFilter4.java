@@ -33,6 +33,8 @@ public class MyFilter4 extends MyFilter {
     private String[] paths={
             "/deleteFile",
             "/upload/",
+            "/download/getAllFileType",
+            "/download/getAllFileType",
     };
     private Logger log= LoggerFactory.getLogger(getClass());
     @Autowired

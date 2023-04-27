@@ -51,10 +51,14 @@
         var Data = null;
 
         function getAllFileType() {
+            checkCoookie();
             $.ajax({
                 url: "/download/getAllFileType",
                 method: "post",
                 dataType: "json",
+                xhrFields: {
+                    withCredentials: true
+                },
                 success: function (d) {
                     var html = "";
                     for (var i = 0; i < d.length; i++) {

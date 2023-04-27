@@ -293,7 +293,7 @@ function client_result() {
         br: brandName, //设备名
         r: 1 * new Date() //时间戳
     }
-    console.log(ClientData);
+    // console.log(ClientData);
     debounce(SendData(ClientData), 500, false);
     return ClientData;
 }
