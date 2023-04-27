@@ -2,7 +2,6 @@ package com.zhangheng.file_servser.controller;
 
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
-import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,10 +35,10 @@ public class UpLoadController {
 
     @Autowired
     private UpLoadService upLoadService;
-    @Autowired
-    private WebController webController;
-    @Autowired
-    private KeyService keyService;
+//    @Autowired
+//    private WebController webController;
+//    @Autowired
+//    private KeyService keyService;
     @Value("#{'${is-add-appName}'}")
     private Boolean is_add_appName;
     @Value("#{'${admin_keys}'.split(',')}")
@@ -210,55 +208,6 @@ public class UpLoadController {
         return msg;
     }
 
-    @ResponseBody
-    @RequestMapping("deleteFile")
-    public Message deleteFile(String path, HttpServletRequest request) {
-        Message msg = new Message();
-        msg.setTime(TimeUtil.time(new Date()));
-        User user = (User) request.getAttribute("user");
-        if (user.getKey() != null && user.getKey().trim().length() > 0) {
-            if (user.getType().equals(User.Type.Admin)) {
-                if (path != null && path.length() > 0) {
-                    File file = new File(baseDir + path);
-                    if (file.exists()) {
-                        if (!file.isDirectory()) {
-                            boolean b = upLoadService.deleteFile(path);
-                            if (b) {
-                                msg.setCode(200);
-                                msg.setTitle("删除成功");
-                                msg.setMessage("成功！文件删除成功：" + path);
-                            } else {
-                                msg.setCode(500);
-                                msg.setTitle("删除失败");
-                                msg.setMessage("错误！文件删除失败：" + path);
-                            }
-                        } else {
-                            msg.setCode(404);
-                            msg.setTitle("路径错误");
-                            msg.setMessage("警告！路径：" + path + "不是文件类型");
-                        }
-                    } else {
-                        msg.setCode(404);
-                        msg.setTitle("文件不存在");
-                        msg.setMessage("警告！删除文件的不存在：" + path);
-                    }
-                } else {
-                    msg.setCode(500);
-                    msg.setTitle("路径为空");
-                    msg.setMessage("错误！删除路径为空");
-                }
-            } else {
-                msg.setCode(500);
-                msg.setTitle("秘钥错误");
-                msg.setMessage("秘钥错误！请使用管理秘钥操作");
-            }
-        } else {
-            msg.setCode(500);
-            msg.setTitle("秘钥为空");
-            msg.setMessage("错误！管理秘钥不能为空");
-        }
-        log.info("\n"+msg.toString()+"\n");
-        return msg;
-    }
+
 
 }

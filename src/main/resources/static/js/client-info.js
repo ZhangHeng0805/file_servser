@@ -14,7 +14,6 @@ var ua = window.navigator.userAgent,
     osName = isWindows ? "Windows" : isLinux ? "Linux" : isMacOS ? "MacOS" : isChromeOS ? "Chrome OS" : isAndroid ? "Android" : isiOS ? "iOS" : isWebOS ? "WebOS" : "",
 
 
-
     isEdg = /\sedg\//.test(e),
     isEdge = /\sedge\//.test(e),
     isChrome = !isEdge && /chrome|crios/.test(e),
@@ -65,13 +64,13 @@ const getOS = () => {
     var os = '',
         v = '';
     l && (os = 'Android', v = l[2]),
-        b && (os = 'iPod', v = b[2].replace(/_/g, ".")),
-        p && (os = 'iPad', v = p[2].replace(/_/g, ".")),
-        x && (os = 'iPhone', v = x[2].replace(/_/g, ".")),
-        n && (os = 'Windows', v = n[2] == '10.0' ? '10' : n[2] == '6.3' ? '8.1' : n[2] == '6.2' ? '8' : n[2] == '6.1' ? '7' : n[2]),
-        t && (os = 'Mac', v = t[1].split(/_|\./).join('.')),
-        a && (os = 'Linux', v = '');
-    return { os: os, version: v };
+    b && (os = 'iPod', v = b[2].replace(/_/g, ".")),
+    p && (os = 'iPad', v = p[2].replace(/_/g, ".")),
+    x && (os = 'iPhone', v = x[2].replace(/_/g, ".")),
+    n && (os = 'Windows', v = n[2] == '10.0' ? '10' : n[2] == '6.3' ? '8.1' : n[2] == '6.2' ? '8' : n[2] == '6.1' ? '7' : n[2]),
+    t && (os = 'Mac', v = t[1].split(/_|\./).join('.')),
+    a && (os = 'Linux', v = '');
+    return {os: os, version: v};
 
 }
 
@@ -80,9 +79,8 @@ const getBrowser = () => {
     var v2 = e.match(/(?:chrome|crios|version|firefox|msie|rv).(\d+)\.(\d+)/);
     var v3 = e.match(/(?:applewebkit|gecko|trident).(\d+)/);
     var v = v1 ? parseInt(v1[1], 10) : v2 ? parseInt(v2[1], 10) : v3 ? parseInt(v3[1], 10) : '';
-    return { browser: browserName, version: v };
+    return {browser: browserName, version: v};
 }
-
 
 
 const getSpider = () => {
@@ -132,7 +130,7 @@ const getReferrer = () => {
 
     }
 
-    return { rurl: rurl, se: se, kw: kw }
+    return {rurl: rurl, se: se, kw: kw}
 
 }
 
@@ -156,43 +154,65 @@ const parseURL = (t) => {
     }
 }
 
-const setCookie = (a, b) => {
-    var d = window.location.host,
-        e = {
-            "com.cn": 1,
-            "net.cn": 1,
-            "gov.cn": 1,
-            "com.hk": 1,
-            "co.nz": 1,
-            "org.cn": 1,
-            "top.cn": 1,
-            "edu.cn": 1
-        },
-        f = d.split(".");
-    2 < f.length && (d = (e[f.slice(-2).join(".")] ? f.slice(-3) : f.slice(-2)).join("."));
-    document.cookie = a + "=" + b + ";path=/;domain=" + d + ";expires=Sun, 18 Jan 2038 00:00:00 GMT;";
+function setCookie(key, value) {
+    let host = window.location.host;
+    // let date = new Date();
+    let expiresTime =(60 * 60 * 24);
+    document.cookie = key + "=" + value ;
 }
 
-const getCookie = (a) => {
-    return (a = RegExp("(^| )" + a + "=([^;]*)(;|$)").exec(document.cookie)) ? a[2] : w;
+// const setCookie = (a, b) => {
+//
+//         // e = {
+//         //     "com.cn": 1,
+//         //     "net.cn": 1,
+//         //     "gov.cn": 1,
+//         //     "com.hk": 1,
+//         //     "co.nz": 1,
+//         //     "org.cn": 1,
+//         //     "top.cn": 1,
+//         //     "edu.cn": 1,
+//         //     "asia.cn": 1
+//         // },
+//         // f = d.split(".");
+//     var millisecond = new Date().getTime();
+//     var expiresTime = new Date(millisecond + 60 * 1000 * 15);
+//     // 2 < f.length && (d = (e[f.slice(-2).join(".")] ? f.slice(-3) : f.slice(-2)).join("."));
+//     document.cookie = a + "=" + b + ";path=/;domain=" + d + ";expires="+expiresTime;
+// }
+
+// const getCookie = (a) => {
+//     return (a = RegExp("(^| )" + a + "=([^;]*)(;|$)").exec(document.cookie)) ? a[2] : w;
+// }
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
+
 const getSid = () => {
-    var u = document.getElementsByName("TAZENGIP")
-    return u.length > 0 ? parseInt(u[0].attributes.sid.nodeValue) : 0;
+    var sid = getCookie("JSESSIONID");
+    sid = sid.length > 0 ? sid : Math.random().toString(36).slice(-8);
+    var a = "zhangheng0805_sid";
+    window.localStorage.setItem(a, sid);
+    setCookie(a, sid);
+    return window.btoa(sid);
 }
 
 const getCid = () => {
     var a = "zhangheng0805_cid";
     var cid = window.localStorage ? window.localStorage.getItem(a) : getCookie(a);
-    if (cid) {
-        return cid;
-    } else {
-        var b = (new Date).getUTCMilliseconds();
-        cid = Math.round(2147483647 * Math.abs(Math.random() - 1)) * b % 1E10;
-        window.localStorage.setItem(a, cid);
-        setCookie(a, cid);
-        return cid;
-    }
+    var b = (new Date).getUTCMilliseconds();
+    cid = Math.round(2147483647 * Math.abs(Math.random() - 1)) * b % 1E10;
+    window.localStorage.setItem(a, cid);
+    setCookie(a, cid);
+    return cid;
 }
 
 const serialize = (obj) => {
@@ -204,10 +224,10 @@ const serialize = (obj) => {
 
 const sendImg = (url, data) => {
     var d = new Image(1, 1);
-    d.onload = function() {
+    d.onload = function () {
         d.onload = null;
     };
-    d.onerror = function() {
+    d.onerror = function () {
         d.onerror = null;
     };
     d.src = url + "?" + data;
@@ -242,9 +262,7 @@ function client_result() {
     var os = getOS();
     var browser = getBrowser();
     var spider = getSpider();
-
     var ref = getReferrer();
-
     var b = window.navigator,
         c = window.screen,
         h = document.documentElement,
@@ -275,9 +293,8 @@ function client_result() {
         br: brandName, //设备名
         r: 1 * new Date() //时间戳
     }
-
-    SendData(ClientData);
-    // console.log(ClientData);
+    console.log(ClientData);
+    debounce(SendData(ClientData), 500, false);
     return ClientData;
 }
 

@@ -89,7 +89,7 @@
 
         function sub2() {
             let query_name = $("#query_name").val();
-            if (query_name != null && query_name.length > 0&&Data!=null) {
+            if (query_name != null && query_name.length > 0 && Data != null) {
                 if (TYPE != $("#type").val()) {
                     set_select_checked("type", TYPE);
                 }
@@ -109,7 +109,7 @@
                     },
                     success: function (d) {
                         // console.log(d);
-                        d=Array.isArray(d)?d:new Array(d);
+                        d = Array.isArray(d) ? d : new Array(d);
                         if (isData(d)) {
                             Data = d;
                             TYPE = $("#type").val();
@@ -248,14 +248,25 @@
 
         }
 
+        function checkCoookie() {
+            if (getCookie('zhangheng0805_cid').length<=0)
+                setCookie('zhangheng0805_cid',window.localStorage.getItem('zhangheng0805_cid'));
+            if (getCookie('zhangheng0805_sid').length<=0)
+                setCookie('zhangheng0805_sid',window.localStorage.getItem('zhangheng0805_sid'));
+        }
+
         function del(path) {
+            checkCoookie();
             if (confirm("确定删除该文件吗？")) {
                 var key = $("#keys").val();
                 if (key.length > 0) {
                     $.ajax({
-                        url: '/upload/deleteFile',
+                        url: '/deleteFile',
                         method: "post",
                         dataType: "json",
+                        xhrFields: {
+                            withCredentials: true
+                        },
                         data: {
                             key: key,
                             path: path

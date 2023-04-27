@@ -3,8 +3,12 @@ package com.zhangheng.file_servser.controller;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.captcha.generator.MathGenerator;
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.file_servser.entity.Message;
@@ -26,9 +30,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -46,6 +52,8 @@ public class WebController {
     private Logger log = LoggerFactory.getLogger(getClass());
     @Value(value = "#{'${version}'}")
     private String version;
+    @Value("${baseDir}")
+    private String baseDir;
 
     @RequestMapping("/favicon.ico")
     public String favicon() {
@@ -59,7 +67,7 @@ public class WebController {
      */
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("version",version);
+        model.addAttribute("version", version);
         return "index";
     }
 
@@ -108,7 +116,59 @@ public class WebController {
         return "index";
     }
 
+    @ResponseBody
+    @RequestMapping("deleteFile")
+    public Message deleteFile(String path, HttpServletRequest request) {
+        Message msg = new Message();
+        msg.setTime(com.zhangheng.file_servser.utils.TimeUtil.time(new Date()));
+        User user = (User) request.getAttribute("user");
+        if (user.getKey() != null && user.getKey().trim().length() > 0) {
+            if (user.getType().equals(User.Type.Admin)) {
+                if (path != null && path.length() > 0) {
+                    File file = new File(baseDir + path);
+                    if (file.exists()) {
+                        if (!file.isDirectory()) {
+                            boolean b = upLoadService.deleteFile(path);
+                            if (b) {
+                                msg.setCode(200);
+                                msg.setTitle("删除成功");
+                                msg.setMessage("成功！文件删除成功：" + path);
+                            } else {
+                                msg.setCode(500);
+                                msg.setTitle("删除失败");
+                                msg.setMessage("错误！文件删除失败：" + path);
+                            }
+                        } else {
+                            msg.setCode(404);
+                            msg.setTitle("路径错误");
+                            msg.setMessage("警告！路径：" + path + "不是文件类型");
+                        }
+                    } else {
+                        msg.setCode(404);
+                        msg.setTitle("文件不存在");
+                        msg.setMessage("警告！删除文件的不存在：" + path);
+                    }
+                } else {
+                    msg.setCode(500);
+                    msg.setTitle("路径为空");
+                    msg.setMessage("错误！删除路径为空");
+                }
+            } else {
+                msg.setCode(500);
+                msg.setTitle("秘钥错误");
+                msg.setMessage("秘钥错误！请使用管理秘钥操作");
+            }
+        } else {
+            msg.setCode(500);
+            msg.setTitle("秘钥为空");
+            msg.setMessage("错误！管理秘钥不能为空");
+        }
+        log.info("\n" + msg.toString() + "\n");
+        return msg;
+    }
+
     CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 6, 150);
+
     /**
      * 获取数学验证码
      */
@@ -169,15 +229,16 @@ public class WebController {
         }
         return msg;
     }
+
     @ResponseBody
     @RequestMapping("/static/client")
-    public void client(@RequestBody String map, HttpServletRequest request){
+    public void client(@RequestBody String map, HttpServletRequest request) {
         String ip = com.zhangheng.util.CusAccessObjectUtil.getIpAddress(request);
         StringBuilder sb = new StringBuilder();
 //        System.out.println(map);
-        if (!StrUtil.isBlank(map)&&!"null".equals(map)) {
+        if (!StrUtil.isBlank(map) && !"null".equals(map)) {
             JSONObject jb = JSONUtil.parseObj(map);
-                    sb.append("时间:" + TimeUtil.toTime(new Date(jb.getLong("r"))))
+            sb.append("时间:" + TimeUtil.toTime(new Date(jb.getLong("r"))))
                     .append("\tip:" + ip)
                     .append("\t系统:" + jb.getStr("os") + jb.getStr("osv"))
                     .append("\t浏览器:" + jb.getStr("bs") + "-V" + jb.getStr("bsv") + "(" + jb.getStr("ul") + ")[" + jb.getStr("br") + "]");
@@ -185,13 +246,16 @@ public class WebController {
             if (!StrUtil.isEmptyIfStr(app)) {
                 sb.append("\t应用:" + app);
             }
-        }else {
+            String cid = jb.getStr("cid");
+            String sid = jb.getStr("sid");
+            HttpSession session = request.getSession();
+            session.setAttribute("cid", cid);
+            sid = Base64.isBase64(sid) ? Base64Decoder.decodeStr(sid) : sid;
+            session.setAttribute("sid", sid);
+        } else {
             sb.append("暂无信息");
         }
-        log.info("\nWeb端信息:{{}}\n",sb.toString());
+        log.info("\nWeb端信息:{{}}\n", sb.toString());
     }
 
-    public static void main(String[] args) {
-        System.out.println("/12".startsWith("/"));
-    }
 }

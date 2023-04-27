@@ -55,9 +55,9 @@ public class MyFilter2 extends MyFilter {
         isFilter = isFilter(excludePath,uri,isFilter);
         if (isFilter){
             HttpSession session = req.getSession();
-            Integer sessionCount = Convert.toInt(session.getAttribute("_c"), 0);
+            Integer sessionCount = Convert.toInt(session.getAttribute(uri+"_c"), 0);
             sessionCount = sessionCount + 1;
-            session.setAttribute("_c", sessionCount);
+            session.setAttribute(uri+"_c", sessionCount);
             if (sessionCount > maxCount) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("application/json; charset=utf-8");

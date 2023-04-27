@@ -60,8 +60,8 @@ public class MyFilter1 extends MyFilter {
         if (isFilter){
             long nowTime = new Date().getTime();
             HttpSession session = req.getSession();
-            Long sessionTime = Convert.toLong(session.getAttribute("_t"), null);
-            session.setAttribute("_t", nowTime);
+            Long sessionTime = Convert.toLong(session.getAttribute(uri+"_t"), null);
+            session.setAttribute(uri+"_t", nowTime);
             if (sessionTime != null) {
                 //判断请求间隔时间
                 long abs = Math.abs(nowTime - sessionTime);

@@ -131,11 +131,15 @@
         }
 
         function upload(key) {
+            checkCoookie();
             var form = new FormData(document.getElementById("upload_form"));
             $.ajax({
                 url: "/upload/saveMulFile",
                 type: "post",
                 dataType: "json",
+                xhrFields: {
+                    withCredentials: true
+                },
                 data: form,
                 processData: false,
                 contentType: false,

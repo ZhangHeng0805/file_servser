@@ -1,5 +1,6 @@
 package com.zhangheng.file_servser.utils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -124,6 +125,24 @@ public class CusAccessObjectUtil {
     public static String getUri(HttpServletRequest request) throws UnsupportedEncodingException {
         String uri = request.getRequestURI();//返回请求行中的资源名称
         return URLDecoder.decode(uri,"UTF-8");
+    }
+
+    /**
+     * 判断Cookie中是否存在key-value
+     * @param request
+     * @param cookieName
+     * @param cookieValue
+     * @return
+     */
+    public static Boolean isExitCookie(HttpServletRequest request,String cookieName,String cookieValue){
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals(cookieName)){
+                if (cookie.getValue().equals(cookieValue)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

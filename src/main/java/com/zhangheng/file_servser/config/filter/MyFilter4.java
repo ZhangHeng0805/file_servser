@@ -1,11 +1,11 @@
 package com.zhangheng.file_servser.config.filter;
 
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.file_servser.controller.WebController;
 import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.system.KillServer;
+import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -25,14 +25,14 @@ import java.io.IOException;
  * @email: zhangheng_0805@163.com
  * @date: 2023-04-26 16:07
  * @version: 1.0
- * @description: 验证码过滤
+ * @description: cookie过滤
  */
 @WebFilter
-@Order(3)
-public class MyFilter3 extends MyFilter {
+@Order(4)
+public class MyFilter4 extends MyFilter {
     private String[] paths={
-            "/upload/*",
-            "/web/upload",
+            "/deleteFile",
+            "/upload/",
     };
     private Logger log= LoggerFactory.getLogger(getClass());
     @Autowired
@@ -44,11 +44,19 @@ public class MyFilter3 extends MyFilter {
         boolean isFilter=false;
         isFilter = isFilter(paths,uri,isFilter);
         if (isFilter){
-            String code = req.getParameter("code");
-            Message msg = webController.verifyMathCheck(code, false, req);
-            if (msg.getCode()!=200){
-                wirterJson(response, JSONUtil.parse(msg).toString());
-                log.warn("\n验证码核验失败：{}-路径[{}]\n",msg.getTitle(),uri);
+            HttpSession session = req.getSession();
+            String cid = session.getAttribute("cid").toString();
+            String sid = session.getAttribute("sid").toString();
+            Boolean isCid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_cid", cid);
+            Boolean isSid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_sid", sid);
+            if (!isCid||!isSid){
+                Message msg = new Message();
+                msg.setTime(TimeUtil.getNowTime());
+                msg.setCode(401);
+                msg.setTitle("身份验证失败");
+                msg.setMessage(StatusCode.Http401);
+                wirterJson(response,JSONUtil.parse(msg).toString());
+                log.warn("\n身份核验失败-路径[{}]\n",uri);
                 return;
             }
         }
