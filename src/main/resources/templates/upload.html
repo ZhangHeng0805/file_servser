@@ -14,7 +14,8 @@
             <label class="control-label" for="key"><label style="color: red">*</label>访问秘钥：</label>
         </div>
         <div class="col-lg-7 form-group">
-            <input class="form-control" type="password" id="key" name="key" placeholder="请输入访问秘钥" required autofocus autocomplete>
+            <input class="form-control" type="password" id="key" name="key" placeholder="请输入访问秘钥" required autofocus
+                   autocomplete>
         </div>
         <div class="col-lg-3 checkbox" style="float: right">
             <input type="checkbox" id="remember"><label>记住秘钥</label>
@@ -45,7 +46,8 @@
         <input class="form-control" type="text" id="code" name="code" placeholder="请输入图片中的计算结果" required>
     </div>
     <div>
-        <img id="wait_icon"src="" onerror="loadImg(this)" lsrc="/static/img/%E5%BE%AA%E7%8E%AF.gif" style="zoom:0.2;" hidden="hidden">
+        <img id="wait_icon" src="" onerror="loadImg(this)" lsrc="/static/img/%E5%BE%AA%E7%8E%AF.gif" style="zoom:0.2;"
+             hidden="hidden">
         <input type="submit" id="btn_upload" class="btn btn-search" onclick="sub1()" value="上传">
         <input type="button" class="btn btn-default" value="重置" onclick="reset()">
     </div>
@@ -153,7 +155,7 @@
                     showModel(d);
                     if (d.code == 200) {
                         reset();
-                    }else {
+                    } else {
                         resetImgCode();
                         console.warn(d);
                     }
@@ -173,19 +175,14 @@
 
         function showModel(d) {
             var html = "";
-            switch (d.code) {
-                case 200:
-                    html += '<div  class="alert alert-success fade in">';
-                    break;
-                case 500:
-                    html += '<div  class="alert alert-danger fade in">';
-                    break;
-                case 404:
-                    html += '<div  class="alert alert-warning fade in">';
-                    break;
-                case 100:
-                    html += '<div  class="alert alert-info fade in">';
-                    break;
+            if ((d.code + '').startsWith('2')) {
+                html += '<div  class="alert alert-success fade in">';
+            } else if ((d.code + '').startsWith('5')) {
+                html += '<div  class="alert alert-danger fade in">';
+            } else if ((d.code + '').startsWith('4')) {
+                html += '<div  class="alert alert-warning fade in">';
+            } else if ((d.code + '').startsWith('1')) {
+                html += '<div  class="alert alert-info fade in">';
             }
             html += '<button type="button" class="close close-sm" data-dismiss="alert">' +
                 '      <i class="fa fa-times"></i>' +

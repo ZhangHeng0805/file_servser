@@ -30,16 +30,19 @@ import java.util.Date;
 @WebFilter
 @Order(1)
 public class MyFilter1 extends MyFilter {
-    private String[] excludePath={
-            "/static/**",//静态资源
-            "/favicon.ico",//网址图标
-            "/error/**",//错误
-            "/download/getAllFileType",
-            "/getVerify/",
-            "/download/show/",
-            "/download/split/",
+    @Value("#{'${config.filter1.excludePath}'.split(',')}")
+    private String[] excludePath;
 
-    };
+//    private String[] excludePath={
+//            "/static/**",//静态资源
+//            "/favicon.ico",//网址图标
+//            "/error/**",//错误
+//            "/download/getAllFileType",
+//            "/getVerify/",
+//            "/download/show/",
+//            "/download/split/",
+//
+//    };
     private Logger log= LoggerFactory.getLogger(getClass());
 
     @Value(value = "#{'${config.request-interval}'}")

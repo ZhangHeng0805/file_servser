@@ -108,6 +108,7 @@ public class WebController {
         return "index";
     }
 
+    CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 6, 150);
     /**
      * 获取数学验证码
      */
@@ -116,17 +117,17 @@ public class WebController {
         ServletOutputStream outputStream = null;
         response.setCharacterEncoding("UTF-8");
         try {
-            CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 6, 150);
             captcha.setGenerator(new MathGenerator());
             captcha.createCode();
             String code = captcha.getCode();
             HttpSession session = request.getSession();
-            session.setAttribute("verify-code", MathUtil.simpleOperation(code));
+            session.setAttribute("verify-code", MathUtil.operation(code));
             outputStream = response.getOutputStream();
             response.setHeader("Content-Disposition", "filename=[星曦向荣]验证码" + new Date().getTime() + ".png");
             captcha.write(outputStream);
         } catch (Exception e) {
             response.sendError(500, "验证码生成错误:" + e.getMessage());
+            e.printStackTrace();
         } finally {
             if (outputStream != null) {
                 outputStream.close();

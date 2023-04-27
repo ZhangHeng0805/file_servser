@@ -45,26 +45,26 @@
 </head>
 <body>
 <!--消息提示框-->
-<div id="com_alert" th:if="${msg}!=null" th:switch="${msg.code}">
-    <div th:case="200" class="alert alert-success fade in" >
+<div id="com_alert" th:if="${msg}!=null" >
+    <div th:if="${#strings.startsWith(${msg.code}+'','2')}" class="alert alert-success fade in" >
         <button type="button" class="close close-sm" data-dismiss="alert">
             <i class="fa fa-times"></i>
         </button>
         <label style="color: green" th:utext="${msg.message}"></label>
     </div>
-    <div th:case="100" class="alert alert-info fade in" >
+    <div th:if="${#strings.startsWith(${msg.code}+'','1')}"class="alert alert-info fade in" >
         <button type="button" class="close close-sm" data-dismiss="alert">
             <i class="fa fa-times"></i>
         </button>
         <label th:utext="${msg.message}"></label>
     </div>
-    <div th:case="500" class="alert alert-danger fade in" >
+    <div th:if="${#strings.startsWith(${msg.code}+'','5')}"class="alert alert-danger fade in" >
         <button type="button" class="close close-sm" data-dismiss="alert">
             <i class="fa fa-times"></i>
         </button>
         <label style="color: red" th:utext="${msg.message}"></label>
     </div>
-    <div th:case="404" class="alert alert-warning fade in" >
+    <div th:if="${#strings.startsWith(${msg.code}+'','4')}"class="alert alert-warning fade in" >
         <button type="button" class="close close-sm" data-dismiss="alert">
             <i class="fa fa-times"></i>
         </button>

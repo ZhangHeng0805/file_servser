@@ -5,6 +5,8 @@
 ```properties
 # 应用服务 WEB 访问端口
 server.port=8080
+#会话超时时间
+server.servlet.session.timeout=10m
 
 # 文件名前缀名(中文可能会乱码)
 appName=XXXR
@@ -26,6 +28,19 @@ admin_keys=admin123456
 
 #js版本，更换版本即可刷新前端缓存资源文件
 version=23.04.12
+#普通下载是否以附件形式
+is-download-show-attchment=false
+#分片下载是否以附件形式
+is-download-split-attchment=true
+#相邻请求的间隔时间[ms](若请求间隔时间小于setting.request-interval，则拦截)
+config.request-interval=1000
+#每个ip每次会话最大请求次数
+config.max-request-counts=5
+#请求频率拦截-排除路径
+config.filter1.excludePath=/static/,/favicon.ico,/error/,/download/getAllFileType,/getVerify/,/download/show/,/download/split/
+#请求次数拦截-排除路径
+config.filter2.excludePath=/static/,/favicon.ico,/error/,/download/getAllFileType,/getVerify/,/download/show/,/download/split/
+
 ```
 
 # 一、文件上传（单个文件最大100Mb）
