@@ -24,7 +24,7 @@
                         <option value="$all$">全部</option>
                     </select>
                 </div>
-                <div id="query_file" class="form-group col-md-4" title="查询文件">
+                <div id="query_file" class="form-group col-md-4" title="查询文件,清空查询全部,只能查询同类型的文件">
                     <label class="control-label" for="query_name" id="lab_query">文件名：</label>
                     <input class="form-control" type="text" id="query_name" placeholder="请输入查找的文件名">
                 </div>
@@ -79,7 +79,7 @@
             });
             if (isData(Data)) {
                 $("#query_file").show();
-                $("#query_file").val('');
+                $("#query_name").val('');
             } else {
                 $("#query_file").hide();
             }
@@ -89,12 +89,10 @@
             return data != null && data.length > 0 && data[0].code == 200;
         }
 
-        getAllFileType();
-
         function sub2() {
             let query_name = $("#query_name").val();
             if (query_name != null && query_name.length > 0 && Data != null) {
-                if (TYPE != $("#type").val()) {
+                if (TYPE !== $("#type").val()) {
                     set_select_checked("type", TYPE);
                 }
                 handle(fuzzyQuery(Data, query_name));
@@ -103,10 +101,14 @@
 
             if ($("#keys").val().length > 0) {
                 $("#btn_sub2").attr('disabled', true);
+                checkCoookie();
                 $.ajax({
                     url: "/download/findFileList",
                     method: "post",
                     dataType: "json",
+                    xhrFields: {
+                        withCredentials: true
+                    },
                     data: {
                         key: $("#keys").val(),
                         type: $("#type").val()
@@ -119,7 +121,7 @@
                             TYPE = $("#type").val();
                         } else {
                             Data = null;
-                            if (TYPE != $("#type").val()) ;
+                            if (TYPE !== $("#type").val()) ;
                             set_select_checked("type", TYPE);
                             console.warn(d)
                         }

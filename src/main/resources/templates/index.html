@@ -9,7 +9,7 @@
 
 </head>
 <body class="loading">
-
+<div th:include="comm :: #com_js"></div>
 <section>
     <div class="row">
 
@@ -49,11 +49,12 @@
     </div>
 </section>
 <!--<script src="/static/js/scripts.js"></script>-->
-<div th:include="comm :: #com_js"></div>
+
 <script defer>
     window.onload = function () {
         // console.log("页面加载完成====》onload");
         document.body.classList.remove('loading');
+        getAllFileType();
     };
     $(window).load(function () {
         // console.log("jquery===》window load");

@@ -1,14 +1,14 @@
 package com.zhangheng.file_servser.config.filter;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.zhangheng.file_servser.controller.WebController;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
@@ -34,11 +34,9 @@ public class MyFilter4 extends MyFilter {
             "/deleteFile",
             "/upload/",
             "/download/getAllFileType",
-            "/download/getAllFileType",
+            "/download/findFileList",
     };
     private Logger log= LoggerFactory.getLogger(getClass());
-    @Autowired
-    private WebController webController;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -47,8 +45,8 @@ public class MyFilter4 extends MyFilter {
         isFilter = isFilter(paths,uri,isFilter);
         if (isFilter){
             HttpSession session = req.getSession();
-            String cid = session.getAttribute("cid").toString();
-            String sid = session.getAttribute("sid").toString();
+            String cid = Convert.toStr(session.getAttribute("cid"),"");
+            String sid = Convert.toStr(session.getAttribute("sid"),"");
             Boolean isCid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_cid", cid);
             Boolean isSid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_sid", sid);
             if (!isCid||!isSid){

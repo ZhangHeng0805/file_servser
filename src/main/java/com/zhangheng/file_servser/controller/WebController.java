@@ -238,16 +238,18 @@ public class WebController {
 //        System.out.println(map);
         if (!StrUtil.isBlank(map) && !"null".equals(map)) {
             JSONObject jb = JSONUtil.parseObj(map);
+            String cid = jb.getStr("cid");
+            String sid = jb.getStr("sid");
             sb.append("时间:" + TimeUtil.toTime(new Date(jb.getLong("r"))))
                     .append("\tip:" + ip)
                     .append("\t系统:" + jb.getStr("os") + jb.getStr("osv"))
-                    .append("\t浏览器:" + jb.getStr("bs") + "-V" + jb.getStr("bsv") + "(" + jb.getStr("ul") + ")[" + jb.getStr("br") + "]");
+                    .append("\t浏览器:" + jb.getStr("bs") + "-V" + jb.getStr("bsv") + "(" + jb.getStr("ul") + ")[" + jb.getStr("br") + "]")
+                    .append("\tsid:" + sid )
+                    .append("\tcid:" + cid );
             String app = jb.getStr("app");
             if (!StrUtil.isEmptyIfStr(app)) {
                 sb.append("\t应用:" + app);
             }
-            String cid = jb.getStr("cid");
-            String sid = jb.getStr("sid");
             HttpSession session = request.getSession();
             session.setAttribute("cid", cid);
             sid = Base64.isBase64(sid) ? Base64Decoder.decodeStr(sid) : sid;
