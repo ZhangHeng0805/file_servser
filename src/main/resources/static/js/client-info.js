@@ -253,8 +253,35 @@ const SendData = (json) => {
     var url = '/static/client';
     var r = navigator.sendBeacon && navigator.sendBeacon(url, JSON.stringify(json));
 }
+/**
+ * @desc  函数防抖---“立即执行版本” 和 “非立即执行版本” 的组合版本
+ * 立即执行版 触发事件后函数不会立即执行，而是在 n 秒后执行，如果在 n 秒内又触发了事件，则会重新计算函数执行时间
+ * 非立即执行版 指的是 触发事件后函数会立即执行，然后 n 秒内不触发事件才能继续执行函数的效果。
+ * @param  func 需要执行的函数
+ * @param  wait 延迟执行时间（毫秒）
+ * @param  immediate---true 表立即执行，false 表非立即执行
+ **/
+function debounce(func,wait,immediate) {
+    let timer;
+    return function () {
+        let context = this;
+        let args = arguments;
 
-window.onload = client_result();
+        if (timer) clearTimeout(timer);
+        if (immediate) {
+            var callNow = !timer;
+            timer = setTimeout(() => {
+                timer = null;
+            }, wait)
+            if (callNow) func.apply(context, args)
+        } else {
+            timer = setTimeout(function () {
+                func.apply(context, args)
+            }, wait);
+        }
+    }
+}
+
 
 function client_result() {
     var sid = getSid();
@@ -297,5 +324,4 @@ function client_result() {
     debounce(SendData(ClientData), 500, false);
     return ClientData;
 }
-
-// })(window.onload)
+window.onload = client_result();
