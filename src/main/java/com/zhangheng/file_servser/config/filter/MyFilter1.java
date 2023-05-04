@@ -3,6 +3,7 @@ package com.zhangheng.file_servser.config.filter;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.bean.Message;
+import com.zhangheng.file.FileUtil;
 import com.zhangheng.file_servser.config.MvcConfig;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
@@ -15,6 +16,7 @@ import org.springframework.core.annotation.Order;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,6 +34,7 @@ import java.util.Date;
 public class MyFilter1 extends MyFilter {
     @Value("#{'${config.filter1.excludePath}'.split(',')}")
     private String[] excludePath;
+
 
 //    private String[] excludePath={
 //            "/static/**",//静态资源
@@ -52,7 +55,8 @@ public class MyFilter1 extends MyFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String requestInfo = CusAccessObjectUtil.getCompleteRequest(req);
-        log.info("\n访问日志:{}\n",requestInfo);
+        long contentLengthLong = request.getContentLengthLong();
+        log.info("\n访问日志:{}，大小:{}\n",requestInfo, FileUtil.fileSizeStr(contentLengthLong));
 
         String uri = CusAccessObjectUtil.getUri(req);
         boolean isFilter=true;
@@ -66,16 +70,12 @@ public class MyFilter1 extends MyFilter {
                 //判断请求间隔时间
                 long abs = Math.abs(nowTime - sessionTime);
                 if (abs < minInterval) {
-                    response.setCharacterEncoding("UTF-8");
-                    response.setContentType("application/json; charset=utf-8");
-                    PrintWriter writer = response.getWriter();
                     Message msg = new Message();
                     msg.setCode(503);
                     msg.setTime(TimeUtil.getNowTime());
                     msg.setTitle("请求频繁!");
                     msg.setMessage(StatusCode.Http503);
-                    writer.print(JSONUtil.parse(msg).toString());
-                    writer.close();
+                    wirterJson(response, JSONUtil.parse(msg).toString(),msg.getCode());
                     log.warn("\n请求频率过快,路径[{}]-间隔[{}ms]\n",uri,abs);
                     return;
                 }

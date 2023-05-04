@@ -34,6 +34,11 @@ public abstract class MyFilter implements Filter {
         return defualt;
     }
     protected ServletResponse wirterJson(ServletResponse response, String json) throws IOException {
+        return wirterJson(response,json,200);
+    }
+    protected ServletResponse wirterJson(ServletResponse response, String json,Integer state) throws IOException {
+        HttpServletResponse resp= (HttpServletResponse) response;
+        resp.setStatus(state);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter writer = response.getWriter();

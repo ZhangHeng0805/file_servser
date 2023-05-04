@@ -44,7 +44,7 @@ public class MyFilter3 extends MyFilter {
             String code = req.getParameter("code");
             Message msg = webController.verifyMathCheck(code, false, req);
             if (msg.getCode()!=200){
-                wirterJson(response, JSONUtil.parse(msg).toString());
+                wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n验证码核验失败：{}-路径[{}]\n",msg.getTitle(),uri);
                 return;
             }

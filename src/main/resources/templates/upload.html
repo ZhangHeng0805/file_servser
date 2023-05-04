@@ -7,7 +7,6 @@
 <body>
 <form id="upload_form" class="form-horizontal" style="padding: 8px" role="form" onsubmit="return false;"
       enctype="multipart/form-data">
-    <div id="upload_alert"></div>
     <!--    <input id="v-code" name="code" type="hidden">-->
     <div class="form-group" title="用户访问密钥">
         <div class="col-md-2 form-group">
@@ -123,8 +122,7 @@
                     }
                 },
                 error: function (e) {
-                    alert("验证错误！" + e);
-                    console.error(e);
+                    ajax_error(e);
                     return false;
                 }
             });
@@ -171,10 +169,23 @@
                     $("#btn_upload").attr("disabled", false);
                     $("#btn_upload").val('上传');
                     $("#wait_icon").hide();
-                    alert("上传错误：" + e);
-                    console.error(e);
+
+                    ajax_error(e);
                 }
             })
+        }
+        function ajax_error(e) {
+            if (e.readyState===4){
+                if (e.responseJSON!=null) {
+                    alert(e.responseJSON.title+'\n'+e.responseJSON.message);
+                    showModel(e.responseJSON);
+                }else if (e.responseText!=null) {
+                    alert("请求错误："+e.responseText);
+                }
+            }else{
+                alert("请求失败！")
+            }
+            console.error(e);
         }
 
         function showModel(d) {
@@ -191,7 +202,8 @@
             html += '<button type="button" class="close close-sm" data-dismiss="alert">' +
                 '      <i class="fa fa-times"></i>' +
                 '  </button>' +
-                '<h4><strong>' + d.title + '</strong></h4>';
+                '<h4><strong>' + d.title + '</strong></h4>' +
+                '<div class="text-right">'+d.time+'</div>';
             if (d.code == 200) {
                 let arr = d.message.split("/");
                 for (let n = 0; n < arr.length; n++) {

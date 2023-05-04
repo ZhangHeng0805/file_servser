@@ -53,9 +53,9 @@ public class MyFilter4 extends MyFilter {
                 Message msg = new Message();
                 msg.setTime(TimeUtil.getNowTime());
                 msg.setCode(401);
-                msg.setTitle("身份验证失败");
+                msg.setTitle("身份验证失败,请刷新重试");
                 msg.setMessage(StatusCode.Http401);
-                wirterJson(response,JSONUtil.parse(msg).toString());
+                wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n身份核验失败-路径[{}]\n",uri);
                 return;
             }

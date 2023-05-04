@@ -59,16 +59,12 @@ public class MyFilter2 extends MyFilter {
             sessionCount = sessionCount + 1;
             session.setAttribute(uri+"_c", sessionCount);
             if (sessionCount > maxCount) {
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("application/json; charset=utf-8");
-                PrintWriter writer = response.getWriter();
                 Message msg = new Message();
                 msg.setCode(403);
                 msg.setTime(TimeUtil.getNowTime());
                 msg.setTitle("请求达上限!");
                 msg.setMessage(StatusCode.Http403);
-                writer.print(JSONUtil.parse(msg).toString());
-                writer.close();
+                wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n请求次数过多,路径[{}]-次数[{}]\n",uri,sessionCount);
                 return;
             }

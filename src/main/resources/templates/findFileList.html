@@ -29,10 +29,6 @@
                     <input class="form-control" type="text" id="query_name" placeholder="请输入查找的文件名">
                 </div>
             </div>
-            <!--            <script>-->
-            <!--                $("#lab_keys").css("font-size", $("#keys").height() / 1.5);-->
-            <!--                $("#lab_type").css("font-size", $("#type").height() / 1.5);-->
-            <!--            </script>-->
             <hr>
             <input type="submit" class="btn btn-warning btn-block text-center" id="btn_sub2" onclick="sub2()"
                    value="查询">
@@ -73,8 +69,7 @@
                     set_select_checked("type", TYPE);
                 },
                 error: function (e) {
-                    alert("类型查询错误：" + e);
-                    console.error(e)
+                    ajax_error(e);
                 }
             });
             if (isData(Data)) {
@@ -133,8 +128,7 @@
                     },
                     error: function (e) {
                         $("#btn_sub2").attr('disabled', false);
-                        alert("结果查询错误：" + e);
-                        console.error(e);
+                        ajax_error(e);
                     }
                 })
             } else {
@@ -255,10 +249,12 @@
         }
 
         function checkCoookie() {
+            hideModel();
             if (getCookie('zhangheng0805_cid').length<=0)
                 setCookie('zhangheng0805_cid',window.localStorage.getItem('zhangheng0805_cid'));
             if (getCookie('zhangheng0805_sid').length<=0)
                 setCookie('zhangheng0805_sid',window.localStorage.getItem('zhangheng0805_sid'));
+
         }
 
         function del(path) {
@@ -286,8 +282,7 @@
                             alert(d.message);
                         },
                         error: function (e) {
-                            alert("删除错误：" + e);
-                            console.error(e);
+                            ajax_error(e);
                         }
                     })
                 } else {
@@ -306,13 +301,10 @@
         }
 
         function scrollToTop() {
-            var timer = setInterval(function () {
-                if (document.documentElement.scrollTop != 0) {
-                    document.documentElement.scrollTop -= 100;
-                } else {
-                    clearInterval(timer);
-                }
-            }, 10);
+            // 滚动到指定位置
+            $('html, body').animate({
+                scrollTop: $("#findFileList").offset().top
+            }, 1000);
         }
     </script>
 </div>
