@@ -186,7 +186,7 @@ public class UpLoadController {
                     String s = upLoadService.saveFile(file, name, Path);
                     if (s != null) {
                         msg.setCode(200);
-                        msg.setTitle("["+code+"]上传文件保存成功");
+                        msg.setTitle("上传文件保存成功");
                         msg.setMessage(s);
                     } else {
                         msg.setCode(500);

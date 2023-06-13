@@ -250,7 +250,7 @@ const sendXhr = (url, data) => {
 }
 
 const SendData = (json) => {
-    var url = '/static/client';
+    var url = window.location.href+'static/client';
     var r = navigator.sendBeacon && navigator.sendBeacon(url, JSON.stringify(json));
 }
 /**

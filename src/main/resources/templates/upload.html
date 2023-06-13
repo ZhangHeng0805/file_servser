@@ -37,7 +37,7 @@
                onchange="limitInput('path',20)">
     </div>
     <div class="form-group" title="输入验证码，进行上传验证">
-        <label class="control-label" for="code"><label style="color: red">*</label>验证码：<img src="/getVerify/math"
+        <label class="control-label" for="code"><label style="color: red">*</label>验证码：<img src="getVerify/math"
                                                                                             style="height: 50px"
                                                                                             onclick="resetImgCode()"
                                                                                             id="img-code"><a
@@ -45,7 +45,7 @@
         <input class="form-control" type="text" id="code" name="code" placeholder="请输入图片中的计算结果" required>
     </div>
     <div>
-        <img id="wait_icon" src="" onerror="loadImg(this)" lsrc="/static/img/%E5%BE%AA%E7%8E%AF.gif" style="zoom:0.2;"
+        <img id="wait_icon" src="" onerror="loadImg(this)" lsrc="static/img/%E5%BE%AA%E7%8E%AF.gif" style="zoom:0.2;"
              hidden="hidden">
         <input type="submit" id="btn_upload" class="btn btn-search" onclick="sub1()" value="上传">
         <input type="button" class="btn btn-default" value="重置" onclick="reset()">
@@ -54,7 +54,7 @@
     <script>
         function resetImgCode() {
             $("#code").val(null);
-            $("#img-code").attr("src", "/getVerify/math?t=" + new Date().getTime());
+            $("#img-code").attr("src", window.location.href+"getVerify/math?t=" + new Date().getTime());
         }
 
         $("#file").change(function () {
@@ -101,7 +101,7 @@
 
         function checkCode(code) {
             $.ajax({
-                url: "/getVerify/math/checking",
+                url: window.location.href+"getVerify/math/checking",
                 type: "post",
                 dataType: "json",
                 data: {
@@ -132,7 +132,7 @@
             checkCoookie();
             var form = new FormData(document.getElementById("upload_form"));
             $.ajax({
-                url: "/upload/saveMulFile",
+                url: window.location.href+"upload/saveMulFile",
                 type: "post",
                 dataType: "json",
                 xhrFields: {
@@ -210,7 +210,7 @@
                     arr[n] = encodeURIComponent(arr[n]);
                 }
                 let path = arr.join("/");
-                html += '<label><a target="_blank" href="/download/show/' + path + '">' + d.message + '</a></label>';
+                html += '<label><a target="_blank" href="download/show/' + path + '">' + d.message + '</a></label>';
             } else {
                 html += '<label>' + d.message + '</label>';
             }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>页面公共</title>
@@ -8,21 +8,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="ZhangHeng">
+        <link  href="static/favicon.ico"  rel="shortcut icon" type="image/x-icon" />
 <!--        <link rel="shortcut icon" href="#" type="image/png">-->
-        <script src="/static/js/localFile.js" th:version="${version}"></script>
 
-        <link href="/static/css/style.css" rel="stylesheet">
+        <link href="static/css/style.css" rel="stylesheet">
 <!--        <link href="/static/css/style-responsive.css" rel="stylesheet">-->
 <!--        <link href="/static/css/bootstrap.min.css" rel="stylesheet">-->
 <!--        <link href="/static/css/load.css" rel="stylesheet">-->
 <!--        <link href="/static/css/bootstrap-reset.css" rel="stylesheet">-->
+        <script src="static/js/localFile.js" th:version="${version}"></script>
         <script>
             // eval(loadCss("/static/css/style.css"));
-            loadCss("/static/css/style-responsive.css");
-            loadCss("/static/css/bootstrap.min.css");
-            loadCss("/static/css/bootstrap-reset.css");
-            loadCss("/static/css/load.css");
-            eval(loadJs("/static/js/jquery-1.10.2.min.js"));
+            loadCss("static/css/style-responsive.css");
+            loadCss("static/css/bootstrap.min.css");
+            loadCss("static/css/bootstrap-reset.css");
+            loadCss("static/css/load.css");
+            eval(loadJs("static/js/jquery-1.10.2.min.js"));
         </script>
     </div>
     <!--公共js-->
@@ -33,11 +34,11 @@
 <!--        <script src="/static/js/clipboard.js"></script>-->
 <!--        <script src="/static/js/ZH_Utils.js"></script>-->
         <script>
-            eval(loadJs("/static/js/ZH_Utils.js"));
-            eval(loadJs("/static/js/bootstrap.min.js"));
-            eval(loadJs("/static/js/jquery-ui-1.9.2.custom.min.js"));
-            eval(loadJs("/static/js/clipboard.js"));
-            eval(loadJs("/static/js/client-info.js"));
+            eval(loadJs("static/js/ZH_Utils.js"));
+            eval(loadJs("static/js/bootstrap.min.js"));
+            eval(loadJs("static/js/jquery-ui-1.9.2.custom.min.js"));
+            eval(loadJs("static/js/clipboard.js"));
+            eval(loadJs("static/js/client-info.js"));
         </script>
     </div>
 </head>
