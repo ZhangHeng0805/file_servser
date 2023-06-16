@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletException;
@@ -45,7 +42,7 @@ import java.util.List;
  * @date 2022-01-18 16:48
  */
 @RequestMapping("download")
-@Controller
+@RestController
 public class DownLoadController {
 
 
@@ -62,19 +59,10 @@ public class DownLoadController {
     private Logger log = LoggerFactory.getLogger(getClass());
     private List<String> files = new ArrayList<>();
 
-    @ResponseBody
     @RequestMapping("/accs")
     public String main(){
         return test_keys.toString();
     }
-    /**
-     * 文件下载请求
-     * @param name 文件名
-     * @param type 文件类型（父级文件夹名称）
-     * @param request
-     * @param response
-     * @throws IOException
-     */
 
     /**
      * 文件下载请求
@@ -87,7 +75,7 @@ public class DownLoadController {
     @RequestMapping("show/{moduleBaseName}/**")
     public void show(@PathVariable("moduleBaseName") String moduleBaseName,
                      HttpServletRequest request,
-                     HttpServletResponse response) throws IOException, ServletException {
+                     HttpServletResponse response) throws Exception {
         String err = null;
         FileInputStream input = null;
         File file = null;
@@ -176,7 +164,7 @@ public class DownLoadController {
                         response.sendError(500, StatusCode.Http500);
                     }
                 } catch (Exception e) {
-//                    log.error(e.toString());
+                    log.error("下载show错误3："+e.toString());
                 }
             }
             try {
@@ -192,7 +180,6 @@ public class DownLoadController {
 
 
 
-    @ResponseBody
     @RequestMapping("findFileList")
     public List<Message> findFileList(HttpServletRequest request, String type)  {
         List<Message> list =new ArrayList<>();
@@ -268,7 +255,6 @@ public class DownLoadController {
      * 获取文件夹列表
      * @return
      */
-    @ResponseBody
     @PostMapping("getAllFileType")
     public List<Message> getAllFileType(){
         ArrayList<Message> list = new ArrayList<>();
