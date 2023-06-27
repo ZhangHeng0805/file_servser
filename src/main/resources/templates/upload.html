@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="form-group" title="选择100Mb以内的文件">
-        <label class="control-label" for="file"><label style="color: red">*</label>选择文件(100Mb以内)：<span
+        <label class="control-label" for="file"><label style="color: red">*</label>选择文件([[${maxFileSize}]]以内)：<span
                 id="fileSize"></span></label>
         <input type="file" id="file" name="file" required>
     </div>
@@ -51,7 +51,7 @@
         <input type="button" class="btn btn-default" value="重置" onclick="reset()">
     </div>
 
-    <script>
+    <script th:inline="javascript">
         function resetImgCode() {
             $("#code").val(null);
             $("#img-code").attr("src", window.location.href+"getVerify/math?t=" + new Date().getTime());
@@ -66,8 +66,9 @@
             $("#fileName").val(fName);
             $("#fileSize").text(getFileSizeFormat(size));
             // $("#path").val(size);
-            if ((size / 1048576) >= 100) {
-                alert("警告：文件大小超过100Mb最大限制！");
+            let maxSize=[[${maxFileSize}]];
+            if ((size / 1048576) >= Number(maxSize.replace('MB',''))) {
+                alert("警告：文件大小超过"+maxSize+"最大限制！");
                 $("#file").val(null);
                 $("#fileName").val(null);
                 $("#fileSize").attr("style", "color:red");
@@ -177,6 +178,7 @@
         function ajax_error(e) {
             if (e.readyState===4){
                 if (e.responseJSON!=null) {
+                    e.responseJSON.title=e.responseJSON.title?e.responseJSON.title:e.responseJSON.error;
                     alert(e.responseJSON.title+'\n'+e.responseJSON.message);
                     showModel(e.responseJSON);
                 }else if (e.responseText!=null) {
@@ -189,6 +191,9 @@
         }
 
         function showModel(d) {
+            d.code=d.code?d.code:d.status;
+            d.title=d.title?d.title:d.error;
+            d.time=d.time?d.time:d.timestamp;
             var html = "";
             if ((d.code + '').startsWith('2')) {
                 html += '<div  class="alert alert-success fade in">';

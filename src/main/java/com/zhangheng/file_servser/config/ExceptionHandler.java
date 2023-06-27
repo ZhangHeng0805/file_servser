@@ -1,12 +1,15 @@
 package com.zhangheng.file_servser.config;
 
 import cn.hutool.core.util.StrUtil;
+import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
+import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.ByteArrayOutputStream;
@@ -24,9 +27,16 @@ import java.util.Map;
 public class ExceptionHandler extends DefaultErrorAttributes {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+//    @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Throwable.class)
-    public void e(Exception e){
+    public Exception e(Exception e){
+//        Message msg = new Message();
+//        msg.setTime(TimeUtil.now());
+//        msg.setCode(500);
+//        msg.setTitle("错误异常");
+//        msg.setMessage(e.getMessage());
         log.error("\n全局异常捕获:{}\n", e.toString());
+        return e;
     }
 
     @Override

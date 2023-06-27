@@ -52,6 +52,8 @@ public class WebController {
     private Logger log = LoggerFactory.getLogger(getClass());
     @Value(value = "#{'${version}'}")
     private String version;
+    @Value(value = "#{'${spring.servlet.multipart.max-file-size}'}")
+    private String maxFileSize;
     @Value("${baseDir}")
     private String baseDir;
 
@@ -68,6 +70,7 @@ public class WebController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("version", version);
+        model.addAttribute("maxFileSize", maxFileSize);
         return "index";
     }
 
