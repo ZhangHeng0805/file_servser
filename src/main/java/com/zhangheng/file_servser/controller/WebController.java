@@ -54,6 +54,10 @@ public class WebController {
     private String version;
     @Value(value = "#{'${spring.servlet.multipart.max-file-size}'}")
     private String maxFileSize;
+    @Value(value = "#{'${zh.file.upload.max-name}'}")
+    private Integer maxFileName;
+    @Value(value = "#{'${zh.file.upload.max-path}'}")
+    private Integer maxFilePath;
     @Value("${baseDir}")
     private String baseDir;
 
@@ -71,6 +75,8 @@ public class WebController {
     public String index(Model model) {
         model.addAttribute("version", version);
         model.addAttribute("maxFileSize", maxFileSize);
+        model.addAttribute("maxFileName", maxFileName);
+        model.addAttribute("maxFilePath", maxFilePath);
         return "index";
     }
 

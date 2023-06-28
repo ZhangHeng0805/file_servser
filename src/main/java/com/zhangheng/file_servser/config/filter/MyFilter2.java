@@ -32,6 +32,8 @@ import java.util.Date;
 public class MyFilter2 extends MyFilter {
     @Value("#{'${config.filter2.excludePath}'.split(',')}")
     private String[] excludePath;
+    @Value("#{'${server.servlet.context-path}'}")
+    private String contextPath;
 
 //    private String[] excludePath={
 //            "/static/**",//静态资源
@@ -51,6 +53,8 @@ public class MyFilter2 extends MyFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String uri = CusAccessObjectUtil.getUri(req);
+        if (contextPath!="/")
+            uri=uri.replace(contextPath,"");
         boolean isFilter=true;
         isFilter = isFilter(excludePath,uri,isFilter);
         if (isFilter){

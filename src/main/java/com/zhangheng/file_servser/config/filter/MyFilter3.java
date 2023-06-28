@@ -7,6 +7,7 @@ import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
@@ -31,6 +32,8 @@ public class MyFilter3 extends MyFilter {
             "/upload/*",
             "/web/upload",
     };
+    @Value("#{'${server.servlet.context-path}'}")
+    private String contextPath;
     private Logger log= LoggerFactory.getLogger(getClass());
     @Autowired
     private WebController webController;
@@ -38,6 +41,8 @@ public class MyFilter3 extends MyFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String uri = CusAccessObjectUtil.getUri(req);
+        if (contextPath!="/")
+            uri=uri.replace(contextPath,"");
         boolean isFilter=false;
         isFilter = isFilter(paths,uri,isFilter);
         if (isFilter){

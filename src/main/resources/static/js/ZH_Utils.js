@@ -53,9 +53,11 @@ function getTime() {
  * @param max 最大字数
  */
 function titleInput(inputId, tipsId, max) {
+    limitInput(inputId,max);
     var input = document.getElementById(inputId);
     var i_length = input.value.length;
     var tips = document.getElementById(tipsId);
+    tips.style.display='';
     if (i_length >= max) {
         // $("#"+input).parent().removeClass("has-success").addClass("has-error");
         tips.style.color = "#f48f0d";

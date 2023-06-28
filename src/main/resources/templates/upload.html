@@ -25,30 +25,37 @@
                 id="fileSize"></span></label>
         <input type="file" id="file" name="file" required>
     </div>
-    <div class="form-group" title="选择文件后可以修改保存的文件名称，文件名控制在25个字符内">
+    <div class="form-group" th:title="'选择文件后可以修改保存的文件名称，文件名控制在'+${maxFileName}+'个字符内，非法字符/\:*?|<>'">
         <label class="control-label" for="fileName">文件名称：</label>
         <input class="form-control" type="text" id="fileName" name="fileName" placeholder="请输入文件名称（选填）例：壁纸123"
-               oninput="titleInput('fileName','fileName_tips',25)" onchange="limitInput('fileName',25)">
+               th:oninput="'titleInput(\'fileName\',\'fileName_tips\','+${maxFileName}+')'"
+               onchange="value=value.replace(/[/\\:*?|<>]/g,'')"
+        >
+
         <p class="help-block" id="fileName_tips"></p>
     </div>
-    <div class="form-group" title="输入文件保存的目录，默认根据文件类型进行保存">
+    <div class="form-group" th:title="'输入文件保存的目录，默认根据文件类型进行保存，路径名控制在'+${maxFilePath}+'个字符内，非法字符/\$'">
         <label class="control-label" for="path">保存路径：</label>
         <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image"
-               onchange="limitInput('path',20)">
+               th:oninput="'titleInput(\'path\',\'filePath_tips\','+${maxFilePath}+')'"
+               onchange="value=value.replace(/[/\\$]/g,'')"
+        >
+        <p class="help-block" id="filePath_tips"></p>
     </div>
     <div class="form-group" title="输入验证码，进行上传验证">
-        <label class="control-label" for="code"><label style="color: red">*</label>验证码：<img src="getVerify/math"
-                                                                                            style="height: 50px"
-                                                                                            onclick="resetImgCode()"
-                                                                                            id="img-code"><a
-                onclick="resetImgCode()">换一张</a></label>
-        <input class="form-control" type="text" id="code" name="code" placeholder="请输入图片中的计算结果" required>
+        <label class="control-label" for="code"><label style="color: red">*</label>验证码：
+            <img
+                style="height: 50px"
+                onclick="resetImgCode()"
+                id="img-code">
+            <a onclick="resetImgCode()">换一张</a></label>
+        <input class="form-control" type="number" id="code" name="code" placeholder="请输入图片中的计算结果" required>
     </div>
     <div>
         <img id="wait_icon" src="" onerror="loadImg(this)" lsrc="static/img/%E5%BE%AA%E7%8E%AF.gif" style="zoom:0.2;"
              hidden="hidden">
         <input type="submit" id="btn_upload" class="btn btn-search" onclick="sub1()" value="上传">
-        <input type="button" class="btn btn-default" value="重置" onclick="reset()">
+        <input type="button" class="btn btn-default" value="重置" onclick="upload_reset()">
     </div>
 
     <script th:inline="javascript">
@@ -62,20 +69,23 @@
             var name = f[0].name;
             var size = f[0].size;
             var type = f[0].type;
-            var fName = name.substring(0, name.lastIndexOf(".")).length > 25 ? name.substring(0, 25) : name.substring(0, name.lastIndexOf("."));
+            let maxSize=[[${maxFileSize}]];
+            let maxName=[[${maxFileName}]];
+            var fName = name.substring(0, name.lastIndexOf(".")).length > maxName ? name.substring(0, maxName) : name.substring(0, name.lastIndexOf("."));
             $("#fileName").val(fName);
             $("#fileSize").text(getFileSizeFormat(size));
             // $("#path").val(size);
-            let maxSize=[[${maxFileSize}]];
             if ((size / 1048576) >= Number(maxSize.replace('MB',''))) {
                 alert("警告：文件大小超过"+maxSize+"最大限制！");
                 $("#file").val(null);
                 $("#fileName").val(null);
-                $("#fileSize").attr("style", "color:red");
+                $("#fileSize").text('');
+                // $("#fileSize").attr("style", "color:red");
                 // $("#path").val(null);
             } else {
                 $("#fileSize").attr("style", "color:green");
             }
+            titleInput('fileName','fileName_tips',maxName);
         });
 
         function sub1() {
@@ -157,7 +167,7 @@
                 success: function (d) {
                     showModel(d);
                     if (d.code == 200) {
-                        reset();
+                        upload_reset();
                     } else {
                         resetImgCode();
                         console.warn(d);
@@ -227,7 +237,7 @@
             $("#upload_alert").html('');
         }
 
-        function reset(state) {
+        function upload_reset(state) {
             if (!$("#remember").is(':checked')) {
                 $("#key").val(null);
             }
@@ -235,10 +245,11 @@
                 $("#file").val(null);
 
             $("#fileName").val(null);
-            $("#fileSize").innerText = "";
+            $("#fileSize").text('');
             $("#path").val(null);
             resetImgCode();
-
+            document.getElementById('fileName_tips').style.display='none';
+            document.getElementById('filePath_tips').style.display='none';
         }
 
         function getFileSizeFormat(size) {

@@ -9,6 +9,7 @@ import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
@@ -35,12 +36,17 @@ public class MyFilter4 extends MyFilter {
             "/upload/",
             "/download/getAllFileType",
             "/download/findFileList",
+            "/getVerify/math",
     };
+    @Value("#{'${server.servlet.context-path}'}")
+    private String contextPath;
     private Logger log= LoggerFactory.getLogger(getClass());
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String uri = CusAccessObjectUtil.getUri(req);
+        if (contextPath!="/")
+            uri=uri.replace(contextPath,"");
         boolean isFilter=false;
         isFilter = isFilter(paths,uri,isFilter);
         if (isFilter){

@@ -30,6 +30,10 @@ public class UpLoadService {
     private boolean is_add_appName;
     @Value("${appName}")
     private String appName;
+    @Value(value = "#{'${zh.file.upload.max-name}'}")
+    private Integer maxFileName;
+    @Value(value = "#{'${zh.file.upload.max-path}'}")
+    private Integer maxFilePath;
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -170,9 +174,10 @@ public class UpLoadService {
             //排除文件名中的非法字符
             fileName = FiletypeUtil.filterFileName(fileName);
             //排除文件夹名称的非法字符
-            type = type.replace("$", "");
+            type = type.replace("$", "").replace("\\","").replace("/","");
+            type = type.length() < maxFilePath ? type : type.substring(0, maxFilePath);
             //判断文件名长度
-            fileName = fileName.length() < 25 ? fileName : fileName.substring(0, 25);
+            fileName = fileName.length() < maxFileName ? fileName : fileName.substring(0, maxFileName);
             //保存文件名
             String name;
             if (is_add_appName) {

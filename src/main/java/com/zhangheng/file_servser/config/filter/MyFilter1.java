@@ -34,6 +34,8 @@ import java.util.Date;
 public class MyFilter1 extends MyFilter {
     @Value("#{'${config.filter1.excludePath}'.split(',')}")
     private String[] excludePath;
+    @Value("#{'${server.servlet.context-path}'}")
+    private String contextPath;
 
 
 //    private String[] excludePath={
@@ -59,6 +61,8 @@ public class MyFilter1 extends MyFilter {
         log.info("\n访问日志:{}，大小:{}\n",requestInfo, FileUtil.fileSizeStr(contentLengthLong));
 
         String uri = CusAccessObjectUtil.getUri(req);
+        if (contextPath!="/")
+            uri=uri.replace(contextPath,"");
         boolean isFilter=true;
         isFilter = isFilter(excludePath,uri, isFilter);
         if (isFilter){

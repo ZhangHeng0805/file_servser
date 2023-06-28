@@ -135,10 +135,13 @@ public class CusAccessObjectUtil {
      * @return
      */
     public static Boolean isExitCookie(HttpServletRequest request,String cookieName,String cookieValue){
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(cookieName)){
-                if (cookie.getValue().equals(cookieValue)){
-                    return true;
+        Cookie[] cookies = request.getCookies();
+        if (cookies!=null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    if (cookie.getValue().equals(cookieValue)) {
+                        return true;
+                    }
                 }
             }
         }
