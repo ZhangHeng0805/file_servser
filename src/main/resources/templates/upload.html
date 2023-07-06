@@ -124,7 +124,7 @@
                         $("#wait_icon").show();
                         $("#btn_upload").attr('disabled', true);
                         $("#btn_upload").val('上传中...');
-                        upload(key);
+                        upload();
                     } else {
                         showModel(d);
                         resetImgCode();
@@ -139,9 +139,11 @@
             });
         }
 
-        function upload(key) {
+        function upload() {
             checkCoookie();
             var form = new FormData(document.getElementById("upload_form"));
+            form.set("key",zh_md5($("#key").val()));
+            console.log("upload-form",form);
             $.ajax({
                 url: window.location.href+"upload/saveMulFile",
                 type: "post",

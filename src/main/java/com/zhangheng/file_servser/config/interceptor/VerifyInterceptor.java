@@ -4,6 +4,7 @@ import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.TimeUtil;
+import com.zhangheng.util.EncryptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,13 +45,13 @@ public class VerifyInterceptor implements HandlerInterceptor {
             User user = new User();
             user.setIp(CusAccessObjectUtil.getIpAddress(request));
             user.setKey(key);
-            if (test_keys.indexOf(key)>-1){
+            if (check_Key(test_keys,key)){
                 log.info("\nIP[{}],临时密钥["+key+"]访问成功\n",user.getIp());
                 user.setType(User.Type.Test);
-            }else if (keys.indexOf(key)>-1){
+            }else if (check_Key(keys,key)){
                 log.info("\nIP[{}],普通密钥["+key+"]访问成功\n",user.getIp());
                 user.setType(User.Type.Common);
-            }else if (admin_keys.indexOf(key)>-1){
+            }else if (check_Key(admin_keys,key)){
                 log.info("\nIP[{}],管理密钥["+key+"]访问成功\n",user.getIp());
                 user.setType(User.Type.Admin);
             }else {
@@ -76,6 +77,13 @@ public class VerifyInterceptor implements HandlerInterceptor {
         request.getRequestDispatcher("/error/error_key").forward(request,response);
         return false;
     }
-
-
+    public boolean check_Key(List<String> keys,String key) throws Exception {
+        if (keys!=null&&!keys.isEmpty()) {
+            for (String s : keys) {
+                if (EncryptUtil.getMyMd5(s).equalsIgnoreCase(key))
+                    return true;
+            }
+        }
+        return false;
+    }
 }

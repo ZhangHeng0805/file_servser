@@ -18,13 +18,13 @@
 <!--        <link href="/static/css/bootstrap-reset.css" rel="stylesheet">-->
         <script src="static/js/localFile.js" th:version="${version}"></script>
         <script>
+            eval(loadJs("static/js/client-info.js"));
             // eval(loadCss("/static/css/style.css"));
             loadCss("static/css/style-responsive.css");
             loadCss("static/css/bootstrap.min.css");
             loadCss("static/css/bootstrap-reset.css");
             loadCss("static/css/load.css");
             eval(loadJs("static/js/jquery-1.10.2.min.js"));
-            eval(loadJs("static/js/client-info.js"));
         </script>
     </div>
     <!--公共js-->
@@ -39,6 +39,7 @@
             eval(loadJs("static/js/bootstrap.min.js"));
             eval(loadJs("static/js/jquery-ui-1.9.2.custom.min.js"));
             eval(loadJs("static/js/clipboard.js"));
+            eval(loadJs("static/js/mymd5.js"));
         </script>
     </div>
 </head>

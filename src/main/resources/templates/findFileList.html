@@ -93,8 +93,8 @@
                 handle(fuzzyQuery(Data, query_name));
                 return;
             }
-
-            if ($("#keys").val().length > 0) {
+            let key=$("#keys").val();
+            if (key.length > 0) {
                 $("#btn_sub2").attr('disabled', true);
                 checkCoookie();
                 $.ajax({
@@ -105,7 +105,7 @@
                         withCredentials: true
                     },
                     data: {
-                        key: $("#keys").val(),
+                        key: zh_md5(key),
                         type: $("#type").val()
                     },
                     success: function (d) {
@@ -254,13 +254,12 @@
                 setCookie('zhangheng0805_cid',window.localStorage.getItem('zhangheng0805_cid'));
             if (getCookie('zhangheng0805_sid').length<=0)
                 setCookie('zhangheng0805_sid',window.localStorage.getItem('zhangheng0805_sid'));
-
         }
 
         function del(path) {
             checkCoookie();
             if (confirm("确定删除该文件吗？")) {
-                var key = $("#keys").val();
+                let key = $("#keys").val();
                 if (key.length > 0) {
                     $.ajax({
                         url: window.location.href+'deleteFile',
@@ -270,7 +269,7 @@
                             withCredentials: true
                         },
                         data: {
-                            key: key,
+                            key: zh_md5(key),
                             path: path
                         },
                         success: function (d) {
