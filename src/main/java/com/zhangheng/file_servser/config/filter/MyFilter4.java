@@ -1,7 +1,6 @@
 package com.zhangheng.file_servser.config.filter;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
@@ -33,6 +32,7 @@ import java.io.IOException;
 public class MyFilter4 extends MyFilter {
     private String[] paths={
             "/deleteFile",
+            "/renameFile",
             "/upload/",
             "/download/getAllFileType",
             "/download/findFileList",
@@ -59,7 +59,7 @@ public class MyFilter4 extends MyFilter {
                 Message msg = new Message();
                 msg.setTime(TimeUtil.getNowTime());
                 msg.setCode(401);
-                msg.setTitle("身份验证失败,请刷新重试");
+                msg.setTitle("身份验证失败,请刷新页面");
                 msg.setMessage(StatusCode.Http401);
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n身份核验失败-路径[{}]\n",uri);

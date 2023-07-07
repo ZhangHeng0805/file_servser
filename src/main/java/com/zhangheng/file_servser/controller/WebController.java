@@ -11,6 +11,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.zhangheng.file.FileUtil;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
@@ -176,6 +177,42 @@ public class WebController {
         return msg;
     }
 
+    @ResponseBody
+    @RequestMapping("renameFile")
+    public Message reNameFile(HttpServletRequest request,
+                              @RequestParam(defaultValue = "") String path,
+                              @RequestParam(defaultValue = "") String newName) {
+        User user = (User) request.getAttribute("user");
+        Message msg = new Message();
+        msg.setTime(TimeUtil.getNowTime());
+        if (user.getType().equals(User.Type.Admin)) {
+            File file = new File(baseDir + path);
+            if (file.exists() && file.isFile()) {
+                if (!StrUtil.isBlank(newName)) {
+                    newName = FileUtil.getPrefix(newName);
+                    FileUtil.rename(file, newName.concat(".").concat(FileUtil.getSuffix(file)), true);
+                    msg.setCode(200);
+                    msg.setTitle("重命名成功!");
+                    msg.setMessage(newName);
+                } else {
+                    msg.setCode(500);
+                    msg.setTitle("重命名失败");
+                    msg.setMessage("新文件名不能为空！");
+                }
+            } else {
+                msg.setCode(500);
+                msg.setTitle("重命名失败");
+                msg.setMessage("文件路径错误！");
+            }
+        } else {
+            msg.setCode(500);
+            msg.setTitle("秘钥错误");
+            msg.setMessage("秘钥错误！请使用管理秘钥操作");
+        }
+        log.info("\n" + msg.toString() + "\n");
+        return msg;
+    }
+
     CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 6, 150);
 
     /**
@@ -253,8 +290,8 @@ public class WebController {
                     .append("\tip:" + ip)
                     .append("\t系统:" + jb.getStr("os") + jb.getStr("osv"))
                     .append("\t浏览器:" + jb.getStr("bs") + "-V" + jb.getStr("bsv") + "(" + jb.getStr("ul") + ")[" + jb.getStr("br") + "]")
-                    .append("\tsid:" + sid )
-                    .append("\tcid:" + cid );
+                    .append("\tsid:" + sid)
+                    .append("\tcid:" + cid);
             String app = jb.getStr("app");
             if (!StrUtil.isEmptyIfStr(app)) {
                 sb.append("\t应用:" + app);

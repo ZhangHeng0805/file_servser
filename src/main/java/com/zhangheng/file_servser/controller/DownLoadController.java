@@ -9,7 +9,7 @@ import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
-import com.zhangheng.file_servser.utils.TimeUtil;
+import com.zhangheng.util.TimeUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -215,7 +215,7 @@ public class DownLoadController {
                                         info.setName(FileUtil.getMainName(name));
                                         info.setType(FiletypeUtil.getFileType(name));
                                         info.setSize(file.length());
-                                        info.setUpdate_time(TimeUtil.time(new Date(file.lastModified())));
+                                        info.setUpdate_time(TimeUtil.toTime(new Date(file.lastModified())));
                                         info.setPath(s1);
                                         //判断是否为管理秘钥
                                         if (user.getType().equals(User.Type.Admin)) {

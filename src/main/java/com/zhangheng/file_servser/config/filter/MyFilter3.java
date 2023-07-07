@@ -40,6 +40,7 @@ public class MyFilter3 extends MyFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
+//        System.out.println(JSONUtil.parse(request.getParameterMap()).toStringPretty());
         String uri = CusAccessObjectUtil.getUri(req);
         if (contextPath!="/")
             uri=uri.replace(contextPath,"");

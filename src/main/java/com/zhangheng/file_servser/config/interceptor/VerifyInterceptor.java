@@ -1,9 +1,10 @@
 package com.zhangheng.file_servser.config.interceptor;
 
+import cn.hutool.core.convert.Convert;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.file_servser.utils.TimeUtil;
+import com.zhangheng.util.TimeUtil;
 import com.zhangheng.util.EncryptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,35 +41,29 @@ public class VerifyInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String key = request.getParameter("key");
+
         Message msg = new Message();
         if (key!=null&&key.length()>0) {
             User user = new User();
             user.setIp(CusAccessObjectUtil.getIpAddress(request));
             user.setKey(key);
-            if (check_Key(test_keys,key)){
-                log.info("\nIP[{}],临时密钥["+key+"]访问成功\n",user.getIp());
+            if (check_Key(test_keys,request,key)){
+                log.info("\nIP[{}],临时密钥访问成功\n",user.getIp());
                 user.setType(User.Type.Test);
-            }else if (check_Key(keys,key)){
-                log.info("\nIP[{}],普通密钥["+key+"]访问成功\n",user.getIp());
+            }else if (check_Key(keys,request,key)){
+                log.info("\nIP[{}],普通密钥访问成功\n",user.getIp());
                 user.setType(User.Type.Common);
-            }else if (check_Key(admin_keys,key)){
-                log.info("\nIP[{}],管理密钥["+key+"]访问成功\n",user.getIp());
+            }else if (check_Key(admin_keys,request,key)){
+                log.info("\nIP[{}],管理密钥访问成功\n",user.getIp());
                 user.setType(User.Type.Admin);
             }else {
-                log.info("\nIP[{}],未知密钥["+key+"]访问拦截\n",user.getIp());
+                log.info("\nIP[{}],未知密钥访问拦截\n",user.getIp());
                 user.setType(User.Type.Unknown);
-//                msg.setTime(TimeUtil.time(new Date()));
-//                msg.setCode(500);
-//                msg.setTitle("验证密钥错误");
-//                msg.setMessage("访问秘钥key错误!");
-//                request.setAttribute("msg",msg);
-//                request.getRequestDispatcher("/error/error_key").forward(request,response);
-//                return false;
             }
             request.setAttribute("user",user);
             return true;
         }else {
-            msg.setTime(TimeUtil.time(new Date()));
+            msg.setTime(TimeUtil.getNowTime());
             msg.setCode(500);
             msg.setTitle("验证密钥为空");
             msg.setMessage("错误！请输入访问密钥key");
@@ -77,10 +72,14 @@ public class VerifyInterceptor implements HandlerInterceptor {
         request.getRequestDispatcher("/error/error_key").forward(request,response);
         return false;
     }
-    public boolean check_Key(List<String> keys,String key) throws Exception {
+
+    public boolean check_Key(List<String> keys,HttpServletRequest request,String key) throws Exception {
+        HttpSession session = request.getSession();
+        String cid = Convert.toStr(session.getAttribute("cid"),"");
+        String sid = Convert.toStr(session.getAttribute("sid"),"");
         if (keys!=null&&!keys.isEmpty()) {
             for (String s : keys) {
-                if (EncryptUtil.getMyMd5(s).equalsIgnoreCase(key))
+                if (EncryptUtil.getMyMd5(cid+s+sid).equalsIgnoreCase(key))
                     return true;
             }
         }

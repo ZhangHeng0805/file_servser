@@ -1,11 +1,13 @@
 package com.zhangheng.file_servser.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
-import com.zhangheng.file_servser.utils.TimeUtil;
+import com.zhangheng.util.EncryptUtil;
+import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +38,7 @@ public class UpLoadController {
 
     @Autowired
     private UpLoadService upLoadService;
-//    @Autowired
+    //    @Autowired
 //    private WebController webController;
 //    @Autowired
 //    private KeyService keyService;
@@ -63,7 +66,7 @@ public class UpLoadController {
             , @Nullable String imgName
             , @Nullable String path, HttpServletRequest request) {
         Message msg = new Message();
-        msg.setTime(TimeUtil.time(new Date()));
+        msg.setTime(TimeUtil.getNowTime());
         User user = (User) request.getAttribute("user");
         if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
             if (!image.isEmpty()) {
@@ -103,7 +106,7 @@ public class UpLoadController {
             msg.setTitle("秘钥key错误");
             msg.setMessage("该秘钥没有上传文件的权限！");
         }
-        log.info("\n"+msg.toString()+"\n");
+        log.info("\n" + msg.toString() + "\n");
         return msg;
     }
 
@@ -121,7 +124,7 @@ public class UpLoadController {
             , @Nullable String imgName
             , @Nullable String path, HttpServletRequest request) {
         Message msg = new Message();
-        msg.setTime(TimeUtil.time(new Date()));
+        msg.setTime(TimeUtil.getNowTime());
         User user = (User) request.getAttribute("user");
         if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
             if (!image.isEmpty()) {
@@ -155,10 +158,27 @@ public class UpLoadController {
             msg.setTitle("秘钥key错误");
             msg.setMessage("该秘钥没有上传文件的权限！");
         }
-        log.info("\n"+msg.toString()+"\n");
+        log.info("\n" + msg.toString() + "\n");
         return msg;
     }
 
+    private boolean uplaodCheck_signature(String fileName,long size,HttpServletRequest request){
+        String req_key = request.getParameter("key");
+        String req_time = request.getHeader("_t");
+        String req_size = request.getHeader("_size");
+        String req_signature = request.getHeader("_signature");
+        if (!StrUtil.isBlank(fileName)&&!StrUtil.isBlank(req_size)&&!StrUtil.isBlank(req_signature)){
+            try {
+                String encoding = request.getCharacterEncoding();
+                String md5 = EncryptUtil.getMd5(req_time + req_key + size + URLEncoder.encode(fileName, encoding),encoding);
+                if(md5.equalsIgnoreCase(req_signature))
+                    return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
     /**
      * 保存文件接口（MultipartFile格式）
      *
@@ -171,20 +191,22 @@ public class UpLoadController {
     @RequestMapping(value = "/saveMulFile")
     public Message saveFileInterface(@Nullable MultipartFile file
             , @Nullable String fileName
-            , @Nullable String code
             , @Nullable String path, HttpServletRequest request) {
         Message msg = new Message();
+        msg.setTime(TimeUtil.getNowTime());
 //        msg=webController.verifyMathCheck(code,request);
-        if (true) {
-            msg.setTime(TimeUtil.time(new Date()));
+
+        boolean b = uplaodCheck_signature(fileName, file.getSize(), request);
+        if (b) {
             User user = (User) request.getAttribute("user");
             if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
-                log.info("\n文件上传：" + CusAccessObjectUtil.getRequst(request)+"\n");
-                if (file!=null&&!file.isEmpty()) {
+                log.info("\n文件上传：" + CusAccessObjectUtil.getRequst(request) + "\n");
+                if (file != null && !file.isEmpty()) {
                     String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
                     String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
                     String s = upLoadService.saveFile(file, name, Path);
                     if (s != null) {
+                        msg.setTime(TimeUtil.getNowTime());
                         msg.setCode(200);
                         msg.setTitle("上传文件保存成功");
                         msg.setMessage(s);
@@ -203,11 +225,14 @@ public class UpLoadController {
                 msg.setTitle("上传失败，秘钥错误");
                 msg.setMessage("该秘钥没有上传文件的权限！");
             }
+        }else {
+            msg.setCode(500);
+            msg.setTitle("上传失败，上传异常");
+            msg.setMessage("对不起！上传信息异常！");
         }
-        log.info("\n"+msg.toString()+"\n");
+        log.info("\n" + msg.toString() + "\n");
         return msg;
     }
-
 
 
 }
