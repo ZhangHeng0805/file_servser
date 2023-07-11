@@ -164,13 +164,16 @@ public class UpLoadController {
 
     private boolean uplaodCheck_signature(String fileName,long size,HttpServletRequest request){
         String req_key = request.getParameter("key");
+        String req_code = request.getParameter("code");
         String req_time = request.getHeader("_t");
         String req_size = request.getHeader("_size");
         String req_signature = request.getHeader("_signature");
         if (!StrUtil.isBlank(fileName)&&!StrUtil.isBlank(req_size)&&!StrUtil.isBlank(req_signature)){
             try {
-                String encoding = request.getCharacterEncoding();
-                String md5 = EncryptUtil.getMd5(req_time + req_key + size + URLEncoder.encode(fileName, encoding),encoding);
+                String encoding = "UTF-8";
+                String str = req_time + req_key + size + req_code + "zh0805" + fileName.length();
+//                System.out.println(str);
+                String md5 = EncryptUtil.getMyMd5(str);
                 if(md5.equalsIgnoreCase(req_signature))
                     return true;
             } catch (Exception e) {

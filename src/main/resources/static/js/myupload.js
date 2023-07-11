@@ -56,12 +56,15 @@ function checkCode(code) {
 function upload() {
     checkCoookie();
     var form = new FormData(document.getElementById("upload_form"));
-    let key=zh_md5(getCookie('zhangheng0805_cid')+$("#key").val()+getCookie('zhangheng0805_sid'));
+    var code = $("#code").val();
+    let key=zh_md5(getCookie('zhangheng0805_cid')+ $("#key").val() +getCookie('zhangheng0805_sid'));
     form.set("key",key);
-    console.log("upload-form",form.get("file"));
+    // console.log("upload-form",form.get("file"));
     let time=new Date().getTime();
     let size=form.get('file').size;
-    let name=encodeURIComponent(form.get('fileName'));
+    let name=code+'zh0805'+form.get('fileName').length;
+    var s = time+key+size+name;
+    // console.log(s)
     $.ajax({
         url: window.location.href+"upload/saveMulFile",
         type: "post",
@@ -69,7 +72,7 @@ function upload() {
         headers:{
             '_t':time,
             '_size':size,
-            '_signature':hex_md5(time+key+size+name),
+            '_signature':zh_md5(s),
         },
         xhrFields: {
             withCredentials: true
