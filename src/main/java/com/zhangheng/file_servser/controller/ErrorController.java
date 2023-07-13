@@ -29,7 +29,8 @@ public class ErrorController {
     @RequestMapping("error_key")
     public Message error_key(HttpServletRequest request){
         Message msg = (Message) request.getAttribute("msg");
-        if (msg.getTime()==null){
+        if(msg==null||msg.getTime()==null) {
+            msg=new Message();
             msg.setTime(TimeUtil.time(new Date()));
             msg.setCode(500);
             msg.setTitle("验证秘钥错误");
@@ -48,6 +49,7 @@ public class ErrorController {
     public Message err_404(HttpServletRequest request){
         Message msg = (Message) request.getAttribute("msg");
         if(msg==null||msg.getTime()==null) {
+            msg=new Message();
             msg.setTime(TimeUtil.time(new Date()));
             msg.setCode(404);
             msg.setTitle("没有找到");
@@ -65,12 +67,17 @@ public class ErrorController {
     @RequestMapping("err_500")
     public Message err_500(HttpServletRequest request){
         Message msg = (Message) request.getAttribute("msg");
-        if (msg.getTime()==null){
+        if(msg==null||msg.getTime()==null) {
+            msg=new Message();
             msg.setTime(TimeUtil.time(new Date()));
             msg.setCode(500);
             msg.setTitle("出错了");
             msg.setMessage("哎呀！服务器出错了 (。・＿・。)ﾉI’m sorry~");
         }
         return msg;
+    }
+    @RequestMapping("test")
+    public void test(){
+        int i=1/0;
     }
 }

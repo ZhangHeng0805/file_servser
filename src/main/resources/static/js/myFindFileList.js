@@ -12,15 +12,19 @@ function getAllFileType() {
         },
         success: function (d) {
             var html = "";
+            var html2 = "";
             for (var i = 0; i < d.length; i++) {
                 if (d[i].code == 200) {
                     html += '<option value="' + d[i].message + '">' + d[i].title + '</option>';
+                    if (d[i].message != '$all$')
+                        html2 += '<option>' + d[i].title + '</option>';
                 } else {
                     alert("类型查询错误：" + d[i].message);
                     console.warn("类型查询错误:" + d[i])
                 }
             }
             $("#type").html(html);
+            $("#upload_path_list").html(html2);
             set_select_checked("type", TYPE);
         },
         error: function (e) {
@@ -271,7 +275,7 @@ function rename(path, oldName) {
                             } else {
                                 console.warn(d);
                             }
-                            alert(d.title+'\n'+d.message);
+                            alert(d.title + '\n' + d.message);
                         },
                         error: function (e) {
                             ajax_error(e);

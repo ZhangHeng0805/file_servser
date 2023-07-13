@@ -27,9 +27,9 @@ import java.util.Map;
 public class ExceptionHandler extends DefaultErrorAttributes {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-//    @ResponseBody
+    //    @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Throwable.class)
-    public Exception e(Exception e){
+    public Exception e(Exception e) {
 //        Message msg = new Message();
 //        msg.setTime(TimeUtil.now());
 //        msg.setCode(500);
@@ -43,29 +43,31 @@ public class ExceptionHandler extends DefaultErrorAttributes {
     public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
         String message = errorAttributes.get("message").toString();
-        if (StrUtil.isBlank(message)||message.equals("No message available")) {
+        errorAttributes.put("timestamp", TimeUtil.getNowTime());
+        if (StrUtil.isBlank(message) || message.equals("No message available")) {
             Object status = errorAttributes.get("status");
-            String msg="";
+            String msg = "";
             if (status.equals(404)) {
-                msg= StatusCode.Http404;
-            }else if (status.equals(500)){
-                msg=StatusCode.Http500;
-            }else if (status.equals(400)){
-                msg=StatusCode.Http400;
-            }else if (status.equals(403)){
-                msg=StatusCode.Http403;
-            }else if (status.equals(503)){
-                msg=StatusCode.Http503;
-            }else if (status.equals(401)){
-                msg=StatusCode.Http401;
+                msg = StatusCode.Http404;
+            } else if (status.equals(500)) {
+                msg = StatusCode.Http500;
+            } else if (status.equals(400)) {
+                msg = StatusCode.Http400;
+            } else if (status.equals(403)) {
+                msg = StatusCode.Http403;
+            } else if (status.equals(503)) {
+                msg = StatusCode.Http503;
+            } else if (status.equals(401)) {
+                msg = StatusCode.Http401;
             }
             errorAttributes.put("message", msg);
-        }else {
+        } else {
             errorAttributes.put("message", message);
         }
-        log.error("\n错误异常请求:{}\n",errorAttributes.toString());
+        log.error("\n错误异常请求:{}\n", errorAttributes.toString());
         return errorAttributes;
     }
+
     /**
      * 获取异常详细信息，知道出了什么错，错在哪个类的第几行 .
      *

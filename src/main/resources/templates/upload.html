@@ -36,10 +36,13 @@
     </div>
     <div class="form-group" th:title="'输入文件保存的目录，默认根据文件类型进行保存，路径名控制在'+${maxFilePath}+'个字符内，非法字符/\$'">
         <label class="control-label" for="path">保存路径：</label>
-        <input class="form-control" type="text" id="path" name="path" placeholder="请输入保存路径（选填）例：image"
+        <input class="form-control" type="text" list="upload_path_list" id="path" name="path" placeholder="请输入保存路径（选填）例：image"
                th:oninput="'titleInput(\'path\',\'filePath_tips\','+${maxFilePath}+')'"
                onchange="value=value.replace(/[/\\$]/g,'')"
         >
+        <datalist id="upload_path_list">
+
+        </datalist>
         <p class="help-block" id="filePath_tips"></p>
     </div>
     <div class="form-group" title="输入验证码，进行上传验证">
@@ -60,7 +63,7 @@
     </div>
 
     <script th:inline="javascript">
-        eval(loadJs("static/js/myupload.js"));
+        eval(loadJs("static/js/myUpload.js"));
 
         $("#file").change(function () {
             var f = document.getElementById("file").files;
