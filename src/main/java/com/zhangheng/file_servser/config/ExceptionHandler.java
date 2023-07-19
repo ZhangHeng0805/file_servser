@@ -6,6 +6,7 @@ import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -26,6 +27,8 @@ import java.util.Map;
 @ControllerAdvice
 public class ExceptionHandler extends DefaultErrorAttributes {
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    @Value("#{'${server.servlet.context-path}'}")
+    private String contextPath;
 
     //    @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Throwable.class)
@@ -44,6 +47,7 @@ public class ExceptionHandler extends DefaultErrorAttributes {
         Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
         String message = errorAttributes.get("message").toString();
         errorAttributes.put("timestamp", TimeUtil.getNowTime());
+        errorAttributes.put("index",contextPath);
         if (StrUtil.isBlank(message) || message.equals("No message available")) {
             Object status = errorAttributes.get("status");
             String msg = "";

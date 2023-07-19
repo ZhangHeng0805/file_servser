@@ -19,7 +19,7 @@ public class MyExceptionHandler {
     @ExceptionHandler({Exception.class})
     public String handleException(Exception e, HttpServletRequest request, Map<String,Object> map){
 //        request.setAttribute("javax.servlet.error.status_code",code);
-        System.out.println("error："+JSONUtil.parse(map).toStringPretty());
+//        System.out.println("error："+JSONUtil.parse(map).toStringPretty());
         map.put("message",e.getMessage());
         return "forward:/error";
     }
