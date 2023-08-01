@@ -1,9 +1,9 @@
 package com.zhangheng.file_servser.controller;
 
+import com.zhangheng.bean.Message;
 import com.zhangheng.file.FileUtil;
 import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.entity.FileInfo;
-import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.KeyService;
@@ -16,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletException;
@@ -227,26 +229,26 @@ public class DownLoadController {
                                         info.setSize(0);
                                         info.setUpdate_time("***");
                                     }
-                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), s1,info));
+                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), s1,true,info));
                                 } else {
                                     s1 = s;
-                                    list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,null));
+                                    list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,false,null));
                                 }
                             }
                         }
                     }catch (Exception e){
                         //e.printStackTrace();
                         log.error("\n文件检索错误："+e.getMessage()+"\n");
-                        list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),null));
+                        list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),false,null));
                     }
                 }else {
-                    list.add(new Message(null,500,"文件夹名称为null","对不起，文件夹名称不能为空",null));
+                    list.add(new Message(null,500,"文件夹名称为null","对不起，文件夹名称不能为空",false,null));
                 }
             }else {
-                list.add(new Message(null,500,"秘钥错误","对不起，访问秘钥错误",null));
+                list.add(new Message(null,500,"秘钥错误","对不起，访问秘钥错误",false,null));
             }
         }else {
-            list.add(new Message(null,500,"秘钥为null","对不起，访问秘钥不能为空",null));
+            list.add(new Message(null,500,"秘钥为null","对不起，访问秘钥不能为空",false,null));
         }
         return list;
     }
@@ -259,17 +261,17 @@ public class DownLoadController {
     public List<Message> getAllFileType(){
         ArrayList<Message> list = new ArrayList<>();
         try {
-            list.add(new Message(null,200,"全部","$all$",null));
+            list.add(new Message(null,200,"全部","$all$",true,null));
             File fileList = new File(baseDir);
             File[] files = fileList.listFiles();
             for (File f : files) {
                 if (f.isDirectory()){
                     String path = f.getPath().substring(baseDir.length());
-                    list.add(new Message(null,200,path,path,null));
+                    list.add(new Message(null,200,path,path,true,null));
                 }
             }
         }catch (Exception e){
-            list.add(new Message(null,500,"文件类型获取错误！",e.getMessage(),null));
+            list.add(new Message(null,500,"文件类型获取错误！",e.getMessage(),true,null));
         }
         return list;
     }

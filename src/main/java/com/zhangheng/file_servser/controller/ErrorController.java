@@ -1,6 +1,6 @@
 package com.zhangheng.file_servser.controller;
 
-import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file_servser.utils.TimeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

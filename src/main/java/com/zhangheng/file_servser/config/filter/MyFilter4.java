@@ -2,10 +2,9 @@ package com.zhangheng.file_servser.config.filter;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
-import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,9 +56,8 @@ public class MyFilter4 extends MyFilter {
             Boolean isSid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_sid", sid);
             if (!isCid||!isSid){
                 Message msg = new Message();
-                msg.setTime(TimeUtil.getNowTime());
                 msg.setCode(401);
-                msg.setTitle("身份验证失败,请刷新页面");
+                msg.setTitle("身份验证过期,请刷新页面");
                 msg.setMessage(StatusCode.Http401);
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n身份核验失败-路径[{}]\n",uri);

@@ -1,7 +1,8 @@
 package com.zhangheng.file_servser.config.interceptor;
 
+import com.zhangheng.file_servser.controller.CaptchaController;
 import com.zhangheng.file_servser.controller.WebController;
-import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
@@ -24,15 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 public class UploadInterceptor implements HandlerInterceptor {
     private Logger log= LoggerFactory.getLogger(getClass());
     @Autowired
-    private WebController webController;
+    private CaptchaController captchaController;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         User user = (User) request.getAttribute("user");
         Message msg = new Message();
-        msg.setTime(TimeUtil.getNowTime());
         if (user!=null){
             if (user.getType().equals(User.Type.Common)||user.getType().equals(User.Type.Admin)){
-                msg=webController.verifyMathCheck((String)request.getParameter("code"),true,request);
+                msg=captchaController.verifyMathCheck((String)request.getParameter("code"),true,request);
                 if (msg.getCode()==200){
                     log.info("\n文件上传拦截：验证成功，放行！\n");
                     return true;

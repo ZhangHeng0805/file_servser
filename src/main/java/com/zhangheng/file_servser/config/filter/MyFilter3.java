@@ -1,8 +1,9 @@
 package com.zhangheng.file_servser.config.filter;
 
 import cn.hutool.json.JSONUtil;
+import com.zhangheng.file_servser.controller.CaptchaController;
 import com.zhangheng.file_servser.controller.WebController;
-import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,15 @@ public class MyFilter3 extends MyFilter {
     private String[] paths={
             "/upload/*",
             "/web/upload",
+            "/deleteFile",
+            "/renameFile",
+            "/download/findFileList",
     };
     @Value("#{'${server.servlet.context-path}'}")
     private String contextPath;
     private Logger log= LoggerFactory.getLogger(getClass());
     @Autowired
-    private WebController webController;
+    private CaptchaController captchaController;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -48,7 +52,7 @@ public class MyFilter3 extends MyFilter {
         isFilter = isFilter(paths,uri,isFilter);
         if (isFilter){
             String code = req.getParameter("code");
-            Message msg = webController.verifyMathCheck(code, false, req);
+            Message msg = captchaController.verifyMathCheck(code, false, req);
             if (msg.getCode()!=200){
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n验证码核验失败：{}-路径[{}]\n",msg.getTitle(),uri);

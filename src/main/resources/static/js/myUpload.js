@@ -6,15 +6,12 @@ function sub1() {
     hideModel();
     var key = $("#key").val();
     var file = $("#file").val();
-    var code = $("#code").val();
+    // var code = $("#code").val();
     if (key.length > 0) {
         if (file.length > 0) {
-            if (code.length > 0) {
-                checkCode(code)
+                // checkCode(code)
                 //resetImgCode();
-            } else {
-                alert("请输入验证码");
-            }
+                captcha_model_show("upload()");
         } else {
             alert("请选择文件");
         }
@@ -26,7 +23,7 @@ function sub1() {
 
 function checkCode(code) {
     $.ajax({
-        url: window.location.href+"getVerify/math/checking",
+        url: window.location.href+ZH_URL.captcha_checking,
         type: "post",
         dataType: "json",
         data: {
@@ -54,11 +51,15 @@ function checkCode(code) {
 }
 
 function upload() {
+    $("#wait_icon").show();
+    $("#btn_upload").attr('disabled', true);
+    $("#btn_upload").val('上传中...');
     checkCoookie();
     var form = new FormData(document.getElementById("upload_form"));
     var code = $("#code").val();
     let key=zh_md5(getCookie('zhangheng0805_cid')+ $("#key").val() +getCookie('zhangheng0805_sid'));
     form.set("key",key);
+    form.set("code",code);
     // console.log("upload-form",form.get("file"));
     let time=new Date().getTime();
     let size=form.get('file').size;
@@ -66,13 +67,13 @@ function upload() {
     var s = time+key+size+name;
     // console.log(s)
     $.ajax({
-        url: window.location.href+"upload/saveMulFile",
+        url: ZH_URL.upload_file,
         type: "post",
         dataType: "json",
         headers:{
-            '_t':time,
-            '_size':size,
-            '_signature':zh_md5(s),
+            'x-t':time,
+            'x-size':size,
+            'x-signature':zh_md5(s),
         },
         xhrFields: {
             withCredentials: true
@@ -99,7 +100,6 @@ function upload() {
                 alert("上传成功！耗时:"+((Math.abs(Date.parse(new Date(d.time))-time))/1000).toFixed(2)+"秒")
                 upload_reset();
             } else {
-                resetImgCode();
                 console.warn(d);
             }
             $("#btn_upload").attr("disabled", false);
@@ -178,7 +178,7 @@ function upload_reset(state) {
     $("#fileName").val(null);
     $("#fileSize").text('');
     $("#path").val(null);
-    resetImgCode();
+    // resetImgCode();
     document.getElementById('fileName_tips').style.display='none';
     document.getElementById('filePath_tips').style.display='none';
 }

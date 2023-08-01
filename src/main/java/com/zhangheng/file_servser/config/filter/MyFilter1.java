@@ -4,7 +4,6 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.bean.Message;
 import com.zhangheng.file.FileUtil;
-import com.zhangheng.file_servser.config.MvcConfig;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.util.TimeUtil;
@@ -13,13 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 
 /**
@@ -76,7 +76,6 @@ public class MyFilter1 extends MyFilter {
                 if (abs < minInterval) {
                     Message msg = new Message();
                     msg.setCode(503);
-                    msg.setTime(TimeUtil.getNowTime());
                     msg.setTitle("请求频繁!");
                     msg.setMessage(StatusCode.Http503);
                     wirterJson(response, JSONUtil.parse(msg).toString(),msg.getCode());

@@ -49,13 +49,13 @@
     </div>
 </section>
 <!--<script src="/static/js/scripts.js"></script>-->
-
+<div th:include="comm :: #com_captcah_dialog"></div>
 <script defer>
     window.onload = function () {
         // console.log("页面加载完成====》onload");
         document.body.classList.remove('loading');
         getAllFileType();
-        resetImgCode();
+        // resetImgCode();
     };
     $(window).load(function () {
         // console.log("jquery===》window load");

@@ -1,7 +1,7 @@
 package com.zhangheng.file_servser.controller;
 
 import cn.hutool.core.util.StrUtil;
-import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
@@ -60,55 +60,55 @@ public class UpLoadController {
      * @param path    保存文件夹 （可不填）
      * @return
      */
-    @ResponseBody
-    @RequestMapping("/saveMulImg")
-    public Message saveMulImagInterface(MultipartFile image
-            , @Nullable String imgName
-            , @Nullable String path, HttpServletRequest request) {
-        Message msg = new Message();
-        msg.setTime(TimeUtil.getNowTime());
-        User user = (User) request.getAttribute("user");
-        if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
-            if (!image.isEmpty()) {
-                //判断图片大小
-                if (image.getSize() < 2080000) {
-                    if (FiletypeUtil.getFileType(image.getOriginalFilename()).equals("image")) {
-                        String name = imgName != null ? imgName : image.getOriginalFilename().substring(0, image.getOriginalFilename().lastIndexOf("."));
-                        String Path = path != null ? path.split("/")[0] : FiletypeUtil.getFileType(image.getOriginalFilename());
-                        String s = upLoadService.saveFile(image, name, Path);
-                        if (s != null) {
-                            msg.setCode(200);
-                            msg.setTitle("图片保存成功");
-                            msg.setMessage(s);
-                            log.info(s);
-                        } else {
-                            msg.setCode(500);
-                            msg.setTitle("图片保存失败");
-                            msg.setMessage("上传图片保存失败");
-                        }
-                    } else {
-                        msg.setCode(500);
-                        msg.setTitle("格式错误");
-                        msg.setMessage("上传图片格式错误，建议选择主流的图片格式（png、jpg）");
-                    }
-                } else {
-                    msg.setCode(500);
-                    msg.setTitle("图片错误");
-                    msg.setMessage("上传图片大小超过2Mb限制");
-                }
-            } else {
-                msg.setCode(500);
-                msg.setTitle("图片错误");
-                msg.setMessage("上传图片为空");
-            }
-        } else {
-            msg.setCode(500);
-            msg.setTitle("秘钥key错误");
-            msg.setMessage("该秘钥没有上传文件的权限！");
-        }
-        log.info("\n" + msg.toString() + "\n");
-        return msg;
-    }
+//    @ResponseBody
+//    @RequestMapping("/saveMulImg")
+//    public Message saveMulImagInterface(MultipartFile image
+//            , @Nullable String imgName
+//            , @Nullable String path, HttpServletRequest request) {
+//        Message msg = new Message();
+//        msg.setTime(TimeUtil.getNowTime());
+//        User user = (User) request.getAttribute("user");
+//        if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
+//            if (!image.isEmpty()) {
+//                //判断图片大小
+//                if (image.getSize() < 2080000) {
+//                    if (FiletypeUtil.getFileType(image.getOriginalFilename()).equals("image")) {
+//                        String name = imgName != null ? imgName : image.getOriginalFilename().substring(0, image.getOriginalFilename().lastIndexOf("."));
+//                        String Path = path != null ? path.split("/")[0] : FiletypeUtil.getFileType(image.getOriginalFilename());
+//                        String s = upLoadService.saveFile(image, name, Path);
+//                        if (s != null) {
+//                            msg.setCode(200);
+//                            msg.setTitle("图片保存成功");
+//                            msg.setMessage(s);
+//                            log.info(s);
+//                        } else {
+//                            msg.setCode(500);
+//                            msg.setTitle("图片保存失败");
+//                            msg.setMessage("上传图片保存失败");
+//                        }
+//                    } else {
+//                        msg.setCode(500);
+//                        msg.setTitle("格式错误");
+//                        msg.setMessage("上传图片格式错误，建议选择主流的图片格式（png、jpg）");
+//                    }
+//                } else {
+//                    msg.setCode(500);
+//                    msg.setTitle("图片错误");
+//                    msg.setMessage("上传图片大小超过2Mb限制");
+//                }
+//            } else {
+//                msg.setCode(500);
+//                msg.setTitle("图片错误");
+//                msg.setMessage("上传图片为空");
+//            }
+//        } else {
+//            msg.setCode(500);
+//            msg.setTitle("秘钥key错误");
+//            msg.setMessage("该秘钥没有上传文件的权限！");
+//        }
+//        log.info("\n" + msg.toString() + "\n");
+//        return msg;
+//    }
 
     /**
      * 保存图片接口（base64格式）
@@ -165,9 +165,9 @@ public class UpLoadController {
     private boolean uplaodCheck_signature(String fileName,long size,HttpServletRequest request){
         String req_key = request.getParameter("key");
         String req_code = request.getParameter("code");
-        String req_time = request.getHeader("_t");
-        String req_size = request.getHeader("_size");
-        String req_signature = request.getHeader("_signature");
+        String req_time = request.getHeader("x-t");
+        String req_size = request.getHeader("x-size");
+        String req_signature = request.getHeader("x-signature");
         if (!StrUtil.isBlank(fileName)&&!StrUtil.isBlank(req_size)&&!StrUtil.isBlank(req_signature)){
             try {
                 String encoding = "UTF-8";

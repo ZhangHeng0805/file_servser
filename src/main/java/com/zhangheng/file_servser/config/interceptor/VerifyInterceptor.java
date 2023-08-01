@@ -1,11 +1,11 @@
 package com.zhangheng.file_servser.config.interceptor;
 
 import cn.hutool.core.convert.Convert;
-import com.zhangheng.file_servser.entity.Message;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.util.TimeUtil;
 import com.zhangheng.util.EncryptUtil;
+import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +15,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.net.URLDecoder;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,7 +61,6 @@ public class VerifyInterceptor implements HandlerInterceptor {
             request.setAttribute("user",user);
             return true;
         }else {
-            msg.setTime(TimeUtil.getNowTime());
             msg.setCode(500);
             msg.setTitle("验证密钥为空");
             msg.setMessage("错误！请输入访问密钥key");

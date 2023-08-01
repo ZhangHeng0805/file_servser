@@ -182,3 +182,4 @@
     $('.popovers').popover();
 
 })(jQuery);
+

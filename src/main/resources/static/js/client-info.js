@@ -198,7 +198,7 @@ function getCookie(cname) {
 
 const getSid = () => {
     var sid = getCookie("JSESSIONID");
-    sid = sid.length > 0 ? sid : Math.random().toString(36).slice(-8);
+        sid = sid.length > 0 ? sid : Math.random().toString(36).slice(-8);
     var a = "zhangheng0805_sid";
     window.localStorage.setItem(a, sid);
     setCookie(a, sid);
@@ -221,7 +221,11 @@ const serialize = (obj) => {
         obj.hasOwnProperty(d) && obj[d] && z.push(encodeURIComponent(d) + "=" + encodeURIComponent(obj[d]));
     return z.join("&");
 };
-
+const dongle=(a,b,c,d)=>{
+    let e=window.btoa(a+b);
+    e=window.btoa(e+c);
+    return window.btoa(e+d);
+}
 const sendImg = (url, data) => {
     var d = new Image(1, 1);
     d.onload = function () {
@@ -250,7 +254,7 @@ const sendXhr = (url, data) => {
 }
 
 const SendData = (json) => {
-    var url = window.location.href+'static/client';
+    var url = 'static/client';
     var r = navigator.sendBeacon && navigator.sendBeacon(url, JSON.stringify(json));
 }
 /**
@@ -293,7 +297,8 @@ function client_result() {
     var b = window.navigator,
         c = window.screen,
         h = document.documentElement,
-        j = document.body;
+        j = document.body,
+        r=new Date().getTime();
     var g = (e = document.body) && e.clientWidth && e.clientHeight,
         ca = [];
     h && h.clientWidth && h.clientHeight && ("CSS1Compat" === document.compatMode || !g) ? ca = [h.clientWidth, h.clientHeight] : g && (ca = [e.clientWidth, e.clientHeight]);
@@ -318,10 +323,20 @@ function client_result() {
         je: b.javaEnabled ? 1 : 0, //浏览器是否已启用 Java 
         app: appName, //APP名
         br: brandName, //设备名
-        r: 1 * new Date() //时间戳
+        t: dongle(sid,cid,r,browser.version),
+        r:  r //时间戳
     }
     // console.log(ClientData);
-    debounce(SendData(ClientData), 500, false);
+    debounce(SendData(ClientData), 500, true);
     return ClientData;
 }
 window.onload = client_result();
+var ZH_URL={
+    captcha_getbase64 : 'getVerify/base64',
+    captcha_checking : 'getVerify/checking',
+    upload_file : 'upload/saveMulFile',
+    download_getfiletype : 'download/getAllFileType',
+    download_getfilelist : 'download/findFileList',
+    delete_file : 'deleteFile',
+    rename_file : 'renameFile',
+};

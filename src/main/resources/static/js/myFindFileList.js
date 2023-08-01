@@ -4,7 +4,7 @@ var Data = null;
 function getAllFileType() {
     checkCoookie();
     $.ajax({
-        url: window.location.href + "download/getAllFileType",
+        url: ZH_URL.download_getfiletype,
         method: "post",
         dataType: "json",
         xhrFields: {
@@ -54,46 +54,50 @@ function sub2() {
     }
     let key = $("#keys").val();
     if (key.length > 0) {
-        $("#btn_sub2").attr('disabled', true);
-        checkCoookie();
-        $.ajax({
-            url: window.location.href + "download/findFileList",
-            method: "post",
-            dataType: "json",
-            xhrFields: {
-                withCredentials: true
-            },
-            data: {
-                key: zh_md5(getCookie('zhangheng0805_cid') + key + getCookie('zhangheng0805_sid')),
-                type: $("#type").val()
-            },
-            success: function (d) {
-                // console.log(d);
-                d = Array.isArray(d) ? d : new Array(d);
-                if (isData(d)) {
-                    Data = d;
-                    TYPE = $("#type").val();
-                } else {
-                    Data = null;
-                    if (TYPE !== $("#type").val()) ;
-                    set_select_checked("type", TYPE);
-                    console.warn(d)
-                }
-                //处理数据
-                handle(d);
-                //刷新下拉框数据
-                getAllFileType();
-                $("#btn_sub2").attr('disabled', false);
-            },
-            error: function (e) {
-                $("#btn_sub2").attr('disabled', false);
-                ajax_error(e);
-            }
-        })
+        captcha_model_show("getFileList('" + key + "')");
     } else {
-        alert("请输入秘钥")
+        alert("请输入秘钥");
     }
+}
 
+function getFileList(key) {
+    $("#btn_sub2").attr('disabled', true);
+    checkCoookie();
+    $.ajax({
+        url: ZH_URL.download_getfilelist,
+        method: "post",
+        dataType: "json",
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            key: zh_md5(getCookie('zhangheng0805_cid') + key + getCookie('zhangheng0805_sid')),
+            type: $("#type").val(),
+            code: $("#code").val()
+        },
+        success: function (d) {
+            // console.log(d);
+            d = Array.isArray(d) ? d : new Array(d);
+            if (isData(d)) {
+                Data = d;
+                TYPE = $("#type").val();
+            } else {
+                Data = null;
+                if (TYPE !== $("#type").val()) ;
+                set_select_checked("type", TYPE);
+                console.warn(d)
+            }
+            //处理数据
+            handle(d);
+            //刷新下拉框数据
+            getAllFileType();
+            $("#btn_sub2").attr('disabled', false);
+        },
+        error: function (e) {
+            $("#btn_sub2").attr('disabled', false);
+            ajax_error(e);
+        }
+    })
 }
 
 function handle(d) {
@@ -217,48 +221,60 @@ function checkCoookie() {
 }
 
 function del(path) {
-    checkCoookie();
     if (confirm("确定删除该文件吗？")) {
-        let key = $("#keys").val();
-        if (key.length > 0) {
-            $.ajax({
-                url: window.location.href + 'deleteFile',
-                method: "post",
-                dataType: "json",
-                xhrFields: {
-                    withCredentials: true
-                },
-                data: {
-                    key: zh_md5(getCookie('zhangheng0805_cid') + key + getCookie('zhangheng0805_sid')),
-                    path: path
-                },
-                success: function (d) {
-                    if (d.code == 200) {
-                        sub2();
-                    } else {
-                        console.warn(d);
-                    }
-                    alert(d.message);
-                },
-                error: function (e) {
-                    ajax_error(e);
+        captcha_model_show("del_file('" + path + "')");
+    }
+}
+
+function del_file(path) {
+    checkCoookie();
+
+    let key = $("#keys").val();
+    let code = $("#code").val();
+    if (key.length > 0) {
+        $.ajax({
+            url: ZH_URL.delete_file,
+            method: "post",
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true
+            },
+            data: {
+                key: zh_md5(getCookie('zhangheng0805_cid') + key + getCookie('zhangheng0805_sid')),
+                path: path,
+                code: code,
+            },
+            success: function (d) {
+                if (d.code == 200) {
+                    getFileList(key);
+                } else {
+                    console.warn(d);
                 }
-            })
-        } else {
-            alert("请输入管理访问秘钥");
-        }
+                alert(d.message);
+            },
+            error: function (e) {
+                ajax_error(e);
+            }
+        })
+    } else {
+        alert("请输入管理访问秘钥");
     }
 }
 
 function rename(path, oldName) {
+    captcha_model_show("rename_file('" + path + "','" + oldName + "')");
+}
+
+function rename_file(path, oldName) {
     let key = $("#keys").val();
+    let code = $("#code").val();
     if (key.length > 0) {
         let renameFile = prompt("文件重命名，请输入新的文件名:", oldName);
         if (renameFile) {
             if (renameFile != null && renameFile.length > 0) {
                 if (renameFile != oldName) {
                     $.ajax({
-                        url: window.location.href + 'renameFile',
+                        url: ZH_URL.rename_file,
                         method: "post",
                         dataType: "json",
                         xhrFields: {
@@ -267,11 +283,12 @@ function rename(path, oldName) {
                         data: {
                             key: zh_md5(getCookie('zhangheng0805_cid') + key + getCookie('zhangheng0805_sid')),
                             path: path,
+                            code: code,
                             newName: renameFile,
                         },
                         success: function (d) {
                             if (d.code == 200) {
-                                sub2();
+                                getFileList(key);
                             } else {
                                 console.warn(d);
                             }
