@@ -162,9 +162,10 @@
 
         function getCaptcha() {
             $("#code").val(null);
+            $("#img-code").attr("src", "");
             $.ajax({
                 url: ZH_URL.captcha_getbase64 + '?t=' + new Date().getTime(),
-                type: "post",
+                type: "get",
                 success: function (d) {
                     if (d.code == 200) {
                         $("#img-code").attr("src", d.obj);
@@ -172,12 +173,10 @@
                     } else {
                         alert(d.title + '\n' + d.message);
                         console.warn(d);
-                        return false;
                     }
                 },
                 error: function (e) {
                     ajax_error(e);
-                    return false;
                 }
             });
         }

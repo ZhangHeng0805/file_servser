@@ -54,11 +54,16 @@ function sub2() {
     }
     let key = $("#keys").val();
     if (key.length > 0) {
-        captcha_model_show("getFileList('" + key + "')");
+        if (getFileList_c === 0 || getFileList_c % 5 === 0)
+            captcha_model_show("getFileList('" + key + "')");
+        else
+            getFileList(key);
     } else {
         alert("请输入秘钥");
     }
 }
+
+var getFileList_c = 0;
 
 function getFileList(key) {
     $("#btn_sub2").attr('disabled', true);
@@ -92,6 +97,7 @@ function getFileList(key) {
             //刷新下拉框数据
             getAllFileType();
             $("#btn_sub2").attr('disabled', false);
+            getFileList_c++;
         },
         error: function (e) {
             $("#btn_sub2").attr('disabled', false);
@@ -222,9 +228,14 @@ function checkCoookie() {
 
 function del(path) {
     if (confirm("确定删除该文件吗？")) {
-        captcha_model_show("del_file('" + path + "')");
+        if (del_file_c === 0 || del_file_c % 3 === 0)
+            captcha_model_show("del_file('" + path + "')");
+        else
+            del_file(path);
     }
 }
+
+var del_file_c = 0;
 
 function del_file(path) {
     checkCoookie();
@@ -251,6 +262,7 @@ function del_file(path) {
                     console.warn(d);
                 }
                 alert(d.message);
+                del_file_c++;
             },
             error: function (e) {
                 ajax_error(e);
@@ -262,9 +274,13 @@ function del_file(path) {
 }
 
 function rename(path, oldName) {
-    captcha_model_show("rename_file('" + path + "','" + oldName + "')");
+    if (rename_file_c === 0 || rename_file_c % 4 === 0)
+        captcha_model_show("rename_file('" + path + "','" + oldName + "')");
+    else
+        rename_file(path, oldName);
 }
 
+var rename_file_c = 0;
 function rename_file(path, oldName) {
     let key = $("#keys").val();
     let code = $("#code").val();
@@ -293,6 +309,7 @@ function rename_file(path, oldName) {
                                 console.warn(d);
                             }
                             alert(d.title + '\n' + d.message);
+                            rename_file_c++;
                         },
                         error: function (e) {
                             ajax_error(e);

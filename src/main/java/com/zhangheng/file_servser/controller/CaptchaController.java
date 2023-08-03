@@ -55,7 +55,7 @@ public class CaptchaController {
                 msg.setMessage("对不起，验证码输入错误！");
             }
         } else {
-            msg.setCode(404);
+            msg.setCode(400);
             msg.setTitle("验证码为空");
             msg.setMessage("请重新获取验证码，然后再来验证！");
         }

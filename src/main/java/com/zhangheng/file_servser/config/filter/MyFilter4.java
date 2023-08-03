@@ -35,7 +35,7 @@ public class MyFilter4 extends MyFilter {
             "/upload/",
             "/download/getAllFileType",
             "/download/findFileList",
-            "/getVerify/math",
+            "/getVerify/",
     };
     @Value("#{'${server.servlet.context-path}'}")
     private String contextPath;
