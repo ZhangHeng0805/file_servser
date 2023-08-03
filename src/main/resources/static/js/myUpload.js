@@ -159,6 +159,8 @@ function showModel(d) {
         html += '<label><a target="_blank" href="download/show/' + path + '">' + d.message + '</a></label>';
     } else {
         html += '<label>' + d.message + '</label>';
+        $("#files_result").html('');
+        $("#files_num").html('');
     }
     html += '</div>';
     $("#upload_alert").html(html);

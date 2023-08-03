@@ -54,7 +54,7 @@ function sub2() {
     }
     let key = $("#keys").val();
     if (key.length > 0) {
-        if (getFileList_c === 0 || getFileList_c % 5 === 0)
+        if ( getFileList_c % 5 === 0)
             captcha_model_show("getFileList('" + key + "')");
         else
             getFileList(key);
@@ -228,7 +228,7 @@ function checkCoookie() {
 
 function del(path) {
     if (confirm("确定删除该文件吗？")) {
-        if (del_file_c === 0 || del_file_c % 3 === 0)
+        if ( del_file_c % 3 === 0)
             captcha_model_show("del_file('" + path + "')");
         else
             del_file(path);
@@ -274,7 +274,7 @@ function del_file(path) {
 }
 
 function rename(path, oldName) {
-    if (rename_file_c === 0 || rename_file_c % 4 === 0)
+    if ( rename_file_c % 4 === 0)
         captcha_model_show("rename_file('" + path + "','" + oldName + "')");
     else
         rename_file(path, oldName);
