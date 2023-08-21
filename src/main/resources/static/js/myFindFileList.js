@@ -91,7 +91,8 @@ function getFileList(key) {
                 Data = null;
                 if (TYPE !== $("#type").val()) ;
                 set_select_checked("type", TYPE);
-                console.warn(d)
+                console.warn(d);
+                getFileList_c=0;
             }
             //处理数据
             handle(d);
@@ -261,6 +262,7 @@ function del_file(path) {
                 if (d.code === 200) {
                     getFileList(key);
                 } else {
+                    del_file_c=0;
                     console.warn(d);
                 }
                 if (d.code === 200||del_file_c!==0)
@@ -309,6 +311,7 @@ function rename_file(path, oldName) {
                             if (d.code === 200) {
                                 getFileList(key);
                             } else {
+                                rename_file_c=0;
                                 console.warn(d);
                             }
                             if (d.code === 200||rename_file_c!==0)
