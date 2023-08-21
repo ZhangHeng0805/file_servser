@@ -31,8 +31,12 @@ function loadImg(img) {
                     var reader = new FileReader();
                     reader.readAsDataURL(this.response);
                     reader.onload = function () {
-                        localStorage[img.getAttribute("lsrc")] = this.result;
-                        img.src = this.result;
+                        try {
+                            localStorage[img.getAttribute("lsrc")] = this.result;
+                            img.src = this.result;
+                        }catch (e) {
+                            img.src="static/img/img.png"
+                        }
                     }
                 }
             }

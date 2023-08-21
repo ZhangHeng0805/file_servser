@@ -40,7 +40,7 @@ function getAllFileType() {
 }
 
 function isData(data) {
-    return data != null && data.length > 0 && data[0].code == 200;
+    return data != null && data.length > 0 && data[0].code === 200;
 }
 
 function sub2() {
@@ -97,7 +97,8 @@ function getFileList(key) {
             //刷新下拉框数据
             getAllFileType();
             $("#btn_sub2").attr('disabled', false);
-            getFileList_c++;
+            if (d.code === 200||getFileList_c!==0)
+                getFileList_c++;
         },
         error: function (e) {
             $("#btn_sub2").attr('disabled', false);
@@ -256,13 +257,14 @@ function del_file(path) {
                 code: code,
             },
             success: function (d) {
-                if (d.code == 200) {
+                if (d.code === 200) {
                     getFileList(key);
                 } else {
                     console.warn(d);
                 }
+                if (d.code === 200||del_file_c!==0)
+                    del_file_c++;
                 alert(d.message);
-                del_file_c++;
             },
             error: function (e) {
                 ajax_error(e);
@@ -287,8 +289,8 @@ function rename_file(path, oldName) {
     if (key.length > 0) {
         let renameFile = prompt("文件重命名，请输入新的文件名:", oldName);
         if (renameFile) {
-            if (renameFile != null && renameFile.length > 0) {
-                if (renameFile != oldName) {
+            if (renameFile !=null && renameFile.length > 0) {
+                if (renameFile !== oldName) {
                     $.ajax({
                         url: ZH_URL.rename_file,
                         method: "post",
@@ -303,13 +305,14 @@ function rename_file(path, oldName) {
                             newName: renameFile,
                         },
                         success: function (d) {
-                            if (d.code == 200) {
+                            if (d.code === 200) {
                                 getFileList(key);
                             } else {
                                 console.warn(d);
                             }
-                            alert(d.title + '\n' + d.message);
+                            if (d.code === 200||rename_file_c!==0)
                             rename_file_c++;
+                            alert(d.title + '\n' + d.message);
                         },
                         error: function (e) {
                             ajax_error(e);
