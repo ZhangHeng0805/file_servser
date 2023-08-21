@@ -83,7 +83,8 @@ function getFileList(key) {
         success: function (d) {
             // console.log(d);
             d = Array.isArray(d) ? d : new Array(d);
-            if (isData(d)) {
+            let isSuccess=isData(d);
+            if (isSuccess) {
                 Data = d;
                 TYPE = $("#type").val();
             } else {
@@ -97,7 +98,7 @@ function getFileList(key) {
             //刷新下拉框数据
             getAllFileType();
             $("#btn_sub2").attr('disabled', false);
-            if (d.code === 200||getFileList_c!==0)
+            if (isSuccess||getFileList_c!==0)
                 getFileList_c++;
         },
         error: function (e) {
@@ -311,7 +312,7 @@ function rename_file(path, oldName) {
                                 console.warn(d);
                             }
                             if (d.code === 200||rename_file_c!==0)
-                            rename_file_c++;
+                                rename_file_c++;
                             alert(d.title + '\n' + d.message);
                         },
                         error: function (e) {
