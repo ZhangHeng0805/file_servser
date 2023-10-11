@@ -169,7 +169,7 @@ public class UpLoadService {
         if (!fileName.isEmpty()) {
             //图片小于2Mb
             String Fname = file.getOriginalFilename();
-            log.info("\n文件名：{}；文件大小：{}kb\n", Fname, Message.twoDecimalPlaces((double) file.getSize() / 1024));
+            log.info("\n文件名：{}；文件大小：{}\n", Fname, FileUtil.fileSizeStr(file.getSize()));
 //            log.info("文件大小：{}kb", Message.twoDecimalPlaces((double) file.getSize()/1024));
             //排除文件名中的非法字符
             fileName = FiletypeUtil.filterFileName(fileName);

@@ -2,10 +2,12 @@ package com.zhangheng.file_servser.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.zhangheng.bean.Message;
+import com.zhangheng.file.FileUtil;
 import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
+import com.zhangheng.log.printLog.Log;
 import com.zhangheng.util.EncryptUtil;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
@@ -209,6 +211,7 @@ public class UpLoadController {
                     String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
                     String s = upLoadService.saveFile(file, name, Path);
                     if (s != null) {
+                        Log.Info("文件上传["+ FileUtil.fileSizeStr(file.getSize())+"]："+s+"\n"+ com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request)+"\n");
                         msg.setTime(TimeUtil.getNowTime());
                         msg.setCode(200);
                         msg.setTitle("上传文件保存成功");

@@ -15,6 +15,7 @@ import com.zhangheng.file_servser.entity.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
+import com.zhangheng.log.printLog.Log;
 import com.zhangheng.util.MathUtil;
 import com.zhangheng.util.TimeUtil;
 import org.slf4j.Logger;
@@ -136,6 +137,7 @@ public class WebController {
                         if (!file.isDirectory()) {
                             boolean b = upLoadService.deleteFile(path);
                             if (b) {
+                                Log.Warn("文件删除："+path+"\n"+ com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request)+"\n");
                                 msg.setCode(200);
                                 msg.setTitle("删除成功");
                                 msg.setMessage("成功！文件删除成功：" + path);
@@ -190,6 +192,7 @@ public class WebController {
                     msg.setCode(200);
                     msg.setTitle("重命名成功!");
                     msg.setMessage(newName);
+                    Log.Debug("文件重命名："+path+" | "+newName+"\n"+ com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request)+"\n");
                 } else {
                     msg.setCode(500);
                     msg.setTitle("重命名失败");
@@ -242,7 +245,7 @@ public class WebController {
     @ResponseBody
     @RequestMapping("/static/client")
     public void client(@RequestBody String map, HttpServletRequest request) {
-        String ip = com.zhangheng.util.CusAccessObjectUtil.getIpAddress(request);
+        String ip = com.zhangheng.util.CusAccessObjectUtil.getClientIp(request);
         StringBuilder sb = new StringBuilder();
 //        System.out.println(map);
         if (!StrUtil.isBlank(map) && !"null".equals(map)) {

@@ -58,6 +58,8 @@ public class DownLoadController {
     private String baseDir;
     @Value("${is-download-show-attchment}")
     private Boolean is_show_attchment;
+    @Value("${config.FileType.isAll}")
+    private Boolean is_show_fileType_all;
     private Logger log = LoggerFactory.getLogger(getClass());
     private List<String> files = new ArrayList<>();
 
@@ -261,7 +263,8 @@ public class DownLoadController {
     public List<Message> getAllFileType(){
         ArrayList<Message> list = new ArrayList<>();
         try {
-            list.add(new Message(null,200,"全部","$all$",true,null));
+            if (is_show_fileType_all)
+                list.add(new Message(null,200,"全部","$all$",true,null));
             File fileList = new File(baseDir);
             File[] files = fileList.listFiles();
             for (File f : files) {
