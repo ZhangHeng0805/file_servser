@@ -32,14 +32,14 @@ public class ExceptionHandler extends DefaultErrorAttributes {
 
     //    @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Throwable.class)
-    public Exception e(Exception e) {
+    public void e(Exception e) {
 //        Message msg = new Message();
 //        msg.setTime(TimeUtil.now());
 //        msg.setCode(500);
 //        msg.setTitle("错误异常");
 //        msg.setMessage(e.getMessage());
         log.error("\n全局异常捕获:{}\n", e.toString());
-        return e;
+//        return e;
     }
 
     @Override

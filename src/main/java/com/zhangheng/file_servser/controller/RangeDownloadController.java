@@ -1,15 +1,13 @@
 package com.zhangheng.file_servser.controller;
 
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletOutputStream;
@@ -45,10 +43,8 @@ public class RangeDownloadController {
      * @param response       :
      * @param range          :
      * @param moduleBaseName
-     * @author kevin
-     * @date 2021/1/17
      */
-    @RequestMapping(value = "/download/split/{moduleBaseName}/**")
+    @RequestMapping(value = "download/split/{moduleBaseName}/**")
     public void downloadFile(@PathVariable("moduleBaseName") String moduleBaseName,
                              HttpServletResponse response,
                              HttpServletRequest request,
@@ -84,8 +80,11 @@ public class RangeDownloadController {
         String disposition = is_split_attchment?"attachment;":"";
 
         // 将需要下载的文件段发送到客服端，准备流.
-        try (RandomAccessFile input = new RandomAccessFile(file, "r");
-             ServletOutputStream output = response.getOutputStream()) {
+        RandomAccessFile input = null;
+        ServletOutputStream output=null;
+        try {
+            input = new RandomAccessFile(file, "r");
+            output = response.getOutputStream();
             //最后修改时间
             long lastModified = file.lastModified();
 //            FileTime lastModifiedObj = Files.getLastModifiedTime(file.toPath());
@@ -101,7 +100,7 @@ public class RangeDownloadController {
             response.setHeader("Content-Disposition", disposition + "filename=" + encode);
             response.setHeader("Accept-Ranges", "bytes");
             //判断文件是否被修改
-            response.setHeader("ETag", encode);
+            response.setHeader("ETag", DigestUtil.md5Hex(file));
             //文件修改时间
             response.setDateHeader("Last-Modified", lastModified);
             //过期时间
@@ -114,7 +113,11 @@ public class RangeDownloadController {
 //            e.printStackTrace();
             log.error("下载spilt错误4："+ e.toString());
             response.sendError(500,"文件下载异常：" + e.getMessage());
-
+        }finally {
+            if (input != null)
+                input.close();
+            if(output != null)
+                output.close();
         }
     }
 
@@ -125,7 +128,7 @@ public class RangeDownloadController {
         String ipMessage;
         ipMessage = CusAccessObjectUtil.getCompleteRequest(request);
 //        String ipMessage = IPAnalysisAPI.getIPMessage(request);
-        log.info("\n文件分片下载请求：" + ipMessage+"\n");
+//        log.info("\n文件分片下载请求：" + ipMessage+"\n");
 //        log.info("下载IP："+ipAddress);
         //请求的完整路径（地址）
         final String pathq =
@@ -159,8 +162,6 @@ public class RangeDownloadController {
      * @param ranges   :
      * @param response :
      * @param length   :
-     * @author kevin
-     * @date 2021/1/17
      */
     private void dealRanges(Range full, String range, List<Range> ranges, HttpServletResponse response,
                             long length) throws IOException {
@@ -215,8 +216,6 @@ public class RangeDownloadController {
      * @param output   :
      * @param full     :
      * @param length   :
-     * @author kevin
-     * @date 2021/1/17
      */
     private void outputRange(HttpServletResponse response, List<Range> ranges, RandomAccessFile input,
                              ServletOutputStream output, Range full, long length) throws IOException {
