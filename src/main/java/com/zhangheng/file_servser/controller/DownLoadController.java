@@ -1,11 +1,13 @@
 package com.zhangheng.file_servser.controller;
 
 import com.zhangheng.bean.Message;
+import com.zhangheng.download.server.service.SplitDownloadService;
 import com.zhangheng.file.FileUtil;
 import com.zhangheng.file.FiletypeUtil;
 import com.zhangheng.file_servser.entity.FileInfo;
 import com.zhangheng.file_servser.entity.StatusCode;
 import com.zhangheng.file_servser.entity.User;
+import com.zhangheng.file_servser.service.DownloadService;
 import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FolderFileScanner;
@@ -17,12 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.List;
 
 /**
  * 文件下载
+ *
  * @author 张恒
  * @program: file_servser
  * @email zhangheng.0805@qq.com
@@ -48,8 +50,8 @@ import java.util.List;
 public class DownLoadController {
 
 
-    @Autowired
-    private KeyService keyService;
+    @Resource
+    private DownloadService downloadService;
     @Value("${appName}")
     private String appName;
     @Value("#{'${test_keys}'.split(',')}")
@@ -64,12 +66,13 @@ public class DownLoadController {
     private List<String> files = new ArrayList<>();
 
     @RequestMapping("/accs")
-    public String main(){
+    public String main() {
         return test_keys.toString();
     }
 
     /**
-     * 文件下载请求
+     * 文件普通下载请求
+     *
      * @param moduleBaseName
      * @param request
      * @param response
@@ -85,44 +88,10 @@ public class DownLoadController {
         File file = null;
         ServletOutputStream outputStream = null;
         try {
-            request.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-//        log.info("moduleBaseName:{}",moduleBaseName);
-            String ipMessage;
-            ipMessage = CusAccessObjectUtil.getCompleteRequest(request);
-//        String ipMessage = IPAnalysisAPI.getIPMessage(request);
-            log.info("\n文件普通下载请求：" + ipMessage+"\n");
-//        log.info("下载IP："+ipAddress);
-            //请求的完整路径（地址）
-            final String pathq =
-                    request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
-//        log.info("pathq:{}",pathq);
-            final String bestMatchingPattern =
-                    request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-//        log.info("bestMatchingPattern:{}",bestMatchingPattern);
-            String arguments = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, pathq);
-//        log.info("arguments:{}",arguments);
-            String moduleName;
-            if (null != arguments && !arguments.isEmpty()) {
-                moduleName = moduleBaseName + '/' + arguments;
-            } else {
-                moduleName = moduleBaseName;
-            }
-//        log.info(moduleName);
-            String type = "";
-            String name = "";
-            if (moduleName.lastIndexOf("/") > 0) {
-                type = moduleName.substring(0, moduleName.lastIndexOf("/"));
-                name = moduleName.substring(moduleName.lastIndexOf("/") + 1);
-            }
-            file = new File(baseDir + type + "/" + name);
-//            FileInputStream input = null;
+            file = downloadService.paresPath(request, response, moduleBaseName);
             outputStream = response.getOutputStream();
             //最后修改时间
             long lastModified = file.lastModified();
-//            FileTime lastModifiedObj = Files.getLastModifiedTime(file.toPath());
-//            long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(),
-//                    ZoneId.of(ZoneId.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
             //判断文件是否被修改
             String fileName = file.getName();
             String encode = URLEncoder.encode(fileName, "UTF-8");
@@ -132,13 +101,13 @@ public class DownLoadController {
             //过期时间
             response.setDateHeader("Expires", System.currentTimeMillis() + 604800000L);
             //文件类型
-            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(fileName)+";charset=UTF-8");
+            response.setHeader("Content-Type", FiletypeUtil.getFileContentType(fileName) + ";charset=UTF-8");
             //显示文件大小
             response.setHeader("Content-Length", String.valueOf(file.length()));
             //设置文件下载方式为附件方式，以及设置文件名
 //            response.setHeader("Content-Disposition", "attchment;filename=" + file.getName());
             String disposition = "filename=" + encode;
-            disposition=is_show_attchment?"attchment;"+disposition:disposition;
+            disposition = is_show_attchment ? "attchment;" + disposition : disposition;
             response.setHeader("Content-Disposition", disposition);
             input = FileUtils.openInputStream(file);
             IOUtils.copy(input, outputStream);
@@ -152,7 +121,7 @@ public class DownLoadController {
             log.error("下载show错误2：" + e.getMessage());
         } finally {
             try {
-                if (file.exists()) {
+                if (input != null) {
                     input.close();
                 }
             } catch (Exception e) {
@@ -168,7 +137,7 @@ public class DownLoadController {
                         response.sendError(500, StatusCode.Http500);
                     }
                 } catch (Exception e) {
-                    log.error("下载show错误3："+e.toString());
+                    log.error("下载show错误3：" + e.toString());
                 }
             }
             try {
@@ -176,45 +145,64 @@ public class DownLoadController {
                     outputStream.close();
                 }
             } catch (IOException e) {
-                log.error("下载show错误1："+e.toString());
+                log.error("下载show错误1：" + e.toString());
             }
         }
     }
 
-
+    /**
+     * 文件分片下载请求
+     * @param moduleBaseName
+     * @param response
+     * @param request
+     * @throws IOException
+     */
+    @RequestMapping(value = "split/{moduleBaseName}/**")
+    public void downloadFile(@PathVariable("moduleBaseName") String moduleBaseName,
+                             HttpServletResponse response,
+                             HttpServletRequest request) throws IOException {
+        File file = downloadService.paresPath(request, response, moduleBaseName);
+        try {
+            SplitDownloadService.download(file, request, response);
+        } catch (IOException e) {
+            log.error("分片下载错误：" + e.getMessage());
+            if (!response.isCommitted())
+                response.sendError(500, e.getMessage());
+        }
+    }
 
 
     @RequestMapping("findFileList")
-    public List<Message> findFileList(HttpServletRequest request, String type)  {
-        List<Message> list =new ArrayList<>();
+    public List<Message> findFileList(HttpServletRequest request, String type) {
+        List<Message> list = new ArrayList<>();
         User user = (User) request.getAttribute("user");
-        if (user.getKey()!=null&&user.getKey().length()>0){
-            if (!user.getType().equals(User.Type.Unknown)){
-                if (type!=null&&type.length()>0){
-                    log.info("\n文件夹检索：IP[{}],秘钥[{}],查询[{}]文件夹\n",user.getIp(),user.getKey(),type);
+        if (user.getKey() != null && user.getKey().length() > 0) {
+            if (!user.getType().equals(User.Type.Unknown)) {
+                if (type != null && type.length() > 0) {
+                    log.info("\n文件夹检索：IP[{}],秘钥[{}],查询[{}]文件夹\n", user.getIp(), user.getKey(), type);
                     files.clear();
                     try {
-                        switch (type){
+                        switch (type) {
                             case "$all$"://检索全部文件
                                 files = FolderFileScanner.scanFilesWithRecursion(baseDir);
                                 break;
-                                default:
+                            default:
 //                                    files.add("对不起，"+type+"中没有找到你需要的，请换一个！");
-                                    files = FolderFileScanner.scanFilesWithRecursion(baseDir+type);
-                                    break;
+                                files = FolderFileScanner.scanFilesWithRecursion(baseDir + type);
+                                break;
                         }
                         if (!files.isEmpty()) {
-                            File file=null;
+                            File file = null;
                             for (Object o : files) {
                                 String s1 = "";
                                 String s = String.valueOf(o);
                                 String replace = baseDir.replace("/", "");
                                 if (s.indexOf(replace) > 1) {
                                     s1 = s.substring(s.indexOf(replace) + baseDir.length());
-                                    s1=s1.replace("\\","/");
+                                    s1 = s1.replace("\\", "/");
                                     file = new File(s);
                                     FileInfo info = new FileInfo();
-                                    if (file.exists()){
+                                    if (file.exists()) {
                                         String name = file.getName();
                                         info.setName(FileUtil.getMainName(name));
                                         info.setType(FiletypeUtil.getFileType(name));
@@ -225,56 +213,57 @@ public class DownLoadController {
                                         if (user.getType().equals(User.Type.Admin)) {
                                             info.setAuth("admin");
                                         }
-                                    }else {
+                                    } else {
                                         info.setName("***");
                                         info.setType("***");
-                                        info.setSize(0);
+                                        info.setSize(0L);
                                         info.setUpdate_time("***");
                                     }
-                                    list.add(new Message(null,200,s1.substring(s1.lastIndexOf("/")+1), s1,true,info));
+                                    list.add(new Message(null, 200, s1.substring(s1.lastIndexOf("/") + 1), s1, true, info));
                                 } else {
                                     s1 = s;
-                                    list.add(new Message(null,404,"(＞人＜；)对不起，没有找到你需要的",s1,false,null));
+                                    list.add(new Message(null, 404, "(＞人＜；)对不起，没有找到你需要的", s1, false, null));
                                 }
                             }
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         //e.printStackTrace();
-                        log.error("\n文件检索错误："+e.getMessage()+"\n");
-                        list.add(new Message(null,500,"出错了ε=(´ο｀*)))唉",e.getMessage(),false,null));
+                        log.error("\n文件检索错误：" + e.getMessage() + "\n");
+                        list.add(new Message(null, 500, "出错了ε=(´ο｀*)))唉", e.getMessage(), false, null));
                     }
-                }else {
-                    list.add(new Message(null,500,"文件夹名称为null","对不起，文件夹名称不能为空",false,null));
+                } else {
+                    list.add(new Message(null, 500, "文件夹名称为null", "对不起，文件夹名称不能为空", false, null));
                 }
-            }else {
-                list.add(new Message(null,500,"秘钥错误","对不起，访问秘钥错误",false,null));
+            } else {
+                list.add(new Message(null, 500, "秘钥错误", "对不起，访问秘钥错误", false, null));
             }
-        }else {
-            list.add(new Message(null,500,"秘钥为null","对不起，访问秘钥不能为空",false,null));
+        } else {
+            list.add(new Message(null, 500, "秘钥为null", "对不起，访问秘钥不能为空", false, null));
         }
         return list;
     }
 
     /**
      * 获取文件夹列表
+     *
      * @return
      */
     @PostMapping("getAllFileType")
-    public List<Message> getAllFileType(){
+    public List<Message> getAllFileType() {
         ArrayList<Message> list = new ArrayList<>();
         try {
             if (is_show_fileType_all)
-                list.add(new Message(null,200,"全部","$all$",true,null));
+                list.add(new Message(null, 200, "全部", "$all$", true, null));
             File fileList = new File(baseDir);
             File[] files = fileList.listFiles();
             for (File f : files) {
-                if (f.isDirectory()){
+                if (f.isDirectory()) {
                     String path = f.getPath().substring(baseDir.length());
-                    list.add(new Message(null,200,path,path,true,null));
+                    list.add(new Message(null, 200, path, path, true, null));
                 }
             }
-        }catch (Exception e){
-            list.add(new Message(null,500,"文件类型获取错误！",e.getMessage(),true,null));
+        } catch (Exception e) {
+            list.add(new Message(null, 500, "文件类型获取错误！", e.getMessage(), true, null));
         }
         return list;
     }
