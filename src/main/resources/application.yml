@@ -1,7 +1,9 @@
 spring:
   application:
     #    应用名称
-    name: file_server
+    name: ZHFS
+  profiles:
+    active: '@profiles.name@'
   devtools:
     restart:
       # 设置热部署

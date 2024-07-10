@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.zhangheng</groupId>
     <artifactId>file_servser</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>file_servser</name>
-    <description>Demo project for Spring Boot(文件管理服务器)</description>
+    <version>24.07.10</version>
+    <name>ZHFS ${project.version}</name>
+    <description>Project for Spring Boot(文件管理服务器)</description>
 
     <properties>
         <java.version>1.8</java.version>

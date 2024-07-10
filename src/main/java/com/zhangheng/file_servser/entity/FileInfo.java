@@ -1,8 +1,17 @@
 package com.zhangheng.file_servser.entity;
 
+import com.zhangheng.file.FileUtil;
+import com.zhangheng.file.FiletypeUtil;
+import com.zhangheng.file_servser.service.FileService;
+import com.zhangheng.util.TimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 
 /**
  * @author 张恒
@@ -20,4 +29,27 @@ public class FileInfo {
     private String update_time;//更新时间
     private Long size;//文件大小
     private String auth;
+    private Boolean isFile;
+    private Boolean isDirectory;
+
+    public static void main(String[] args) {
+        FileService fileService = new FileService();
+        System.out.println(fileService.getFileList("files/application", "files/",null));
+    }
+
+    public FileInfo(File file, String basePath, String auth) {
+        this.name = file.getName();
+        this.type = FiletypeUtil.getFileType(file);
+        if (basePath != null) {
+            Path base = Paths.get(basePath);
+            this.path = FileUtil.normalize(base.relativize(file.toPath()).toString());
+        } else {
+            this.path = FileUtil.normalize(file.getPath());
+        }
+        this.update_time = TimeUtil.toTime(new Date(file.lastModified()));
+        this.size = file.length();
+        this.auth = auth;
+        this.isFile = file.isFile();
+        this.isDirectory = file.isDirectory();
+    }
 }
