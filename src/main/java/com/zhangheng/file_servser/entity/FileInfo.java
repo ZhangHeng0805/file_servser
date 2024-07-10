@@ -32,10 +32,6 @@ public class FileInfo {
     private Boolean isFile;
     private Boolean isDirectory;
 
-    public static void main(String[] args) {
-        FileService fileService = new FileService();
-        System.out.println(fileService.getFileList("files/application", "files/",null));
-    }
 
     public FileInfo(File file, String basePath, String auth) {
         this.name = file.getName();
