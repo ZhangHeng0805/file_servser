@@ -52,10 +52,10 @@ public class FileServserApplication {
             WebServer webServer = webServerApplicationContext.getWebServer();
             if (webServer != null) {
                 String localUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, "localhost");
-                String remoteUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, NetUtil.getLocalIpAddress());
+                String externalUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, NetUtil.getLocalIpAddress());
                 sb.append("\t").append(id).append(" is running! Access URLs:\n");
                 sb.append("\tLocal:   ").append(localUrl).append("\n");
-                sb.append("\tRemote:   ").append(remoteUrl).append("\n");
+                sb.append("\tExternal:   ").append(externalUrl).append("\n");
 //        sb.append("\tSwagger: http://localhost").append(port).append(path).append("/doc.html\n");
             }
         }

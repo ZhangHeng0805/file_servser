@@ -28,7 +28,7 @@
                     <li class="active">
                         <a href="#t2" data-toggle="tab">
                             <i class="fa fa-search"></i>
-                            文件查找
+                            文件检索
                         </a>
                     </li>
                 </ul>
@@ -39,8 +39,9 @@
                         <div th:replace="upload::#upload_form"></div>
                     </div>
                     <div class="tab-pane active" id="t2">
-                        <div th:replace="findFileList::#findFileList"></div>
+                        <div th:replace="fileListShow::#fileListShow"></div>
                     </div>
+
                 </div>
 
             </div>
@@ -54,7 +55,7 @@
     window.onload = function () {
         // console.log("页面加载完成====》onload");
         document.body.classList.remove('loading');
-        getAllFileType();
+        // getAllFileType();
         // resetImgCode();
     };
     $(window).load(function () {

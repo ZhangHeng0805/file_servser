@@ -339,4 +339,5 @@ var ZH_URL={
     download_getfilelist : 'download/findFileList',
     delete_file : 'deleteFile',
     rename_file : 'renameFile',
+    getFileList : 'getFileList',
 };

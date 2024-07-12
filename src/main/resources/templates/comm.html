@@ -101,12 +101,6 @@
                                 <input type="text" class="form-control" id="code" placeholder="请输入验证码结果" required>
                             </div>
                         </div>
-                        <!--                        <div class="form-group new-email">-->
-                        <!--                            <label class="col-md-2 control-label"></label>-->
-                        <!--                            <div class="col-md-7">-->
-                        <!--                                <input type="button" class="btn btn-info ver_code" hidden value="验证">-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -192,6 +186,7 @@
             try {
                 this.func = eval(methodName);
             } catch (e) {
+                console.error("方法执行",e)
                 alert("找不到" + methodName + "这个方法");
             }
         }

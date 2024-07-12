@@ -176,9 +176,9 @@ public class DownLoadController {
     public List<Message> findFileList(HttpServletRequest request, String type) {
         List<Message> list = new ArrayList<>();
         User user = (User) request.getAttribute("user");
-        if (user.getKey() != null && user.getKey().length() > 0) {
+        if (user.getKey() != null && !user.getKey().isEmpty()) {
             if (!user.getType().equals(User.Type.Unknown)) {
-                if (type != null && type.length() > 0) {
+                if (type != null && !type.isEmpty()) {
                     log.info("\n文件夹检索：IP[{}],秘钥[{}],查询[{}]文件夹\n", user.getIp(), user.getKey(), type);
                     files.clear();
                     try {
@@ -209,10 +209,7 @@ public class DownLoadController {
                                         info.setSize(file.length());
                                         info.setUpdate_time(TimeUtil.toTime(new Date(file.lastModified())));
                                         info.setPath(s1);
-                                        //判断是否为管理秘钥
-                                        if (user.getType().equals(User.Type.Admin)) {
-                                            info.setAuth("admin");
-                                        }
+                                        info.setAuth(user.getType().name());
                                     } else {
                                         info.setName("***");
                                         info.setType("***");

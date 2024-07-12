@@ -19,6 +19,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * @author: ZhangHeng
@@ -31,11 +33,11 @@ import java.io.IOException;
 @Order(2)
 public class MyFilter2 extends MyFilter {
     @Value("#{'${config.filter2.excludePath}'.split(',')}")
-    private String[] excludePath;
+    private HashSet<String> excludePath;
     @Value("#{'${server.servlet.context-path}'}")
     private String contextPath;
 
-//    private String[] excludePath={
+    //    private String[] excludePath={
 //            "/static/**",//静态资源
 //            "/favicon.ico",//网址图标
 //            "/error/**",//错误
@@ -44,7 +46,7 @@ public class MyFilter2 extends MyFilter {
 //            "/download/show/",
 //            "/download/split/",
 //    };
-    private Logger log= LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     @Value(value = "#{'${config.max-request-counts}'}")
     private Integer maxCount;
 
@@ -53,22 +55,23 @@ public class MyFilter2 extends MyFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String uri = CusAccessObjectUtil.getUri(req);
-        if (contextPath!="/")
-            uri=uri.replace(contextPath,"");
-        boolean isFilter=true;
-        isFilter = isFilter(excludePath,uri,isFilter);
-        if (isFilter){
+        if (!Objects.equals(contextPath, "/")) {
+            uri = uri.replace(contextPath, "");
+        }
+        boolean isFilter = true;
+        isFilter = isFilter(excludePath, uri, isFilter);
+        if (isFilter) {
             HttpSession session = req.getSession();
-            Integer sessionCount = Convert.toInt(session.getAttribute(uri+"_c"), 0);
+            Integer sessionCount = Convert.toInt(session.getAttribute(uri + "_c"), 0);
             sessionCount = sessionCount + 1;
-            session.setAttribute(uri+"_c", sessionCount);
+            session.setAttribute(uri + "_c", sessionCount);
             if (sessionCount > maxCount) {
                 Message msg = new Message();
                 msg.setCode(403);
                 msg.setTitle("请求达上限!");
                 msg.setMessage(StatusCode.Http403);
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
-                log.warn("\n请求次数过多,路径[{}]-次数[{}]\n",uri,sessionCount);
+                log.warn("\n请求次数过多,路径[{}]-次数[{}]\n", uri, sessionCount);
                 return;
             }
         }

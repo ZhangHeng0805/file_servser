@@ -1,7 +1,8 @@
 function resetImgCode() {
     $("#code").val(null);
-    $("#img-code").attr("src", window.location.href+"getVerify/math?t=" + new Date().getTime());
+    $("#img-code").attr("src", window.location.href + "getVerify/math?t=" + new Date().getTime());
 }
+
 function sub1() {
     hideModel();
     var key = $("#key").val();
@@ -9,9 +10,9 @@ function sub1() {
     // var code = $("#code").val();
     if (key.length > 0) {
         if (file.length > 0) {
-                // checkCode(code)
-                //resetImgCode();
-                captcha_model_show("upload()");
+            // checkCode(code)
+            //resetImgCode();
+            captcha_model_show("upload()");
         } else {
             alert("请选择文件");
         }
@@ -23,7 +24,7 @@ function sub1() {
 
 function checkCode(code) {
     $.ajax({
-        url: window.location.href+ZH_URL.captcha_checking,
+        url: window.location.href + ZH_URL.captcha_checking,
         type: "post",
         dataType: "json",
         data: {
@@ -57,23 +58,23 @@ function upload() {
     checkCoookie();
     var form = new FormData(document.getElementById("upload_form"));
     var code = $("#code").val();
-    let key=zh_md5(getCookie('zhangheng0805_cid')+ $("#key").val() +getCookie('zhangheng0805_sid'));
-    form.set("key",key);
-    form.set("code",code);
+    let key = zh_md5(getCookie('zhangheng0805_cid') + $("#key").val() + getCookie('zhangheng0805_sid'));
+    form.set("key", key);
+    form.set("code", code);
     // console.log("upload-form",form.get("file"));
-    let time=new Date().getTime();
-    let size=form.get('file').size;
-    let name=code+'zh0805'+form.get('fileName').length;
-    var s = time+key+size+name;
+    let time = new Date().getTime();
+    let size = form.get('file').size;
+    let name = code + 'zh0805' + form.get('fileName').length;
+    var s = time + key + size + name;
     // console.log(s)
     $.ajax({
         url: ZH_URL.upload_file,
         type: "post",
         dataType: "json",
-        headers:{
-            'x-t':time,
-            'x-size':size,
-            'x-signature':zh_md5(s),
+        headers: {
+            'x-t': time,
+            'x-size': size,
+            'x-signature': zh_md5(s),
         },
         xhrFields: {
             withCredentials: true
@@ -96,8 +97,8 @@ function upload() {
         success: function (d) {
             showModel(d);
             if (d.code == 200) {
-                d.time=d.time?d.time:d.timestamp;
-                alert("上传成功！耗时:"+((Math.abs(Date.parse(new Date(d.time))-time))/1000).toFixed(2)+"秒")
+                d.time = d.time ? d.time : d.timestamp;
+                alert("上传成功！耗时:" + ((Math.abs(Date.parse(new Date(d.time)) - time)) / 1000).toFixed(2) + "秒")
                 upload_reset();
             } else {
                 console.warn(d);
@@ -117,24 +118,24 @@ function upload() {
 }
 
 function ajax_error(e) {
-    if (e.readyState===4){
-        if (e.responseJSON!=null) {
-            e.responseJSON.title=e.responseJSON.title?e.responseJSON.title:e.responseJSON.error;
-            alert(e.responseJSON.title+'\n'+e.responseJSON.message);
+    if (e.readyState === 4) {
+        if (e.responseJSON != null) {
+            e.responseJSON.title = e.responseJSON.title ? e.responseJSON.title : e.responseJSON.error;
+            alert(e.responseJSON.title + '\n' + e.responseJSON.message);
             showModel(e.responseJSON);
-        }else if (e.responseText!=null) {
-            alert("请求错误："+e.responseText);
+        } else if (e.responseText != null) {
+            alert("请求错误：" + e.responseText);
         }
-    }else{
+    } else {
         alert("请求失败！")
     }
     console.error(e);
 }
 
 function showModel(d) {
-    d.code=d.code?d.code:d.status;
-    d.title=d.title?d.title:d.error;
-    d.time=d.time?d.time:d.timestamp;
+    d.code = d.code ? d.code : d.status;
+    d.title = d.title ? d.title : d.error;
+    d.time = d.time ? d.time : d.timestamp;
     var html = "";
     if ((d.code + '').startsWith('2')) {
         html += '<div  class="alert alert-success fade in">';
@@ -149,7 +150,7 @@ function showModel(d) {
         '      <i class="fa fa-times"></i>' +
         '  </button>' +
         '<h4><strong>' + d.title + '</strong></h4>' +
-        '<div class="text-right">'+d.time+'</div>';
+        '<div class="text-right">' + d.time + '</div>';
     if (d.code == 200) {
         let arr = d.message.split("/");
         for (let n = 0; n < arr.length; n++) {
@@ -181,8 +182,8 @@ function upload_reset(state) {
     $("#fileSize").text('');
     $("#path").val(null);
     // resetImgCode();
-    document.getElementById('fileName_tips').style.display='none';
-    document.getElementById('filePath_tips').style.display='none';
+    document.getElementById('fileName_tips').style.display = 'none';
+    document.getElementById('filePath_tips').style.display = 'none';
 }
 
 function getFileSizeFormat(size) {
@@ -195,4 +196,6 @@ function getFileSizeFormat(size) {
     } else {
         return size + "B";
     }
+
+
 }

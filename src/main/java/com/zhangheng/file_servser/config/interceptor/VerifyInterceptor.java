@@ -15,7 +15,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 验证码拦截器
@@ -29,19 +31,19 @@ import java.util.List;
 public class VerifyInterceptor implements HandlerInterceptor {
 
     @Value("#{'${keys}'.split(',')}")
-    private List<String> keys;
+    private HashSet<String> keys;
     @Value("#{'${admin_keys}'.split(',')}")
-    private List<String> admin_keys;
+    private HashSet<String> admin_keys;
     @Value("#{'${test_keys}'.split(',')}")
-    private List<String> test_keys;
-    private Logger log= LoggerFactory.getLogger(getClass());
+    private HashSet<String> test_keys;
+    private final Logger log= LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String key = request.getParameter("key");
 
         Message msg = new Message();
-        if (key!=null&&key.length()>0) {
+        if (key!=null&& !key.isEmpty()) {
             User user = new User();
             user.setIp(CusAccessObjectUtil.getIpAddress(request));
             user.setKey(key);
@@ -70,7 +72,7 @@ public class VerifyInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    public boolean check_Key(List<String> keys,HttpServletRequest request,String key) throws Exception {
+    public boolean check_Key(Set<String> keys, HttpServletRequest request, String key) throws Exception {
         HttpSession session = request.getSession();
         String cid = Convert.toStr(session.getAttribute("cid"),"");
         String sid = Convert.toStr(session.getAttribute("sid"),"");

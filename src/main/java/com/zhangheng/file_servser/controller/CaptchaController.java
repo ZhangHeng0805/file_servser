@@ -36,12 +36,12 @@ public class CaptchaController {
 
 
     @RequestMapping("checking")
-    public Message verifyMathCheck(@RequestParam(value = "code", defaultValue = "") String code, @RequestParam(value = "isClear", defaultValue = "true") Boolean isClear, HttpServletRequest request) {
+    public Message verifyMathCheck(@RequestParam(value = "code", defaultValue = "") String code,
+                                   @RequestParam(value = "isClear", defaultValue = "true") Boolean isClear,
+                                   HttpServletRequest request) {
         Message msg = new Message();
         HttpSession session = request.getSession();
         String vCode = Convert.toStr(session.getAttribute("verify-code"), "");
-//        System.out.println(vCode);
-//        System.out.println(code);
         if (!StrUtil.isBlank(code)) {
             if (vCode.equalsIgnoreCase(code)) {
                 msg.setCode(200);

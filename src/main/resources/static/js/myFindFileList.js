@@ -119,35 +119,44 @@ function handle(d) {
     let type = "";
     let auth = "";
     var size = "";
+    let isFile = true;
+    let isDirectory = false;
     for (var i = 0; i < d.length; i++) {
         var msg = d[i];
         update_time = msg.obj == null ? "" : msg.obj.update_time;
         type = msg.obj == null ? "" : msg.obj.type;
+        isFile = msg.obj == null ? true : msg.obj.isFile;
+        isDirectory = msg.obj == null ? false : msg.obj.isDirectory;
         title = msg.title;
-        if (msg.code == 200) {
-            switch (type) {
-                case "text":
-                    icon = "static/img/text.png";
-                    break;
-                case "video":
-                    icon = "static/img/video.png";
-                    break;
-                case "audio":
-                    icon = "static/img/audio.png";
-                    break;
-                case "image":
-                    icon = "download/show/" + encodeURI(msg.message);
-                    break;
-                case "application":
-                    icon = "static/img/application.png";
-                    break;
-                default:
-                    icon = "static/img/unknown.png";
-                    break;
+        if (msg.code === 200) {
+            if (isFile) {
+                switch (type) {
+                    case "text":
+                        icon = "static/img/text.png";
+                        break;
+                    case "video":
+                        icon = "static/img/video.png";
+                        break;
+                    case "audio":
+                        icon = "static/img/audio.png";
+                        break;
+                    case "image":
+                        icon = "download/show/" + encodeURI(msg.message);
+                        break;
+                    case "application":
+                        icon = "static/img/application.png";
+                        break;
+                    default:
+                        icon = "static/img/unknown.png";
+                        break;
+                }
+                html.push('<div class="panel panel-success">');
+            } else {
+                icon = "static/img/folder.png";
+                html.push('<div class="panel panel-primary">');
             }
             title = msg.obj == null ? "" : msg.obj.name;
             size = msg.obj == null ? "" : getFileSizeFormat(msg.obj.size);
-            html.push('<div class="panel panel-success">');
         } else if ((msg.code + '').startsWith('5')) {
             html.push('<div class="panel panel-danger">');
         } else {
@@ -155,7 +164,7 @@ function handle(d) {
         }
         html.push('<div class="panel-heading">');
         html.push('<img lsrc="' + icon + '" src="" onerror="loadImg(this)" style="height: 40px;margin-right: 15px;box-shadow:0 0 10px black;">');
-        html.push('<label style="margin-right: 25px">' + title + '</label>');
+        html.push('<h3 class="panel-title" style="margin-right: 25px">' + title + '</h3>');
         html.push('<label class="label label-primary">' + size + '</label>');
         html.push('<code>' + update_time + '</code>');
         html.push('</div>');
@@ -164,7 +173,7 @@ function handle(d) {
         html.push('<div class="form-group">');
         html.push('<input class="form-control file_path_' + i + '" type="text" readonly>');
         html.push('</div>');
-        if (msg.code == 200) {
+        if (msg.code === 200) {
             html.push('<div class="form-group">');
             html.push('<div class="btn-group"><button data-toggle="dropdown" class="btn btn-search dropdown-toggle btn_' + i + '" ">复制链接<span class="caret"></span></button>');
             html.push('<ul role="menu" class="dropdown-menu">');
@@ -173,7 +182,7 @@ function handle(d) {
             html.push('</ul></div>');
             html.push('<div class="btn-group"><a class="btn btn-primary" target="_blank" id="btn' + i + '_download">直接访问</a></div>');
             auth = msg.obj == null ? "" : msg.obj.auth;
-            if (auth != null && auth.length > 0 && auth == "admin") {
+            if (auth != null && auth === "Admin") {
                 html.push('<div class="btn-group"><a class="btn btn-danger" target="_blank" onclick="del(\'' + msg.message + '\')">删除文件</a></div>');
                 html.push('<div class="btn-group"><a class="btn btn-warning" target="_blank" onclick="rename(\'' + msg.message + '\',\'' + title + '\')">文件重命名</a></div>');
             }
@@ -181,7 +190,7 @@ function handle(d) {
         html.push('</div></div></div>');
     }
     $("#files_result").html(html.join(""));
-    $("#files_num").html('总计:' + d.length + '个文件');
+    $("#files_num").html('总计:' + d.length + '个文件/夹');
     initData(d);
 }
 
@@ -244,7 +253,6 @@ var del_file_c = 0;
 
 function del_file(path) {
     checkCoookie();
-
     let key = $("#keys").val();
     let code = $("#code").val();
     if (key.length > 0) {
@@ -296,7 +304,7 @@ function rename_file(path, oldName) {
     if (key.length > 0) {
         let renameFile = prompt("文件重命名，请输入新的文件名:", oldName);
         if (renameFile) {
-            if (renameFile != null && renameFile.length > 0) {
+            if (renameFile.length > 0) {
                 if (renameFile !== oldName) {
                     $.ajax({
                         url: ZH_URL.rename_file,

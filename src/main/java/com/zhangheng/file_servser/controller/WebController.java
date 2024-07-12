@@ -10,8 +10,10 @@ import com.zhangheng.captcha.AbstractCaptcha;
 import com.zhangheng.captcha.CircleCaptcha;
 import com.zhangheng.captcha.generator.MathGenerator;
 import com.zhangheng.file.FileUtil;
+import com.zhangheng.file_servser.entity.FileInfo;
 import com.zhangheng.file_servser.entity.Message;
 import com.zhangheng.file_servser.entity.User;
+import com.zhangheng.file_servser.service.FileService;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
@@ -28,6 +30,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+import javax.annotation.Resources;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +39,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 张恒
@@ -58,6 +63,8 @@ public class WebController {
     private Integer maxFilePath;
     @Value("${baseDir}")
     private String baseDir;
+    @Resource
+    private FileService fileService;
 
     @RequestMapping("/favicon.ico")
     public String favicon() {
@@ -124,20 +131,39 @@ public class WebController {
     }
 
     @ResponseBody
-    @RequestMapping("deleteFile")
+    @RequestMapping("/getFileList")
+    public Message getFileList(String path, HttpServletRequest request) {
+        Message msg = new Message();
+        User user = (User) request.getAttribute("user");
+        if (user != null && !User.Type.Unknown.equals(user.getType())) {
+            List<FileInfo> fileList = fileService.getFileList(path, baseDir, user.getType().name());
+            msg.setCode(200);
+            msg.setTime("查询成功");
+            msg.setMessage("查询" + fileList.size() + "条记录");
+            msg.setObj(fileList);
+        } else {
+            msg.setCode(500);
+            msg.setTitle("秘钥错误");
+            msg.setMessage("对不起，访问秘钥错误");
+        }
+        return msg;
+    }
+
+    @ResponseBody
+    @RequestMapping("/deleteFile")
     public Message deleteFile(String path, HttpServletRequest request) {
         Message msg = new Message();
         msg.setTime(com.zhangheng.file_servser.utils.TimeUtil.time(new Date()));
         User user = (User) request.getAttribute("user");
-        if (user.getKey() != null && user.getKey().trim().length() > 0) {
+        if (user.getKey() != null && !user.getKey().trim().isEmpty()) {
             if (user.getType().equals(User.Type.Admin)) {
-                if (path != null && path.length() > 0) {
+                if (path != null && !path.isEmpty()) {
                     File file = new File(baseDir + path);
                     if (file.exists()) {
                         if (!file.isDirectory()) {
                             boolean b = upLoadService.deleteFile(path);
                             if (b) {
-                                Log.Warn("文件删除："+path+"\n"+ com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request)+"\n");
+                                Log.Warn("文件删除：" + path + "\n" + com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request) + "\n");
                                 msg.setCode(200);
                                 msg.setTitle("删除成功");
                                 msg.setMessage("成功！文件删除成功：" + path);
@@ -192,7 +218,7 @@ public class WebController {
                     msg.setCode(200);
                     msg.setTitle("重命名成功!");
                     msg.setMessage(newName);
-                    Log.Debug("文件重命名："+path+" | "+newName+"\n"+ com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request)+"\n");
+                    Log.Debug("文件重命名：" + path + " | " + newName + "\n" + com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request) + "\n");
                 } else {
                     msg.setCode(500);
                     msg.setTitle("重命名失败");
@@ -241,7 +267,6 @@ public class WebController {
     }
 
 
-
     @ResponseBody
     @RequestMapping("/static/client")
     public void client(@RequestBody String map, HttpServletRequest request) {
@@ -252,8 +277,8 @@ public class WebController {
             JSONObject jb = JSONUtil.parseObj(map);
             String cid = jb.getStr("cid");
             String sid = jb.getStr("sid");
-            String bsv = jb.getStr("bsv","");
-            String t = jb.getStr("t","");
+            String bsv = jb.getStr("bsv", "");
+            String t = jb.getStr("t", "");
             Long r = jb.getLong("r");
             sb.append("时间:" + TimeUtil.toTime(new Date(r)))
                     .append("\tip:" + ip)
@@ -265,15 +290,15 @@ public class WebController {
             if (!StrUtil.isEmptyIfStr(app)) {
                 sb.append("\t应用:" + app);
             }
-            String token= Base64Encoder.encode(sid+cid);
-            token=Base64Encoder.encode(token+r);
-            token=Base64Encoder.encode(token+bsv);
+            String token = Base64Encoder.encode(sid + cid);
+            token = Base64Encoder.encode(token + r);
+            token = Base64Encoder.encode(token + bsv);
             if (token.equals(t)) {
                 sid = Base64.isBase64(sid) ? Base64Decoder.decodeStr(sid) : sid;
                 HttpSession session = request.getSession();
                 session.setAttribute("cid", cid);
                 session.setAttribute("sid", sid);
-            }else {
+            } else {
                 sb.append("\n客户端验证失败！");
             }
         } else {

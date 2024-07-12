@@ -35,7 +35,10 @@ public class FileInfo {
 
     public FileInfo(File file, String basePath, String auth) {
         this.name = file.getName();
-        this.type = FiletypeUtil.getFileType(file);
+        this.isFile = file.isFile();
+        if (this.isFile) {
+            this.type = FiletypeUtil.getFileType(file);
+        }
         if (basePath != null) {
             Path base = Paths.get(basePath);
             this.path = FileUtil.normalize(base.relativize(file.toPath()).toString());
@@ -45,7 +48,6 @@ public class FileInfo {
         this.update_time = TimeUtil.toTime(new Date(file.lastModified()));
         this.size = file.length();
         this.auth = auth;
-        this.isFile = file.isFile();
         this.isDirectory = file.isDirectory();
     }
 }

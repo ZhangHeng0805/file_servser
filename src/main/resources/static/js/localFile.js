@@ -2,7 +2,7 @@
 var script = document.getElementsByTagName("script");
 for (var i = 0; i < script.length; i++) {
     if (script[i].getAttribute("version")) {
-        if (script[i].getAttribute("version") != localStorage["version"]) {
+        if (script[i].getAttribute("version") !== localStorage["version"]) {
             localStorage.clear();
             localStorage["version"] = script[i].getAttribute("version");
         }

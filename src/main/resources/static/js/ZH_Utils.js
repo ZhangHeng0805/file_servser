@@ -53,11 +53,11 @@ function getTime() {
  * @param max 最大字数
  */
 function titleInput(inputId, tipsId, max) {
-    limitInput(inputId,max);
+    limitInput(inputId, max);
     var input = document.getElementById(inputId);
     var i_length = input.value.length;
     var tips = document.getElementById(tipsId);
-    tips.style.display='';
+    tips.style.display = '';
     if (i_length >= max) {
         // $("#"+input).parent().removeClass("has-success").addClass("has-error");
         tips.style.color = "#f48f0d";
@@ -88,15 +88,17 @@ function limitInput(inputId, max) {
     }
 
 //    文件大小格式转换
-    function getFileSizeFormat(size) {
-        if (size >= 0 && size < (1024 * 1000)) {
-            return (size / 1024).toFixed(2) + "Kb";
-        } else if (size >= (1024 * 1000) && size < (1024 * 1024 * 1000)) {
-            return (size / (1024 * 1024)).toFixed(2) + "Mb"
-        } else if (size >= (1024 * 1024 * 1000)) {
-            return (size / (1024 * 1024 * 1024)).toFixed(2) + "Gb"
+    function fileSizeFormat(size) {
+        if (size == null) {
+            return "0";
         } else {
-            return size + "B";
+            let length = size;
+            let unit = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+            let i;
+            for (i = 0; !(length < 1024.0); ++i) {
+                length /= 1024.0;
+            }
+            return i === 0 ? length + " " + unit[i] : length.toFixed(2) + " " + unit[i];
         }
     }
 

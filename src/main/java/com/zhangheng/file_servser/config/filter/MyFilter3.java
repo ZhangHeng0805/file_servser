@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -18,6 +19,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * @author: ZhangHeng
@@ -34,22 +38,23 @@ public class MyFilter3 extends MyFilter {
             "/web/upload",
             "/deleteFile",
             "/renameFile",
+            "/getFileList",
             "/download/findFileList",
     };
     @Value("#{'${server.servlet.context-path}'}")
     private String contextPath;
-    private Logger log= LoggerFactory.getLogger(getClass());
-    @Autowired
+    private final Logger log= LoggerFactory.getLogger(getClass());
+    @Resource
     private CaptchaController captchaController;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
-//        System.out.println(JSONUtil.parse(request.getParameterMap()).toStringPretty());
         String uri = CusAccessObjectUtil.getUri(req);
-        if (contextPath!="/")
-            uri=uri.replace(contextPath,"");
+        if (!Objects.equals(contextPath, "/")) {
+            uri = uri.replace(contextPath, "");
+        }
         boolean isFilter=false;
-        isFilter = isFilter(paths,uri,isFilter);
+        isFilter = isFilter(new HashSet<>(Arrays.asList(paths)),uri,isFilter);
         if (isFilter){
             String code = req.getParameter("code");
             Message msg = captchaController.verifyMathCheck(code, false, req);

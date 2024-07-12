@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>文件检索</title>
+    <style>
+    </style>
+</head>
+<body>
+<div id="fileListShow">
+    <div class="row">
+        <form class="form-inline" role="form" onsubmit="return false;">
+            <div class="row">
+                <div class="form-group col-md-4" title="用户访问密钥">
+                    <label class="control-label" for="fls_keys"><label
+                            style="color: red">*</label>秘钥：</label>
+                    <input class="form-control" type="password" id="fls_keys" placeholder="请输入访问秘钥" required
+                           autofocus
+                           autocomplete>
+                </div>
+                <div class="form-group col-md-4" title="选择查找路径">
+                    <label class="control-label" for="fls_path"><label
+                            style="color: red">*</label>路径：</label>
+                    <input class="form-control" id="fls_path" type="text" value="/" required>
+                </div>
+                <div id="query_file" class="form-group col-md-4" title="查询文件,清空查询全部,只能查询同类型的文件">
+                    <label class="control-label" for="fls_query_name">文件名：</label>
+                    <input class="form-control" type="text" id="fls_query_name" placeholder="请输入查找的文件名">
+                </div>
+            </div>
+            <hr>
+
+            <input type="submit" class="btn btn-default btn-block text-center" id="btn_fileListShow"
+                   onclick="fileShowSubmit(this,$('#fls_keys'),$('#fls_path'),$('#fls_query_name'))"
+                   value="查询">
+
+        </form>
+    </div>
+    <hr>
+    <div><input type="button" style="display: none" class="btn btn-primary text-center" id="btn_fileListBack"
+                onclick="let p=$('#fls_path').val();let lastIndex=p.lastIndexOf('/');p=lastIndex>0?p.substring(0,lastIndex):'/';enterFolder(p);"
+                value="<<返回上一级">
+        <label align="center" id="files_num"></label>
+    </div>
+    <div id="files_result">
+    </div>
+    <a class="btn btn-info" style="z-index: 9999; position: fixed ! important; right: 2%; bottom: 3%;"
+       onclick="scrollToTop()">
+        <i class="fa fa-angle-double-up"></i>顶部
+    </a>
+    <script>
+        eval(loadJs("static/js/myFileListShow.js"));
+    </script>
+</div>
+</body>
+</html>

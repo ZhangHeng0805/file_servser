@@ -18,6 +18,10 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * @author: ZhangHeng
@@ -29,9 +33,10 @@ import java.io.IOException;
 @WebFilter
 @Order(4)
 public class MyFilter4 extends MyFilter {
-    private String[] paths={
+    private String[] paths = {
             "/deleteFile",
             "/renameFile",
+            "/getFileList",
             "/upload/",
             "/download/getAllFileType",
             "/download/findFileList",
@@ -39,28 +44,31 @@ public class MyFilter4 extends MyFilter {
     };
     @Value("#{'${server.servlet.context-path}'}")
     private String contextPath;
-    private Logger log= LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String uri = CusAccessObjectUtil.getUri(req);
-        if (contextPath!="/")
-            uri=uri.replace(contextPath,"");
-        boolean isFilter=false;
-        isFilter = isFilter(paths,uri,isFilter);
-        if (isFilter){
+        if (!Objects.equals(contextPath, "/")) {
+            uri = uri.replace(contextPath, "");
+        }
+        boolean isFilter = false;
+
+        isFilter = isFilter(new HashSet<>(Arrays.asList(paths)), uri, isFilter);
+        if (isFilter) {
             HttpSession session = req.getSession();
-            String cid = Convert.toStr(session.getAttribute("cid"),"");
-            String sid = Convert.toStr(session.getAttribute("sid"),"");
+            String cid = Convert.toStr(session.getAttribute("cid"), "");
+            String sid = Convert.toStr(session.getAttribute("sid"), "");
             Boolean isCid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_cid", cid);
             Boolean isSid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_sid", sid);
-            if (!isCid||!isSid){
+            if (!isCid || !isSid) {
                 Message msg = new Message();
                 msg.setCode(401);
                 msg.setTitle("身份验证过期,请刷新页面");
                 msg.setMessage(StatusCode.Http401);
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
-                log.warn("\n身份核验失败-路径[{}]\n",uri);
+                log.warn("\n身份核验失败-路径[{}]\n", uri);
                 return;
             }
         }
