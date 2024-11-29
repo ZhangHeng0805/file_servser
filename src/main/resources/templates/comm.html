@@ -190,6 +190,13 @@
                 alert("找不到" + methodName + "这个方法");
             }
         }
+        function checkCoookie() {
+            hideModel();
+            if (getCookie('zhangheng0805_cid').length <= 0)
+                setCookie('zhangheng0805_cid', window.localStorage.getItem('zhangheng0805_cid'));
+            if (getCookie('zhangheng0805_sid').length <= 0)
+                setCookie('zhangheng0805_sid', window.localStorage.getItem('zhangheng0805_sid'));
+        }
     </script>
     <!-- modal -->
 </div>

@@ -232,13 +232,6 @@ function copeText(id) {
 
 }
 
-function checkCoookie() {
-    hideModel();
-    if (getCookie('zhangheng0805_cid').length <= 0)
-        setCookie('zhangheng0805_cid', window.localStorage.getItem('zhangheng0805_cid'));
-    if (getCookie('zhangheng0805_sid').length <= 0)
-        setCookie('zhangheng0805_sid', window.localStorage.getItem('zhangheng0805_sid'));
-}
 
 function del(path) {
     if (confirm("确定删除该文件吗？")) {

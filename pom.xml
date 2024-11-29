@@ -5,7 +5,7 @@
     <groupId>com.zhangheng</groupId>
     <artifactId>file_servser</artifactId>
     <version>24.07.10</version>
-    <name>ZHFS ${project.version}</name>
+    <name>file_servser ${project.version}</name>
     <description>Project for Spring Boot(文件管理服务器)</description>
 
     <properties>
