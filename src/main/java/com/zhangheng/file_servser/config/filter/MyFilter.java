@@ -1,8 +1,13 @@
 package com.zhangheng.file_servser.config.filter;
 
+import com.zhangheng.file_servser.entity.FilterConfig;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,8 +21,12 @@ import java.util.Set;
  * @version: 1.0
  * @description:
  */
+@WebFilter
 public abstract class MyFilter implements Filter {
-
+    @Value("#{'${server.servlet.context-path}'}")
+    protected String contextPath;
+    @Resource
+    protected FilterConfig filterConfig;
 
     public CusAccessObjectUtil.Request getRequestInfo(HttpServletRequest request) {
         return new CusAccessObjectUtil.Request(request);
@@ -33,6 +42,9 @@ public abstract class MyFilter implements Filter {
      * @return 若存在，返回非默认值；不存在，则返回默认值
      */
     protected boolean isFilter(Set<String> paths, String url, boolean defualt) {
+        if (ObjectUtils.isEmpty(paths)){
+            return defualt;
+        }
         for (String s : paths) {
             if (url.startsWith(s.replace("*", ""))) {
                 defualt = !defualt;

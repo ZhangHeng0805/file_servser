@@ -4,7 +4,7 @@ var Data = null;
 function getAllFileType() {
     checkCoookie();
     $.ajax({
-        url: ZH_URL.download_getfiletype,
+        url: ZH_URL.download_getFileType,
         method: "post",
         dataType: "json",
         xhrFields: {
@@ -69,7 +69,7 @@ function getFileList(key) {
     $("#btn_sub2").attr('disabled', true);
     checkCoookie();
     $.ajax({
-        url: ZH_URL.download_getfilelist,
+        url: ZH_URL.download_getFileList,
         method: "post",
         dataType: "json",
         xhrFields: {

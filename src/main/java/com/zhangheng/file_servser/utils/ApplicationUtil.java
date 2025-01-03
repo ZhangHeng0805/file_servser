@@ -1,5 +1,7 @@
 package com.zhangheng.file_servser.utils;
 
+import com.zhangheng.util.NetworkUtil;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 
@@ -20,11 +22,17 @@ public class ApplicationUtil {
         if (webServer == null) {
             return null;
         }
+        String scheme = "http";
+        int port = webServer.getPort();
+        if (webServer instanceof TomcatWebServer) {
+            scheme = ((TomcatWebServer) webServer).getTomcat().getConnector().getScheme();
+        }
         String path = Objects.requireNonNull(applicationContext.getServletContext()).getContextPath();
-        int port = getWebServerPort(applicationContext);
-        String protocol = "http";
         if (port == 443) {
-            protocol = "https";
+            scheme = "https";
+        }
+        if (NetworkUtil.isIPv6Address(host)) {
+            host = "[" + host + "]";
         }
         if (!(port == 443 || port == 80)) {
             host = host + ":" + port;
@@ -32,6 +40,6 @@ public class ApplicationUtil {
         if (path == null || "/".equals(path)) {
             path = "";
         }
-        return protocol + "://" + host + path + "/";
+        return scheme + "://" + host + path + "/";
     }
 }

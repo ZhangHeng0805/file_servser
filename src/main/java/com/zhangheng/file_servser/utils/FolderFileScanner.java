@@ -1,6 +1,6 @@
 package com.zhangheng.file_servser.utils;
 
-import com.zhangheng.file_servser.entity.MyException;
+import com.zhangheng.file_servser.model.MyException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,11 +50,12 @@ public class FolderFileScanner {
     /**
      *
      * 非递归方式扫描指定文件夹下面的所有文件
+     * 速度更快
      * @param folderPath 需要进行文件扫描的文件夹路径
      * @return ArrayList<Object> 文件夹中所有文件的绝对路径
      * @throws Exception
      */
-    protected static List<String> scanFilesWithNoRecursion(String folderPath) throws Exception {
+    public static List<String> scanFilesWithNoRecursion(String folderPath) throws Exception {
         File directory = new File(folderPath);
         if (!directory.exists()){
             throw new MyException("路径错误",'"' + folderPath + '"' + "(文件夹路径不存在) input path is not a Directory , please input the right path of the Directory. ^_^...^_^");

@@ -1,4 +1,4 @@
-package com.zhangheng.file_servser.entity;
+package com.zhangheng.file_servser.model;
 
 
 import com.zhangheng.file_servser.utils.TimeUtil;
@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Random;
 
 @Data
-public class Message {
+class Message {
 
     private String time;//时间戳
     private int code;//状态码(200:成功; 100:提示; 404:警告; 500:错误）

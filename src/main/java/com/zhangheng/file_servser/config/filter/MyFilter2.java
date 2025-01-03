@@ -3,12 +3,9 @@ package com.zhangheng.file_servser.config.filter;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.bean.Message;
-import com.zhangheng.file_servser.entity.StatusCode;
+import com.zhangheng.file_servser.model.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import com.zhangheng.util.TimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
@@ -19,7 +16,6 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -31,11 +27,12 @@ import java.util.Objects;
  */
 @WebFilter
 @Order(2)
+@Slf4j
 public class MyFilter2 extends MyFilter {
-    @Value("#{'${config.filter2.excludePath}'.split(',')}")
-    private HashSet<String> excludePath;
-    @Value("#{'${server.servlet.context-path}'}")
-    private String contextPath;
+//    @Value("#{'${config.filter2.excludePath}'.split(',')}")
+//    private HashSet<String> excludePath;
+//    @Value("#{'${server.servlet.context-path}'}")
+//    private String contextPath;
 
     //    private String[] excludePath={
 //            "/static/**",//静态资源
@@ -46,9 +43,9 @@ public class MyFilter2 extends MyFilter {
 //            "/download/show/",
 //            "/download/split/",
 //    };
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    @Value(value = "#{'${config.max-request-counts}'}")
-    private Integer maxCount;
+//    private final Logger log = LoggerFactory.getLogger(getClass());
+//    @Value(value = "#{'${config.max-request-counts}'}")
+//    private Integer maxCount;
 
 
     @Override
@@ -59,17 +56,17 @@ public class MyFilter2 extends MyFilter {
             uri = uri.replace(contextPath, "");
         }
         boolean isFilter = true;
-        isFilter = isFilter(excludePath, uri, isFilter);
+        isFilter = isFilter(filterConfig.getCountFilterExcludePath(), uri, isFilter);
         if (isFilter) {
             HttpSession session = req.getSession();
             Integer sessionCount = Convert.toInt(session.getAttribute(uri + "_c"), 0);
             sessionCount = sessionCount + 1;
             session.setAttribute(uri + "_c", sessionCount);
-            if (sessionCount > maxCount) {
+            if (sessionCount > filterConfig.getRequestMaxCount()) {
                 Message msg = new Message();
-                msg.setCode(403);
                 msg.setTitle("请求达上限!");
-                msg.setMessage(StatusCode.Http403);
+                msg.setCode(StatusCode.HTTP_403.getCode());
+                msg.setMessage(StatusCode.HTTP_403.getMessage());
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n请求次数过多,路径[{}]-次数[{}]\n", uri, sessionCount);
                 return;

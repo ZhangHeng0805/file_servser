@@ -1,12 +1,9 @@
 package com.zhangheng.file_servser.config.interceptor;
 
 import com.zhangheng.file_servser.controller.CaptchaController;
-import com.zhangheng.file_servser.controller.WebController;
 import com.zhangheng.bean.Message;
-import com.zhangheng.file_servser.entity.User;
-import com.zhangheng.util.TimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zhangheng.file_servser.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -22,8 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  * @description:
  */
 @Service
+@Slf4j
 public class UploadInterceptor implements HandlerInterceptor {
-    private Logger log= LoggerFactory.getLogger(getClass());
+//    private Logger log= LoggerFactory.getLogger(getClass());
     @Autowired
     private CaptchaController captchaController;
     @Override
@@ -32,7 +30,7 @@ public class UploadInterceptor implements HandlerInterceptor {
         Message msg = new Message();
         if (user!=null){
             if (user.getType().equals(User.Type.Common)||user.getType().equals(User.Type.Admin)){
-                msg=captchaController.verifyMathCheck((String)request.getParameter("code"),true,request);
+                msg=captchaController.verifyMathCheck(request.getParameter("code"),true,request);
                 if (msg.getCode()==200){
                     log.info("\n文件上传拦截：验证成功，放行！\n");
                     return true;
@@ -47,7 +45,7 @@ public class UploadInterceptor implements HandlerInterceptor {
             msg.setTitle("没有验证信息");
             msg.setMessage("错误！请输入访问密钥key");
         }
-        log.info("\n文件上传拦截：验证失败，拦截！"+msg.toString()+"\n");
+        log.info("\n文件上传拦截：验证失败，拦截！"+ msg +"\n");
         request.setAttribute("msg",msg);
         request.getRequestDispatcher("/error/error_key").forward(request,response);
         return false;

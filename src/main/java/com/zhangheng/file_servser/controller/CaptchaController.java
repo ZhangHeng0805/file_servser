@@ -1,24 +1,25 @@
 package com.zhangheng.file_servser.controller;
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.StrUtil;
 import com.zhangheng.bean.Message;
 import com.zhangheng.captcha.AbstractCaptcha;
 import com.zhangheng.captcha.CircleCaptcha;
-import com.zhangheng.captcha.GifCaptcha;
-import com.zhangheng.captcha.ShearCaptcha;
 import com.zhangheng.captcha.generator.MathGenerator;
-import com.zhangheng.captcha.generator.RandomGenerator;
 import com.zhangheng.file_servser.entity.CaptchaConfig;
-import com.zhangheng.util.FormatUtil;
+import com.zhangheng.file_servser.service.CaptchaService;
 import com.zhangheng.util.MathUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author: ZhangHeng
@@ -30,45 +31,38 @@ import javax.servlet.http.HttpSession;
 @RestController
 @RequestMapping("getVerify")
 public class CaptchaController {
-    private AbstractCaptcha captcha;
-    @Autowired
+    private static final Logger log = LoggerFactory.getLogger(CaptchaController.class);
+    @Resource
+    private CaptchaService captchaService;
+    @Resource
     private CaptchaConfig captchaConfig;
 
-
+    /**
+     * 校验验证码
+     *
+     * @param code
+     * @param isClear
+     * @param request
+     * @return
+     */
     @RequestMapping("checking")
     public Message verifyMathCheck(@RequestParam(value = "code", defaultValue = "") String code,
                                    @RequestParam(value = "isClear", defaultValue = "true") Boolean isClear,
                                    HttpServletRequest request) {
-        Message msg = new Message();
-        HttpSession session = request.getSession();
-        String vCode = Convert.toStr(session.getAttribute("verify-code"), "");
-        if (!StrUtil.isBlank(code)) {
-            if (vCode.equalsIgnoreCase(code)) {
-                msg.setCode(200);
-                msg.setTitle("验证码正确");
-                msg.setMessage("恭喜，验证成功！");
-                if (isClear)
-                    session.setAttribute("verify-code", null);
-            } else {
-                msg.setCode(500);
-                msg.setTitle("验证码错误");
-                msg.setMessage("对不起，验证码输入错误！");
-            }
-        } else {
-            msg.setCode(400);
-            msg.setTitle("验证码为空");
-            msg.setMessage("请重新获取验证码，然后再来验证！");
-        }
-        return msg;
+        return captchaService.verifyCheck(code, isClear, request);
     }
 
+    /**
+     * 生成验证码
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping("base64")
     private Message mathBase(HttpServletRequest request) {
         Message msg = new Message();
         try {
-            init();
-//            captcha = new GifCaptcha(200, 100, 6, 20);
-//            captcha.setGenerator(new MathGenerator());
+            AbstractCaptcha captcha = captchaService.getCaptcha();
             captcha.createCode();
             String code = captcha.getCode();
             HttpSession session = request.getSession();
@@ -82,10 +76,11 @@ public class CaptchaController {
                 session.setAttribute("verify-code", MathUtil.operation(code));
             }
             String imageBase64Data;
-            if (captchaConfig.getType().equals(3))
+            if (captchaConfig.getType().equals(3)) {
                 imageBase64Data = captcha.getImageBase64Data("image/gif");
-            else
+            } else {
                 imageBase64Data = captcha.getImageBase64Data();
+            }
             msg.setObj(imageBase64Data);
         } catch (Exception e) {
             msg.setCode(500);
@@ -95,24 +90,33 @@ public class CaptchaController {
         return msg;
     }
 
-    private void init() {
-        switch (captchaConfig.getType()) {
-            case 1:
-                captcha = new CircleCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight(), captchaConfig.getLength(), captchaConfig.getDifficulty());
-                break;
-            case 2:
-                captcha = new ShearCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight(), captchaConfig.getLength(), captchaConfig.getDifficulty());
-                break;
-            case 3:
-                captcha = new GifCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight(), captchaConfig.getLength(), captchaConfig.getDifficulty());
-                break;
-            default:
-                captcha = new CircleCaptcha(200, 100, 6, 50);
-                break;
-        }
-        if (captchaConfig.getMode().equals(1))
-            captcha.setGenerator(new RandomGenerator(captchaConfig.getLength()));
-        else
+
+    /**
+     * 获取数学验证码
+     */
+    @RequestMapping("/getVerify/math")
+    public void getMathVerify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ServletOutputStream outputStream = null;
+        response.setCharacterEncoding("UTF-8");
+        try {
+            AbstractCaptcha captcha = new CircleCaptcha(200, 100, 6, 50);
             captcha.setGenerator(new MathGenerator());
+            captcha.createCode();
+            String code = captcha.getCode();
+            HttpSession session = request.getSession();
+            session.setAttribute("verify-code", MathUtil.operation(code));
+            outputStream = response.getOutputStream();
+            response.setHeader("Content-Disposition", "filename=[ZH]Captcha-" + new Date().getTime() + ".gif");
+            captcha.write(outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            response.sendError(500, "验证码生成错误:" + e.getMessage());
+            log.error(e.getMessage(), e);
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        }
     }
+
 }

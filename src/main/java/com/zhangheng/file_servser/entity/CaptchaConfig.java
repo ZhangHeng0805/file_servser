@@ -2,42 +2,41 @@ package com.zhangheng.file_servser.entity;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.stereotype.Component;
+
 /**
  * @author: ZhangHeng
  * @email: zhangheng_0805@163.com
  * @date: 2023-08-01 11:39
  * @version: 1.0
- * @description:
+ * @description: 验证码配置
  */
-@Configuration
-@ConfigurationProperties(prefix = "config.captcha")
-@Validated
+@Component
+@ConfigurationProperties(prefix = "zhfs.config.captcha")
 @Data
 public class CaptchaConfig {
     /**
-     * 验证码类型：1-线圈，2-扭曲，3-GIF
+     * 验证码干扰类型：1-线圈，2-扭曲，3-GIF
      */
-    private Integer type;
+    private Integer type = 1;
     /**
-     * 验证码模式：1-随机，2-数学
+     * 验证码模式：1-随机字符，2-数学运算
      */
-    private Integer mode;
+    private Integer mode = 1;
     /**
      * 验证码长度
      */
-    private Integer length;
+    private int length = 4;
     /**
-     * 验证码难度
+     * 验证码干扰难度
      */
-    private Integer difficulty;
+    private int difficulty = 50;
     /**
-     * 验证码宽度
+     * 验证码宽度px
      */
-    private Integer width;
+    private int width = 200;
     /**
-     * 验证码高度
+     * 验证码高度px
      */
-    private Integer height;
+    private int height = 100;
 }

@@ -59,3 +59,30 @@ server:
     include-message: always
 logging:
   config: classpath:logging.xml
+zhfs:
+  key:
+    test-keys: 123456
+    common-keys: 666666,888888
+    admin-keys: admin123456
+    file-path:
+      include:
+        123456: image,抖音
+  config:
+    captcha:
+      mode: 1
+      type: 1
+#      difficulty: 60
+      length: 4
+      height: 100
+      width: 200
+    filter:
+      request-min-interval-ms: 1000
+      rate-filter-exclude-path: /favicon.ico,/static/,/error/,/getVerify/,/getFileList
+      request-max-count: 20
+      count-filter-exclude-path: /static/,/favicon.ico,/error/,/download/getAllFileType,/getVerify/,/download/show/,/download/split/,/getFileList
+    server:
+      file-prefix: 星曦向荣网
+      version: 25.01.04
+      max-file-name-length: 35
+      max-file-path-length: 15
+      home-dir: files/

@@ -1,11 +1,11 @@
 package com.zhangheng.file_servser.service;
 
-import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import org.springframework.beans.factory.annotation.Value;
+import com.zhangheng.file_servser.entity.ServerConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -22,8 +22,8 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class DownloadService {
 
-    @Value("${baseDir}")
-    private String baseDir;
+    @Resource
+    private ServerConfig serverConfig;
 
     public File paresPath(HttpServletRequest request, HttpServletResponse response, String moduleBaseName) throws UnsupportedEncodingException {
         request.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -51,6 +51,6 @@ public class DownloadService {
             type = moduleName.substring(0, moduleName.lastIndexOf("/"));
             name = moduleName.substring(moduleName.lastIndexOf("/") + 1);
         }
-        return new File(baseDir + type + "/" + name);
+        return new File(serverConfig.getHomeDir() + type + "/" + name);
     }
 }

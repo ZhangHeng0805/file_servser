@@ -332,11 +332,11 @@ function client_result() {
 }
 window.onload = client_result();
 var ZH_URL={
-    captcha_getbase64 : 'getVerify/base64',
+    captcha_getBase64 : 'getVerify/base64',
     captcha_checking : 'getVerify/checking',
     upload_file : 'upload/saveMulFile',
-    download_getfiletype : 'download/getAllFileType',
-    download_getfilelist : 'download/findFileList',
+    download_getFileType : 'download/getAllFileType',
+    download_getFileList : 'download/findFileList',
     delete_file : 'deleteFile',
     rename_file : 'renameFile',
     getFileList : 'getFileList',

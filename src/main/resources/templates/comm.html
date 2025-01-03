@@ -158,7 +158,7 @@
             $("#code").val(null);
             $("#img-code").attr("src", "");
             $.ajax({
-                url: ZH_URL.captcha_getbase64 + '?t=' + new Date().getTime(),
+                url: ZH_URL.captcha_getBase64 + '?t=' + new Date().getTime(),
                 type: "get",
                 success: function (d) {
                     if (d.code == 200) {

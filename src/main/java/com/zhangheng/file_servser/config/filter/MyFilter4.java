@@ -3,11 +3,9 @@ package com.zhangheng.file_servser.config.filter;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.bean.Message;
-import com.zhangheng.file_servser.entity.StatusCode;
+import com.zhangheng.file_servser.model.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
@@ -19,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -32,8 +29,9 @@ import java.util.Objects;
  */
 @WebFilter
 @Order(4)
+@Slf4j
 public class MyFilter4 extends MyFilter {
-    private String[] paths = {
+    private final String[] paths = {
             "/deleteFile",
             "/renameFile",
             "/getFileList",
@@ -42,9 +40,6 @@ public class MyFilter4 extends MyFilter {
             "/download/findFileList",
             "/getVerify/",
     };
-    @Value("#{'${server.servlet.context-path}'}")
-    private String contextPath;
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -64,9 +59,9 @@ public class MyFilter4 extends MyFilter {
             Boolean isSid = CusAccessObjectUtil.isExitCookie(req, "zhangheng0805_sid", sid);
             if (!isCid || !isSid) {
                 Message msg = new Message();
-                msg.setCode(401);
                 msg.setTitle("身份验证过期,请刷新页面");
-                msg.setMessage(StatusCode.Http401);
+                msg.setCode(StatusCode.HTTP_401.getCode());
+                msg.setMessage(StatusCode.HTTP_401.getMessage());
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                 log.warn("\n身份核验失败-路径[{}]\n", uri);
                 return;

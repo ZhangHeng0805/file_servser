@@ -1,16 +1,14 @@
 package com.zhangheng.file_servser.config;
 
 import cn.hutool.core.util.StrUtil;
-import com.zhangheng.file_servser.entity.Message;
-import com.zhangheng.file_servser.entity.StatusCode;
+import com.zhangheng.bean.Message;
+import com.zhangheng.file_servser.model.StatusCode;
 import com.zhangheng.util.TimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.ByteArrayOutputStream;
@@ -25,8 +23,8 @@ import java.util.Map;
  * @description:
  */
 @ControllerAdvice
+@Slf4j
 public class ExceptionHandler extends DefaultErrorAttributes {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Value("#{'${server.servlet.context-path}'}")
     private String contextPath;
 
@@ -34,7 +32,6 @@ public class ExceptionHandler extends DefaultErrorAttributes {
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Throwable.class)
     public Message e(Exception e) {
         Message msg = new Message();
-        msg.setTime(TimeUtil.now());
         msg.setCode(500);
         msg.setTitle("错误异常");
         msg.setMessage(e.getMessage());
@@ -51,24 +48,17 @@ public class ExceptionHandler extends DefaultErrorAttributes {
         if (StrUtil.isBlank(message) || message.equals("No message available")) {
             Object status = errorAttributes.get("status");
             String msg = "";
-            if (status.equals(404)) {
-                msg = StatusCode.Http404;
-            } else if (status.equals(500)) {
-                msg = StatusCode.Http500;
-            } else if (status.equals(400)) {
-                msg = StatusCode.Http400;
-            } else if (status.equals(403)) {
-                msg = StatusCode.Http403;
-            } else if (status.equals(503)) {
-                msg = StatusCode.Http503;
-            } else if (status.equals(401)) {
-                msg = StatusCode.Http401;
+            for (StatusCode value : StatusCode.values()) {
+                if (status.equals(value.getCode())){
+                    msg = value.getMessage();
+                    break;
+                }
             }
             errorAttributes.put("message", msg);
         } else {
             errorAttributes.put("message", message);
         }
-        log.error("\n错误异常请求:{}\n", errorAttributes.toString());
+        log.error("\n错误异常请求:{}\n", errorAttributes);
         return errorAttributes;
     }
 

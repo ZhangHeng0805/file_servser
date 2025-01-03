@@ -1,12 +1,19 @@
 package com.zhangheng.file_servser.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.zhangheng.file_servser.entity.AccessKey;
+import com.zhangheng.file_servser.utils.SpringContextUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * 秘钥验证
+ *
  * @author 张恒
  * @program: file_servser
  * @email zhangheng.0805@qq.com
@@ -15,58 +22,56 @@ import java.util.List;
 @Service
 public class KeyService {
 
-    @Value("#{'${keys}'.split(',')}")
-    private List<String> keys;
-    @Value("#{'${admin_keys}'.split(',')}")
-    private List<String> admin_keys;
-    @Value("#{'${test_keys}'.split(',')}")
-    private List<String> test_keys;
+    @Resource
+    private AccessKey accessKey;
 
     /**
      * 判断是否为普通秘钥
+     *
      * @param key
      * @return
      */
-    public boolean isKeys(String key){
-        if (key!=null) {
-            //遍历普通秘钥
-            for (String s : keys) {
-                if (s.equals(key)) {
-                    return true;
-                }
-            }
+    public boolean isCommonKeys(String key) {
+        if (StringUtils.hasLength(key) && !ObjectUtils.isEmpty(accessKey.getCommonKeys())) {
+            return accessKey.getCommonKeys().contains(key);
         }
         return false;
     }
 
     /**
      * 判断是否为管理秘钥
+     *
      * @param key
      * @return
      */
-    public boolean isAdminKeys(String key){
-        if (key!=null) {
-            //遍历管理秘钥
-            for (String s : admin_keys) {
-                if (s.equals(key)) {
-                    return true;
-                }
-            }
+    public boolean isAdminKeys(String key) {
+        if (StringUtils.hasLength(key) && !ObjectUtils.isEmpty(accessKey.getAdminKeys())) {
+            return accessKey.getAdminKeys().contains(key);
         }
         return false;
     }
 
     /**
      * 判断是否为临时秘钥
+     *
      * @param key
      * @return
      */
-    public boolean isTestKeys(String key){
-        if (key!=null) {
-            if (test_keys.indexOf(key)>-1){
-                return true;
-            }
+    public boolean isTestKeys(String key) {
+        if (StringUtils.hasLength(key) && !ObjectUtils.isEmpty(accessKey.getTestKeys())) {
+            return accessKey.getTestKeys().contains(key);
         }
         return false;
     }
+
+    public List<String> getInclude(String key) {
+        if (StringUtils.hasLength(key)) {
+            String property = SpringContextUtils.getEnvironment().getProperty("zhfs.key.file-path.include." + key, String.class);
+            if (StringUtils.hasLength(property)) {
+                return Arrays.asList(property.split(","));
+            }
+        }
+        return Collections.emptyList();
+    }
+
 }

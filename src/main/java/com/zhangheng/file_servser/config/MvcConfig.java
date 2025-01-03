@@ -29,6 +29,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     public static String[] excluePath1={
             "/",//首页
+            "/download/access-key",//首页
             "/download/show/**",//下载
             "/download/split/**",//分片下载
             "/static/**",//静态资源

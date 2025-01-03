@@ -1,4 +1,4 @@
-package com.zhangheng.file_servser.entity;
+package com.zhangheng.file_servser.model;
 
 /**
  * @author: ZhangHeng

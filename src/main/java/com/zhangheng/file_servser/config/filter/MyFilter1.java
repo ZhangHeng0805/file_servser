@@ -4,11 +4,9 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import com.zhangheng.bean.Message;
 import com.zhangheng.file.FileUtil;
-import com.zhangheng.file_servser.entity.StatusCode;
+import com.zhangheng.file_servser.model.StatusCode;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
@@ -20,9 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author: ZhangHeng
@@ -33,13 +29,11 @@ import java.util.Set;
  */
 @WebFilter
 @Order(1)
+@Slf4j
 public class MyFilter1 extends MyFilter {
-    @Value("#{'${config.filter1.excludePath}'.split(',')}")
-    private HashSet<String> excludePath;
-    @Value("#{'${server.servlet.context-path}'}")
-    private String contextPath;
 
-
+//    @Value("#{'${config.filter1.excludePath}'.split(',')}")
+//    private HashSet<String> excludePath;
     //    private String[] excludePath={
 //            "/static/**",//静态资源
 //            "/favicon.ico",//网址图标
@@ -50,10 +44,10 @@ public class MyFilter1 extends MyFilter {
 //            "/download/split/",
 //
 //    };
-    private final Logger log = LoggerFactory.getLogger(getClass());
+//    private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Value(value = "#{'${config.request-interval}'}")
-    private Long minInterval;
+//    @Value(value = "#{'${config.request-interval}'}")
+//    private Long minInterval;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -69,7 +63,7 @@ public class MyFilter1 extends MyFilter {
         if (!Objects.equals(contextPath, "/"))
             uri = uri.replace(contextPath, "");
         boolean isFilter = true;
-        isFilter = isFilter(excludePath, uri, isFilter);
+        isFilter = isFilter(filterConfig.getRateFilterExcludePath(), uri, isFilter);
         if (isFilter) {
             long nowTime = new Date().getTime();
             HttpSession session = req.getSession();
@@ -78,11 +72,11 @@ public class MyFilter1 extends MyFilter {
             if (sessionTime != null) {
                 //判断请求间隔时间
                 long abs = Math.abs(nowTime - sessionTime);
-                if (abs < minInterval) {
+                if (abs < filterConfig.getRequestMinIntervalMs()) {
                     Message msg = new Message();
-                    msg.setCode(503);
                     msg.setTitle("请求频繁!");
-                    msg.setMessage(StatusCode.Http503);
+                    msg.setCode(StatusCode.HTTP_503.getCode());
+                    msg.setMessage(StatusCode.HTTP_503.getMessage());
                     wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
                     log.warn("\n请求频率过快,路径[{}]-间隔[{}ms]\n", uri, abs);
                     return;

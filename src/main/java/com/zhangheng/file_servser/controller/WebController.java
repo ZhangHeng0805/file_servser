@@ -6,40 +6,35 @@ import cn.hutool.core.codec.Base64Encoder;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.zhangheng.captcha.AbstractCaptcha;
-import com.zhangheng.captcha.CircleCaptcha;
-import com.zhangheng.captcha.generator.MathGenerator;
+import com.zhangheng.bean.Message;
 import com.zhangheng.file.FileUtil;
-import com.zhangheng.file_servser.entity.FileInfo;
-import com.zhangheng.file_servser.entity.Message;
-import com.zhangheng.file_servser.entity.User;
+import com.zhangheng.file_servser.entity.AccessKey;
+import com.zhangheng.file_servser.entity.ServerConfig;
+import com.zhangheng.file_servser.model.FileInfo;
+import com.zhangheng.file_servser.model.User;
 import com.zhangheng.file_servser.service.FileService;
+import com.zhangheng.file_servser.service.KeyService;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.log.printLog.Log;
-import com.zhangheng.util.MathUtil;
 import com.zhangheng.util.TimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.annotation.Resources;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 张恒
@@ -48,27 +43,33 @@ import java.util.List;
  * @date 2022-01-20 17:07
  */
 @Controller
+@Slf4j
 public class WebController {
 
-    @Autowired
+    @Resource
     private UpLoadService upLoadService;
-    private Logger log = LoggerFactory.getLogger(getClass());
-    @Value(value = "#{'${version}'}")
-    private String version;
-    @Value(value = "#{'${spring.servlet.multipart.max-file-size}'}")
-    private String maxFileSize;
-    @Value(value = "#{'${zh.file.upload.max-name}'}")
-    private Integer maxFileName;
-    @Value(value = "#{'${zh.file.upload.max-path}'}")
-    private Integer maxFilePath;
-    @Value("${baseDir}")
-    private String baseDir;
+    @Resource
+    private ServerConfig serverConfig;
+    @Resource
+    private KeyService keyService;
+    @Resource
+    private AccessKey accessKey;
     @Resource
     private FileService fileService;
+//    @Value(value = "#{'${spring.servlet.multipart.max-file-size}'}")
+//    private String maxFileSize;
 
     @RequestMapping("/favicon.ico")
     public String favicon() {
         return "forward:/static/favicon.ico";
+    }
+
+    @RequestMapping("/access-key")
+    public Object getTestKey(String key) {
+        if (StringUtils.hasLength(key)){
+            return keyService.getInclude(key);
+        }
+        return accessKey.getTestKeys();
     }
 
     /**
@@ -78,10 +79,10 @@ public class WebController {
      */
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("version", version);
-        model.addAttribute("maxFileSize", maxFileSize);
-        model.addAttribute("maxFileName", maxFileName);
-        model.addAttribute("maxFilePath", maxFilePath);
+        model.addAttribute("version", serverConfig.getVersion());
+        model.addAttribute("maxFileSize", serverConfig.getMaxFileSize());
+        model.addAttribute("maxFileName", serverConfig.getMaxFileNameLength());
+        model.addAttribute("maxFilePath", serverConfig.getMaxFilePathLength());
         return "index";
     }
 
@@ -100,12 +101,12 @@ public class WebController {
     public String upload(MultipartFile file, String key, @Nullable String fileName, @Nullable String path, Model model, HttpServletRequest request) {
         Message msg = new Message();
         User user = (User) request.getAttribute("user");
-        if (key != null && key.length() > 0) {
+        if (StringUtils.hasLength(key)) {
             if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
                 log.info("页面上传IP:{}；密钥[{}]正确", CusAccessObjectUtil.getIpAddress(request), key);
                 if (!file.isEmpty()) {
-                    String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
-                    String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
+                    String name = StringUtils.hasLength(fileName) ? fileName : Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf("."));
+                    String Path = StringUtils.hasLength(path) ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
                     String s = upLoadService.saveFile(file, name, Path);
                     if (s != null) {
                         msg.setCode(200);
@@ -136,7 +137,7 @@ public class WebController {
         Message msg = new Message();
         User user = (User) request.getAttribute("user");
         if (user != null && !User.Type.Unknown.equals(user.getType())) {
-            List<FileInfo> fileList = fileService.getFileList(path, baseDir, user.getType().name());
+            List<FileInfo> fileList = fileService.getFileList(path, serverConfig.getHomeDir(), user);
             msg.setCode(200);
             msg.setTime("查询成功");
             msg.setMessage("查询" + fileList.size() + "条记录");
@@ -151,17 +152,16 @@ public class WebController {
 
     @ResponseBody
     @RequestMapping("/deleteFile")
-    public Message deleteFile(String path, HttpServletRequest request) {
+    public Message deleteFile(String path, HttpServletRequest request) throws IOException {
         Message msg = new Message();
-        msg.setTime(com.zhangheng.file_servser.utils.TimeUtil.time(new Date()));
         User user = (User) request.getAttribute("user");
-        if (user.getKey() != null && !user.getKey().trim().isEmpty()) {
+        if (StringUtils.hasLength(user.getKey())) {
             if (user.getType().equals(User.Type.Admin)) {
                 if (path != null && !path.isEmpty()) {
-                    File file = new File(baseDir + path);
+                    File file = new File(serverConfig.getHomeDir() + path);
                     if (file.exists()) {
                         if (!file.isDirectory()) {
-                            boolean b = upLoadService.deleteFile(path);
+                            boolean b = fileService.deleteFile(path);
                             if (b) {
                                 Log.Warn("文件删除：" + path + "\n" + com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request) + "\n");
                                 msg.setCode(200);
@@ -197,7 +197,7 @@ public class WebController {
             msg.setTitle("秘钥为空");
             msg.setMessage("错误！管理秘钥不能为空");
         }
-        log.info("\n" + msg.toString() + "\n");
+        log.info("\n{}\n", msg);
         return msg;
     }
 
@@ -208,9 +208,8 @@ public class WebController {
                               @RequestParam(defaultValue = "") String newName) {
         User user = (User) request.getAttribute("user");
         Message msg = new Message();
-        msg.setTime(TimeUtil.getNowTime());
         if (user.getType().equals(User.Type.Admin)) {
-            File file = new File(baseDir + path);
+            File file = new File(serverConfig.getHomeDir() + path);
             if (file.exists() && file.isFile()) {
                 if (!StrUtil.isBlank(newName)) {
                     newName = FileUtil.getPrefix(newName);
@@ -234,37 +233,10 @@ public class WebController {
             msg.setTitle("秘钥错误");
             msg.setMessage("秘钥错误！请使用管理秘钥操作");
         }
-        log.info("\n" + msg.toString() + "\n");
+        log.info("\n{}\n", msg);
         return msg;
     }
 
-    AbstractCaptcha captcha = new CircleCaptcha(200, 100, 6, 50);
-
-    /**
-     * 获取数学验证码
-     */
-    @RequestMapping("/getVerify/math")
-    public void getMathVerify(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ServletOutputStream outputStream = null;
-        response.setCharacterEncoding("UTF-8");
-        try {
-            captcha.setGenerator(new MathGenerator());
-            captcha.createCode();
-            String code = captcha.getCode();
-            HttpSession session = request.getSession();
-            session.setAttribute("verify-code", MathUtil.operation(code));
-            outputStream = response.getOutputStream();
-            response.setHeader("Content-Disposition", "filename=[ZH]Captcha-" + new Date().getTime() + ".gif");
-            captcha.write(outputStream);
-        } catch (Exception e) {
-            response.sendError(500, "验证码生成错误:" + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        }
-    }
 
 
     @ResponseBody
@@ -304,7 +276,7 @@ public class WebController {
         } else {
             sb.append("暂无信息");
         }
-        log.info("\nWeb端信息:{{}}\n", sb.toString());
+        log.info("\nWeb端信息:{{}}\n", sb);
     }
 
 }

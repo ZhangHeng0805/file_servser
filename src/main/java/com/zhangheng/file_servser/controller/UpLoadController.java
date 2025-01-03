@@ -3,28 +3,23 @@ package com.zhangheng.file_servser.controller;
 import cn.hutool.core.util.StrUtil;
 import com.zhangheng.bean.Message;
 import com.zhangheng.file.FileUtil;
-import com.zhangheng.file_servser.entity.User;
+import com.zhangheng.file_servser.model.User;
 import com.zhangheng.file_servser.service.UpLoadService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
 import com.zhangheng.file_servser.utils.FiletypeUtil;
 import com.zhangheng.log.printLog.Log;
 import com.zhangheng.util.EncryptUtil;
-import com.zhangheng.util.TimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * 文件上传接口
@@ -36,6 +31,7 @@ import java.util.UUID;
  */
 @RequestMapping("upload")
 @Controller
+@Slf4j
 public class UpLoadController {
 
     @Autowired
@@ -44,15 +40,15 @@ public class UpLoadController {
 //    private WebController webController;
 //    @Autowired
 //    private KeyService keyService;
-    @Value("#{'${is-add-appName}'}")
-    private Boolean is_add_appName;
-    @Value("#{'${admin_keys}'.split(',')}")
-    private List<String> admin_keys;
-    @Value("${baseDir}")
-    private String baseDir;
-    @Value("${appName}")
-    private String appName;
-    private Logger log = LoggerFactory.getLogger(getClass());
+//    @Value("#{'${is-add-appName}'}")
+//    private Boolean is_add_appName;
+//    @Value("#{'${admin_keys}'.split(',')}")
+//    private List<String> admin_keys;
+//    @Value("${baseDir}")
+//    private String baseDir;
+//    @Value("${appName}")
+//    private String appName;
+//    private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * 保存图片接口（MultipartFile格式）
@@ -120,49 +116,48 @@ public class UpLoadController {
      * @param path    保存文件夹 （可不填）
      * @return
      */
-    @ResponseBody
-    @RequestMapping("/saveBase64Img")
-    public Message saveBase64ImagInterface(String image
-            , @Nullable String imgName
-            , @Nullable String path, HttpServletRequest request) {
-        Message msg = new Message();
-        msg.setTime(TimeUtil.getNowTime());
-        User user = (User) request.getAttribute("user");
-        if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
-            if (!image.isEmpty()) {
-                //判断图片大小
-                if (image.length() > 1) {
-                    String name = imgName != null ? imgName : UUID.randomUUID().toString().substring(0, 8);
-                    String Path = path != null ? path : "image";
-                    String s = upLoadService.base64ToImg(image, name, Path);
-                    if (s != null) {
-                        msg.setCode(200);
-                        msg.setTitle("图片保存成功");
-                        msg.setMessage(s);
-                        log.info(s);
-                    } else {
-                        msg.setCode(500);
-                        msg.setTitle("图片保存失败");
-                        msg.setMessage("上传图片保存失败");
-                    }
-                } else {
-                    msg.setCode(500);
-                    msg.setTitle("图片错误");
-                    msg.setMessage("上传图片大小超过2Mb限制");
-                }
-            } else {
-                msg.setCode(500);
-                msg.setTitle("图片错误");
-                msg.setMessage("上传图片数据为空");
-            }
-        } else {
-            msg.setCode(500);
-            msg.setTitle("秘钥key错误");
-            msg.setMessage("该秘钥没有上传文件的权限！");
-        }
-        log.info("\n" + msg.toString() + "\n");
-        return msg;
-    }
+//    @ResponseBody
+//    @RequestMapping("/saveBase64Img")
+//    public Message saveBase64ImagInterface(String image
+//            , @Nullable String imgName
+//            , @Nullable String path, HttpServletRequest request) {
+//        Message msg = new Message();
+//        User user = (User) request.getAttribute("user");
+//        if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
+//            if (!image.isEmpty()) {
+//                //判断图片大小
+//                if (image.length() > 1) {
+//                    String name = imgName != null ? imgName : UUID.randomUUID().toString().substring(0, 8);
+//                    String Path = path != null ? path : "image";
+//                    String s = upLoadService.base64ToImg(image, name, Path);
+//                    if (s != null) {
+//                        msg.setCode(200);
+//                        msg.setTitle("图片保存成功");
+//                        msg.setMessage(s);
+//                        log.info(s);
+//                    } else {
+//                        msg.setCode(500);
+//                        msg.setTitle("图片保存失败");
+//                        msg.setMessage("上传图片保存失败");
+//                    }
+//                } else {
+//                    msg.setCode(500);
+//                    msg.setTitle("图片错误");
+//                    msg.setMessage("上传图片大小超过2Mb限制");
+//                }
+//            } else {
+//                msg.setCode(500);
+//                msg.setTitle("图片错误");
+//                msg.setMessage("上传图片数据为空");
+//            }
+//        } else {
+//            msg.setCode(500);
+//            msg.setTitle("秘钥key错误");
+//            msg.setMessage("该秘钥没有上传文件的权限！");
+//        }
+//        log.info("\n" + msg.toString() + "\n");
+//        return msg;
+//    }
 
     private boolean uplaodCheck_signature(String fileName,long size,HttpServletRequest request){
         String req_key = request.getParameter("key");
@@ -172,7 +167,7 @@ public class UpLoadController {
         String req_signature = request.getHeader("x-signature");
         if (!StrUtil.isBlank(fileName)&&!StrUtil.isBlank(req_size)&&!StrUtil.isBlank(req_signature)){
             try {
-                String encoding = "UTF-8";
+//                String encoding = "UTF-8";
                 String str = req_time + req_key + size + req_code + "zh0805" + fileName.length();
 //                System.out.println(str);
                 String md5 = EncryptUtil.getMyMd5(str);
@@ -194,25 +189,21 @@ public class UpLoadController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveMulFile")
-    public Message saveFileInterface(@Nullable MultipartFile file
-            , @Nullable String fileName
-            , @Nullable String path, HttpServletRequest request) {
+    public Message saveFileInterface(MultipartFile file
+            , @RequestParam String fileName
+            , @RequestParam String path, HttpServletRequest request) {
         Message msg = new Message();
-        msg.setTime(TimeUtil.getNowTime());
-//        msg=webController.verifyMathCheck(code,request);
-
         boolean b = uplaodCheck_signature(fileName, file.getSize(), request);
         if (b) {
             User user = (User) request.getAttribute("user");
             if (user.getType().equals(User.Type.Common) || user.getType().equals(User.Type.Admin)) {
                 log.info("\n文件上传：" + CusAccessObjectUtil.getRequst(request) + "\n");
-                if (file != null && !file.isEmpty()) {
-                    String name = fileName != null && fileName.length() > 0 ? fileName : file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
-                    String Path = path != null && path.length() > 0 ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
+                if (!file.isEmpty()) {
+                    String name = StringUtils.hasLength(fileName) ? fileName : Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf("."));
+                    String Path = StringUtils.hasLength(path) ? path.split("/")[0] : FiletypeUtil.getFileType(file.getOriginalFilename());
                     String s = upLoadService.saveFile(file, name, Path);
                     if (s != null) {
                         Log.Info("文件上传["+ FileUtil.fileSizeStr(file.getSize())+"]："+s+"\n"+ com.zhangheng.util.CusAccessObjectUtil.getCompleteRequest(request)+"\n");
-                        msg.setTime(TimeUtil.getNowTime());
                         msg.setCode(200);
                         msg.setTitle("上传文件保存成功");
                         msg.setMessage(s);
@@ -236,7 +227,7 @@ public class UpLoadController {
             msg.setTitle("上传失败，上传异常");
             msg.setMessage("对不起！上传信息异常！");
         }
-        log.info("\n" + msg.toString() + "\n");
+        log.info("\n{}\n", msg);
         return msg;
     }
 

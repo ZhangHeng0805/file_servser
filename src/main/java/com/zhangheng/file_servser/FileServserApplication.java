@@ -32,43 +32,43 @@ public class FileServserApplication {
     }
 
 
-    @Value("${project.version:}")
-    private String version;
-    private static ConfigurableApplicationContext applicationContext = null;
-    @Async
-    @EventListener(ApplicationReadyEvent.class)
-    public void onApplicationReadyEvent(ApplicationReadyEvent event) {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ignored) {
-        }
-        applicationContext = event.getApplicationContext();
-        ConfigurableEnvironment env = applicationContext.getEnvironment();
-        String id = applicationContext.getId();
-        StringBuilder sb = new StringBuilder("\n\n\n---------------------------"+id+": "+version+"-------------------------------\n");
-
-        if (applicationContext instanceof ServletWebServerApplicationContext) {
-            ServletWebServerApplicationContext webServerApplicationContext = (ServletWebServerApplicationContext) applicationContext;
-            WebServer webServer = webServerApplicationContext.getWebServer();
-            if (webServer != null) {
-                String localUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, "localhost");
-                String externalUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, NetUtil.getLocalIpAddress());
-                sb.append("\t").append(id).append(" is running! Access URLs:\n");
-                sb.append("\tLocal:   ").append(localUrl).append("\n");
-                sb.append("\tExternal:   ").append(externalUrl).append("\n");
-//        sb.append("\tSwagger: http://localhost").append(port).append(path).append("/doc.html\n");
-            }
-        }
-        sb.append("\tDefault Profiles: ").append(Arrays.toString(env.getDefaultProfiles())).append("\n");
-        sb.append("\tActive Profiles:  ").append(Arrays.toString(env.getActiveProfiles())).append("\n");
-        sb.append("---------------------------Loaded Configuration Files-------------------------------");
-        env.getPropertySources().forEach(source -> {
-            if (source instanceof OriginTrackedMapPropertySource) {
-                sb.append("\n\t").append(source.getName());
-            }
-        });
-        sb.append("\n---------------------------------------------------------------------\n\n");
-
-        log.info(sb.toString());
-    }
+//    @Value("${project.version:}")
+//    private String version;
+//    private static ConfigurableApplicationContext applicationContext = null;
+//    @Async
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void onApplicationReadyEvent(ApplicationReadyEvent event) {
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException ignored) {
+//        }
+//        applicationContext = event.getApplicationContext();
+//        ConfigurableEnvironment env = applicationContext.getEnvironment();
+//        String id = applicationContext.getId();
+//        StringBuilder sb = new StringBuilder("\n\n\n---------------------------"+id+": "+version+"-------------------------------\n");
+//
+//        if (applicationContext instanceof ServletWebServerApplicationContext) {
+//            ServletWebServerApplicationContext webServerApplicationContext = (ServletWebServerApplicationContext) applicationContext;
+//            WebServer webServer = webServerApplicationContext.getWebServer();
+//            if (webServer != null) {
+//                String localUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, "localhost");
+//                String externalUrl = ApplicationUtil.getBaseUrl(webServerApplicationContext, NetUtil.getLocalIpAddress());
+//                sb.append("\t").append(id).append(" is running! Access URLs:\n");
+//                sb.append("\tLocal:   ").append(localUrl).append("\n");
+//                sb.append("\tExternal:   ").append(externalUrl).append("\n");
+////        sb.append("\tSwagger: http://localhost").append(port).append(path).append("/doc.html\n");
+//            }
+//        }
+//        sb.append("\tDefault Profiles: ").append(Arrays.toString(env.getDefaultProfiles())).append("\n");
+//        sb.append("\tActive Profiles:  ").append(Arrays.toString(env.getActiveProfiles())).append("\n");
+//        sb.append("---------------------------Loaded Configuration Files-------------------------------");
+//        env.getPropertySources().forEach(source -> {
+//            if (source instanceof OriginTrackedMapPropertySource) {
+//                sb.append("\n\t").append(source.getName());
+//            }
+//        });
+//        sb.append("\n---------------------------------------------------------------------\n\n");
+//
+//        log.info(sb.toString());
+//    }
 }

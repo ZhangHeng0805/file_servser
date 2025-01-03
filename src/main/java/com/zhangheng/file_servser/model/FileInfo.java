@@ -1,8 +1,7 @@
-package com.zhangheng.file_servser.entity;
+package com.zhangheng.file_servser.model;
 
 import com.zhangheng.file.FileUtil;
 import com.zhangheng.file.FiletypeUtil;
-import com.zhangheng.file_servser.service.FileService;
 import com.zhangheng.util.TimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;

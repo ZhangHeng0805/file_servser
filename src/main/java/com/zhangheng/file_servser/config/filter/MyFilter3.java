@@ -1,14 +1,10 @@
 package com.zhangheng.file_servser.config.filter;
 
 import cn.hutool.json.JSONUtil;
-import com.zhangheng.file_servser.controller.CaptchaController;
-import com.zhangheng.file_servser.controller.WebController;
 import com.zhangheng.bean.Message;
+import com.zhangheng.file_servser.service.CaptchaService;
 import com.zhangheng.file_servser.utils.CusAccessObjectUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Resource;
@@ -32,8 +28,9 @@ import java.util.Objects;
  */
 @WebFilter
 @Order(3)
+@Slf4j
 public class MyFilter3 extends MyFilter {
-    private String[] paths={
+    private final String[] paths = {
             "/upload/*",
             "/web/upload",
             "/deleteFile",
@@ -41,11 +38,9 @@ public class MyFilter3 extends MyFilter {
             "/getFileList",
             "/download/findFileList",
     };
-    @Value("#{'${server.servlet.context-path}'}")
-    private String contextPath;
-    private final Logger log= LoggerFactory.getLogger(getClass());
     @Resource
-    private CaptchaController captchaController;
+    private CaptchaService captchaService;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -53,14 +48,14 @@ public class MyFilter3 extends MyFilter {
         if (!Objects.equals(contextPath, "/")) {
             uri = uri.replace(contextPath, "");
         }
-        boolean isFilter=false;
-        isFilter = isFilter(new HashSet<>(Arrays.asList(paths)),uri,isFilter);
-        if (isFilter){
+        boolean isFilter = false;
+        isFilter = isFilter(new HashSet<>(Arrays.asList(paths)), uri, isFilter);
+        if (isFilter) {
             String code = req.getParameter("code");
-            Message msg = captchaController.verifyMathCheck(code, false, req);
-            if (msg.getCode()!=200){
+            Message msg = captchaService.verifyCheck(code, false, req);
+            if (msg.getCode() != 200) {
                 wirterJson(response, JSONUtil.parse(msg).toString(), msg.getCode());
-                log.warn("\n验证码核验失败：{}-路径[{}]\n",msg.getTitle(),uri);
+                log.warn("\n验证码核验失败：{}-路径[{}]\n", msg.getTitle(), uri);
                 return;
             }
         }
