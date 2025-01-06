@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.zhangheng</groupId>
     <artifactId>file_servser</artifactId>
-    <version>24.07.10</version>
+    <version>25.01.06</version>
     <name>file_servser ${project.version}</name>
     <description>Project for Spring Boot(文件管理服务器)</description>
 
