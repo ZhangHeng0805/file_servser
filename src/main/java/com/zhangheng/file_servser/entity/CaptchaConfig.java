@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @Data
 public class CaptchaConfig {
     /**
-     * 验证码干扰类型：1-线圈，2-扭曲，3-GIF
+     * 验证码干扰类型
      */
-    private Integer type = 1;
+    private Interference type = Interference.COIL;
     /**
-     * 验证码模式：1-随机字符，2-数学运算
+     * 验证码模式
      */
-    private Integer mode = 1;
+    private Mode mode = Mode.RANDOM;
     /**
      * 验证码长度
      */
@@ -39,4 +39,29 @@ public class CaptchaConfig {
      * 验证码高度px
      */
     private int height = 100;
+
+    public enum Mode{
+        /**
+         * 随机字符
+         */
+        RANDOM,
+        /**
+         * 数学运算
+         */
+        MATH;
+    }
+    public enum Interference{
+        /**
+         * 线圈干扰
+         */
+        COIL,
+        /**
+         * 横线干扰
+         */
+        LINE,
+        /**
+         * 动图线圈干扰
+         */
+        GIF_COIL,
+    }
 }

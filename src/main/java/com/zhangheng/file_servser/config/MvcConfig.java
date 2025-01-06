@@ -2,16 +2,11 @@ package com.zhangheng.file_servser.config;
 
 import com.zhangheng.file_servser.config.interceptor.UploadInterceptor;
 import com.zhangheng.file_servser.config.interceptor.VerifyInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.spring5.ISpringTemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+
+import javax.annotation.Resource;
 
 /**
  * @author 张恒
@@ -22,9 +17,9 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-    @Autowired
+    @Resource
     private VerifyInterceptor verifyInterceptor;
-    @Autowired
+    @Resource
     private UploadInterceptor uploadInterceptor;
 
     public static String[] excluePath1={

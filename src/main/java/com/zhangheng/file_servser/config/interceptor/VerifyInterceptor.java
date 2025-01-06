@@ -29,15 +29,8 @@ import java.util.Set;
 @Slf4j
 public class VerifyInterceptor implements HandlerInterceptor {
 
-    //    @Value("#{'${keys}'.split(',')}")
-//    private HashSet<String> keys;
-//    @Value("#{'${admin_keys}'.split(',')}")
-//    private HashSet<String> admin_keys;
-//    @Value("#{'${test_keys}'.split(',')}")
-//    private HashSet<String> test_keys;
     @Resource
     private AccessKey accessKey;
-//    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -73,7 +66,7 @@ public class VerifyInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    public boolean check_Key(Set<String> keys, HttpServletRequest request, String key, User user) throws Exception {
+    private boolean check_Key(Set<String> keys, HttpServletRequest request, String key, User user) throws Exception {
         HttpSession session = request.getSession();
         String cid = Convert.toStr(session.getAttribute("cid"), "");
         String sid = Convert.toStr(session.getAttribute("sid"), "");

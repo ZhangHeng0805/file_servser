@@ -14,7 +14,7 @@ function fileShowSubmit(ownDom, keyDom, pathDom, searchDom) {
             return;
         }
         console.log("精确查询:", path);
-        if (!Code || Math.random() > 0.7) {
+        if (!Code || Math.random() > 0.8) {
             Code = null;
             captcha_model_show("requestFileList('" + key + "','" + path + "')");
         } else {
@@ -179,7 +179,7 @@ function enterFolder(path) {
 
 function del(path) {
     if (confirm("确定删除该文件吗？")) {
-        if (!Code || Math.random() > 0.7) {
+        if (!Code || Math.random() > 0.8) {
             captcha_model_show("del_file('" + path + "')");
         } else {
             del_file(path);
@@ -222,7 +222,7 @@ function del_file(path) {
 }
 
 function rename(path, oldName) {
-    if (!Code || Math.random() > 0.7) {
+    if (!Code || Math.random() > 0.8) {
         captcha_model_show("rename_file('" + path + "','" + oldName + "')");
     } else {
         rename_file(path, oldName);
@@ -286,11 +286,10 @@ function checkCookie() {
 /*模糊查询过滤*/
 function fuzzyQuery(list, keyWord) {
     if (list) {
-        var arr = list.filter(function (item) {
-            var reg = new RegExp(keyWord, "gi");
+        return list.filter(function (item) {
+            let reg = new RegExp(keyWord, "gi");
             return reg.test(item.title)
-        });
-        return arr
+        })
     } else {
         return list;
     }
@@ -307,9 +306,7 @@ function scrollToTop() {
 }
 
 function fileSize(size) {
-    if (size == null) {
-        return "0";
-    } else {
+    if (size) {
         let length = size;
         let unit = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
         let i;
@@ -317,6 +314,8 @@ function fileSize(size) {
             length /= 1024.0;
         }
         return i === 0 ? length + " " + unit[i] : length.toFixed(2) + " " + unit[i];
+    } else {
+        return "0";
     }
 }
 

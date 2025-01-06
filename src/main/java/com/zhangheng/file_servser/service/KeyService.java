@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 秘钥验证
@@ -68,7 +69,15 @@ public class KeyService {
         if (StringUtils.hasLength(key)) {
             String property = SpringContextUtils.getEnvironment().getProperty("zhfs.key.file-path.include." + key, String.class);
             if (StringUtils.hasLength(property)) {
-                return Arrays.asList(property.split(","));
+                return Arrays.stream(property.split(","))
+                        .filter(StringUtils::hasLength)
+                        .map(s -> {
+                            if (s.startsWith("/")) {
+                                return s.substring(1);
+                            } else {
+                                return s;
+                            }
+                        }).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();

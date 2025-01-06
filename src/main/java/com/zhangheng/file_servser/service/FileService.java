@@ -6,6 +6,7 @@ import com.zhangheng.file_servser.model.User;
 import com.zhangheng.file_servser.utils.PathUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileSystemUtils;
 
 import javax.annotation.Resource;
@@ -28,6 +29,11 @@ public class FileService {
     private ServerConfig serverConfig;
     @Resource
     private KeyService keyService;
+    private final AntPathMatcher pathMatcher;
+
+    public FileService() {
+        this.pathMatcher = new AntPathMatcher();
+    }
 
     public List<FileInfo> getFileList(String relativePath, String base, User user) {
         File folder = new File(base + relativePath);
@@ -39,7 +45,13 @@ public class FileService {
                         return true;
                     } else {
                         for (String s : include) {
-                            if (fileInfo.getPath().startsWith(s)) {
+                            if (pathMatcher.isPattern(s)) {
+                                if (pathMatcher.match(s, fileInfo.getPath())) {
+                                    return true;
+                                }else if (fileInfo.getPath().equals(getPrepareFileParent(s))){
+                                    return true;
+                                }
+                            } else if (fileInfo.getPath().startsWith(s)) {
                                 return true;
                             }
                         }
@@ -48,6 +60,24 @@ public class FileService {
                 }).collect(Collectors.toList());
     }
 
+    private String getPrepareFileParent(String path) {
+//        if (pathMatcher.isPattern(path)) {
+            String[] patternChar = {"*", "?", "{"};
+            int patternIndex = -1;
+            for (String c : patternChar) {
+                patternIndex = path.indexOf(c);
+                if (patternIndex != -1) {
+                    break;
+                }
+            }
+            if (patternIndex != -1) {
+                String substring = path.substring(0, patternIndex);
+                int endIndex = substring.lastIndexOf("/");
+                return endIndex > 0 ? substring.substring(0, endIndex) : "/";
+            }
+//        }
+        return path;
+    }
     public boolean isDirectoryEmpty(Path directoryPath) {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directoryPath)) {
             return !directoryStream.iterator().hasNext();

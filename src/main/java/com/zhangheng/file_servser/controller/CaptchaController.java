@@ -68,7 +68,7 @@ public class CaptchaController {
             HttpSession session = request.getSession();
             msg.setCode(200);
             msg.setTitle("获取成功");
-            if (captchaConfig.getMode().equals(1)) {
+            if (CaptchaConfig.Mode.RANDOM.equals(captchaConfig.getMode())) {
                 msg.setMessage("请仔细观察图中验证码字符，并输入观察到的完整字符");
                 session.setAttribute("verify-code", code);
             } else {
@@ -76,7 +76,7 @@ public class CaptchaController {
                 session.setAttribute("verify-code", MathUtil.operation(code));
             }
             String imageBase64Data;
-            if (captchaConfig.getType().equals(3)) {
+            if (CaptchaConfig.Interference.GIF_COIL.equals(captchaConfig.getType())) {
                 imageBase64Data = captcha.getImageBase64Data("image/gif");
             } else {
                 imageBase64Data = captcha.getImageBase64Data();

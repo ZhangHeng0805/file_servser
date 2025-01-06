@@ -71,24 +71,24 @@ public class CaptchaService implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         switch (captchaConfig.getType()) {
-            case 1:
+            case COIL:
                 captcha = new CircleCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight(), captchaConfig.getLength(), captchaConfig.getDifficulty());
                 break;
-            case 2:
+            case LINE:
                 captcha = new ShearCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight(), captchaConfig.getLength(), captchaConfig.getDifficulty());
                 break;
-            case 3:
+            case GIF_COIL:
                 captcha = new GifCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight(), captchaConfig.getLength(), captchaConfig.getDifficulty());
                 break;
             default:
                 captcha = new CircleCaptcha(200, 100, 6, 50);
                 break;
         }
-        if (captchaConfig.getMode().equals(1)) {
+        if (CaptchaConfig.Mode.RANDOM.equals(captchaConfig.getMode())) {
             captcha.setGenerator(new RandomGenerator(captchaConfig.getLength()));
         } else {
             captcha.setGenerator(new MathGenerator());
         }
-        log.info("验证码初始化完成！");
+        log.debug("验证码初始化完成！");
     }
 }

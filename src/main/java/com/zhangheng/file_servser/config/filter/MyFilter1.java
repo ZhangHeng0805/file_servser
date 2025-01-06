@@ -32,23 +32,6 @@ import java.util.Objects;
 @Slf4j
 public class MyFilter1 extends MyFilter {
 
-//    @Value("#{'${config.filter1.excludePath}'.split(',')}")
-//    private HashSet<String> excludePath;
-    //    private String[] excludePath={
-//            "/static/**",//静态资源
-//            "/favicon.ico",//网址图标
-//            "/error/**",//错误
-//            "/download/getAllFileType",
-//            "/getVerify/",
-//            "/download/show/",
-//            "/download/split/",
-//
-//    };
-//    private final Logger log = LoggerFactory.getLogger(getClass());
-
-//    @Value(value = "#{'${config.request-interval}'}")
-//    private Long minInterval;
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;

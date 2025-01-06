@@ -29,24 +29,6 @@ import java.util.Objects;
 @Order(2)
 @Slf4j
 public class MyFilter2 extends MyFilter {
-//    @Value("#{'${config.filter2.excludePath}'.split(',')}")
-//    private HashSet<String> excludePath;
-//    @Value("#{'${server.servlet.context-path}'}")
-//    private String contextPath;
-
-    //    private String[] excludePath={
-//            "/static/**",//静态资源
-//            "/favicon.ico",//网址图标
-//            "/error/**",//错误
-//            "/getVerify/",
-//            "/download/getAllFileType",
-//            "/download/show/",
-//            "/download/split/",
-//    };
-//    private final Logger log = LoggerFactory.getLogger(getClass());
-//    @Value(value = "#{'${config.max-request-counts}'}")
-//    private Integer maxCount;
-
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
